@@ -1,0 +1,50 @@
+: cascade admin::settings::navigation
+
+: around body -> {
+<div class="mail-container-header">
+	<: loc('Переадресация') :>
+</div>
+<div class="panel panel-transparent">
+	<div class="panel-body">
+		<p class="col-sm-offset-2 lead text-default">
+			<: loc("admin.redirect", [ $settings.appname ]) :>
+		</p>
+		<form class="form-inline col-sm-offset-2 form-group-margin" method="post">
+			<div class="form-group">
+				<input type="text" class="form-control" name="source" placeholder="/your-link.html" required>
+			</div>
+			<div class="form-group">
+				<input type="text" class="form-control" name="destination" placeholder="/" required>
+			</div>
+			<button type="submit" class="btn btn-primary <: 'disabled' if !$vars.site.premium :>">
+				<span class="fa fa-plus"></span>
+			</button>
+		</form>
+		<hr>
+		: for $redirects -> $r {
+		<form class="form-inline col-sm-offset-2 form-group-margin" id="r<: $r.redirect_id :>"
+			action="/admin/settings/redirect/delete/<: $r.redirect_id :>" method="post">
+			<div class="form-group">
+				<input type="text" class="form-control" value="<: $r.source :>" disabled>
+			</div>
+			<div class="form-group">
+				<input type="text" class="form-control" value="<: $r.destination :>" disabled>
+			</div>
+			<button type="submit" class="btn btn-danger"><span class="fa fa-times"></span></button>
+		</form>
+		: }
+	</div>
+</div>
+
+<script type="text/javascript">
+init.push(function () {
+: if !$vars.site.premium {
+	$.growl.error({ 
+		message: "<: loc('Данная опция недоступна на вашем пакете услуг.') :>", 
+		size: 'large', 
+		duration: 999 * 999 
+	});
+: }
+});
+</script>
+: }

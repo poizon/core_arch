@@ -1,0 +1,20 @@
+: if $posts.0 {
+		: for $posts -> $item {
+			<h2><a href="/blog/<: $item.post_id :>"><: $item.title :></a></h2>
+			<span class="date"><: $item.date | format_date($date.formatter) :></span>
+			<: $item.announce | raw :>
+			: if $item.comments {
+				<div>
+					<a href="/blog/<: $item.post_id :>#comments">
+						<: loc('Комментарии') :> (<:$item.comments :>)
+					</a>
+				</div>
+			: }
+		: }
+	</ul>
+	: include templates::okis::pagination
+: } else {
+	<div class="alert">
+		<: loc('Ничего не найдено') :>
+	</div>
+: }

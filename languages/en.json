@@ -1,0 +1,301 @@
+{
+	"default.homepage": "Congratulations, You're Now Online! Now share your site with the world! Make sure that Google can find your site, create a buzz on social networks and get some feedback.",
+	"Создано на конструкторе сайтов %1.": "This site was created using %1. Create your own for FREE.",
+	
+	## Меню
+	"Страницы": "Pages",
+	"Меню": "Menu",
+	"Новости": "News",
+	"Файлы": "Files",
+	"Галерея": "Gallery",
+	"Формы": "Forms",
+	"Блог": "Blog",
+	"Записи": "Posts",
+	"Комментарии": "Comments",
+	"События": "Events",
+	
+	"СКРЫТЬ МЕНЮ": "HIDE MENU",
+	"Свойства": "Properties",
+	"Настройки": "Settings",
+	"Статистика": "Statistics",
+	"Реклама": "Advertisement",
+	
+	"Аккаунт": "Account",
+	"Выйти": "Log Out",
+	
+	"Подключить домен": "Connect domain",
+	"Сменить тариф": "Upgrade site",
+	
+	## Системные фразы
+	"Загрузка": "Loading",
+	"Удалить": "Delete",
+	"Категории": "Categories",
+	"Категория": "Category",
+	"Не сейчас": "Not Now",
+	"Сохранить": "Save",
+	"Применить": "Apply",
+	"Поиск": "Search",
+	"Имя": "Name",
+	"Название": "Name",
+	"Значение": "Value",
+	"Описание": "Description",
+	"Показать": "Show",
+	"Скрыть": "Hide",
+	"Дата": "Date",
+	"Изменить": "Edit",
+	"Заголовок": "Title",
+	"Помощь": "Help",
+	"Создать": "Create",
+	"Отправить": "Send",
+	"Вы подтверждаете удаление?": "Do you really want to delete it?",
+	"Вы уверены?": "Are you sure?",
+	"Следующая": "Next",
+	"Предыдущая": "Previous",
+	"Добавить": "Add",
+	"Изображение": "Image",
+	"Переместить": "Move",
+	"Комментарий": "Comment",
+	"Главная": "Home",
+	"Посмотреть на сайте": "Go to Site", # fix it!
+	"Данные успешно сохранены": "The information was saved successfully",
+	"Закрыть": "Close",
+	"Скопировать": "Copy",
+	"Выбрать": "Choose",
+	"Очистить": "Clear",
+	
+	"%1-%2 из %3": "%1-%2 of %3", # 1-30 из 134
+	"Данная опция недоступна на вашем пакете услуг.": "This option is not available for your package.",
+	"Необходимо повысить статус до пакета Бизнес.": "You must upgrade to the Business Package to use coupons.",
+	
+	# Помощь
+	"Назад": "Back",
+	"Далее": "Next",
+	"Пропустить": "Skip",
+	"Закончить": "Done",
+	
+	"Новая категория": "New Category", # котокий текст 
+	"Без категории": "Unsorted",
+	"Изменить название": "Change name",
+	
+	## Интернет-магазин
+	"Интернет-магазин": "Online Store",
+	"Магазин": "Online Store",
+	"Заказы": "Orders",
+	"Платежи": "Payments",
+	"Промокоды": "Coupons",
+	"Товары": "Products",
+	"Валюта": "Currency",
+	"Доставка": "Shipping",
+	
+	"admin.store.deliveries": "Shipping lets you pass on shipping rates directly from carriers, according to the package destination, weight, and dimensions.",
+	"admin.store.products": "Manage products in your store from here. Click on a product to edit it. Navigate between categories using the links on the left.",
+	"admin.store.coupons": "Add coupons to your store and give your buyers a discount on their cart. Your buyers will only be able to use one coupon per total purchase.",
+	"admin.store.settings.form": "Choose whether your checkout form requires extra information from your customer.",
+	
+	# Сайт
+	"Все разделы": "All categories",
+	"Корзина": "Cart",
+	"Купить": "Buy",
+	"В корзину": "Add to Cart",
+	
+	"Сортировать по": "Order by",
+	"названию": "title",
+	"цене": "price",
+	
+	# Настройки
+	"Текст подтверждения заказа": "Order Confirmation Text",
+	"Ваш заказ принят. В ближайшее время с вами свяжутся.": "Your order has been created successfully.",
+	"Бесплатная доставка при сумме заказа больше": "Free delivery starts from",
+	
+	"Сделать обязательным": "Set as required",
+	"Сделать необязательным": "Set as optional",
+	"Данные для заказа": "Form options",
+	"Список товаров": "Products Category",
+	"Страница товара": "Product's Page",
+	
+	# Заказы
+	"Заказ на сайте %1": "New order (%1)",
+	"В интернет-магазине на сайте %1 совершен новый заказ.": "New order available at your online store (%1)",
+	
+	"Заказ": "Order",
+	"Оформить заказ": "Proceed to Checkout",
+	"Информация о покупателе": "Buyer's Information",
+	"Количество": "Quantity",
+	"Статус": "Status",
+	"Телефон": "Phone",
+	"Адрес": "Address",
+	"Информация о заказе": "Order's Information",
+	"Товар": "Product",
+	"Цена": "Price",
+	"Промокод": "Coupon",
+	"Цена со скидкой": "Sale Price",
+	"Всего": "Total",
+	"Сумма": "Total",
+	
+	"Новый": "New",
+	"В обработке": "Processing",
+	"Завершен": "Resolved",
+	"Отменен": "Failed",
+	
+	# Промокоды
+	"Код": "Code",
+	"Скидка": "Discount",
+	"Ограничение": "Coupon Limit",
+	"Ограничение купона": "Coupon Limit",
+	"Использован": "Times used",
+	"Действителен": "Valid",
+	"с": "from",
+	"до": "to",
+	
+	# Платежи
+	"Метод": "Method",
+	"Информация для подключения": "Payflow Information",
+	
+	"Робокасса": "Robokassa",
+	"Идентификатор магазина": "Store Login",
+	"Пароль для инициализации оплаты": "Payment Notification Password",
+	"Пароль для уведомления об оплате": "Payment Initialization Password",
+	
+	"admin.store.payments.notify": "Notify URL",
+	"admin.store.payments.success": "Success URL",
+	"admin.store.payments.fail": "Fail URL",
+	
+	# Товары
+	"Скрыть эту категорию": "Hide this category",
+	"Перейти к товарам": "Go to Products",
+	
+	"Короткое описание": "Overview",
+	"Файл не выбран": "No file selected",
+	"Скрыть этот товар": "Hide this product",
+	"Похожие товары": "Related Products",
+	"Выберите товары": "Select products",
+	"Импортировать": "Import",
+	"Экспортировать": "Export",
+	
+	"Добавить характеристики товара": "Add product information",
+	"Добавить дополнительные параметры товара": "Add additional parameters",
+	"Добавить еще значений": "Add more values",
+	
+	## Другие разделы (меню, новости, файлы)
+	"Имя файла": "File name",
+	"Размер": "Size", # размер файла
+	"Текст ссылки": "Title",
+	"Добавить новость": "New Post",
+	"Скопировать ссылку": "Copy link",
+	
+	## Формы
+	"Создать форму": "New Form",
+	"Новая форма": "New Form",
+	"Подтверждение": "Confirmation",
+	"Сообщение успешно отправлено": "The email has been sent successfully",
+	"Введите текст с картинки": "Enter text from the image",
+	"Отключить защиту от спама": "Disable CAPTCHA",
+	"Файл": "File",
+	
+	"Добавить элемент": "Add Question",
+	"Вопрос": "Question",
+	"Возможный ответ": "Possible Answer",
+	"Обязателеное поле": "Required",
+	"Пояснение": "Help Message",
+	"Тип вопроса": "Question Type",
+	"Текст": "Text",
+	"Текст (абзац)": "Paragraph Text",
+	"Выпадающий список": "Dropdown Choose",
+	"Несколько из списка": "Multiple Choose From a List",
+	"Один из списка": "Single Choose From a List",
+	
+	## Галерея
+	"Альбомы": "Albums",
+	"Обложка": "Cover",
+	"Новый альбом": "New Album", # котокий текст
+	"Размер картинок": "Pictures size",
+	"Изображений на страницу": "Images per page",
+	
+	## Страницы
+	"Новая страница": "New Page",
+	"Адрес страницы": "Page Address",
+	"Основное": "General",
+	"Введите название страницы": "Name your page",
+	"Сделать стартовой": "Set as homepage",
+	"Редактировать HTML": "Edit HTML",
+	
+	"Заголовок страницы": "Page Title",
+	"Отображается в качестве заголовка окна браузера.": "Text that is displayed in the browser tab.",
+	
+	"Ключевые слова": "Meta Keywords",
+	"Список ключевых слов, разделенных запятыми.": "List your keywords separated by commas.",
+	
+	"Короткое описание страницы.": "A summary of what your page is about.",
+	"Запретить поисковым системам индексировать эту страницу": "Disallow search engines to find this page",
+	
+	## Настройки
+	"Укажите раздел...": "Select folder...",
+	"Расположение": "Positions",
+	"Шапка": "Header",
+	"Меню": "Menu",
+	"Новости": "News",
+	"Контент": "Content",
+	"Тэги": "Tags",
+	"Подзаголовок": "Caption",
+	"Включить социальные кнопки": "Enable Sharing Buttons",
+	"Мета-теги": "Header code",
+	"Переадресация": "Redirect",
+	"Оформление": "Theme",
+	"Отключить сайт": "Disable Site",
+	"Сайт временно отключен": "Site Temporarily Unavailable",
+	
+	"Гугл Аналитика": "Google Analytics",
+	"Другой счетчик посещаемости": "Custom Site Tracking Code",
+	"Запретить поисковым системам индексировать сайт": "Disallow search engines to find my site",
+	
+	"admin.favicon": "A favicon is a small image associated with your website. When set, it displays in the address bar, tab and bookmarks of your site. Your favicon will be automatically set on every page of your site.",
+	"admin.stat": "Track your site's performance and analyze where your visitors coming from, how long they stay on each page and what keywords they are using to find you.",
+	"admin.sitemap": "The sitemap is dynamically generated on our server and, therefore, is always up to date with any pages that you add or remove from your site. You can view your sitemap by adding sitemap.xml to the end of your domain name. Example: %1",
+	"admin.meta": "ex. Google Webmaster Tools verification meta tag",
+	"admin.redirect": "Migrating your site over to %1 and want to keep your SEO ranking in search engines? Use 301 Redirects to automatically transfer visitors to relevant page on your new %1 site.",
+	"admin.disable": "Please provide some message to temporary disable your website.",
+	
+	## Загрузка
+	"Загрузить": "Upload",
+	"Предпросмотр отсутствует": "No preview",
+	
+	"Перетащите файлы сюда для загрузки": "Drop files here to upload",
+	"Перетащите файлы": "Drop files in here", # котокий текст
+	"или выберите их вручную": "or click to pick manually",
+	
+	"Удалить файл": "Remove the file",
+	"Запрещенный тип файла": "Deprecated file type",
+	"Ваш броузер не поддерживает данную возможность": "Browser does not support ant drag&drop options",
+	"Вы превысили допустимый размер файла": "File size is too big",
+	"Вы превысили допустимый объем хранящихся файлов": "You have exceeded the allowed storage size",
+	"Достигнуто максимальное число файлов": "Max files number succeeded",
+	"Ошибка загрузки файла": "Can not upload file!",
+	
+	### Страница не найдена
+	"Страница, которую вы читаете, не существует": "The page you're looking for can't be found",
+	"Проверьте правильность адреса и попробуйте снова.": "Check the web adress for mispelled words and try again.",
+	"Вернуться на главную": "Go to home page",
+	"Создать сайт бесплатно": "Create a free website",
+	
+	"Ничего не найдено": "Nothing Found",
+	"пожалуйста попробуйте еще раз": "please try again",
+	"Попробуйте добавить что-нибудь.": "Please use the following button to add something.",
+	
+	### Ошибки
+	"Ошибка": "Error",
+	"Некорректное значение": "Incorrect value",
+	"Имя должно содержать только латинские буквы или цифры": "Folder name should contain only alphabet symbols and numbers",
+	"Такое имя уже существует": "This name already exists",
+	"Такой URL уже существует": "This URL already exists",
+	"Поле обязательно к заполнению": "This field is required",
+	"Пожалуйста укажите корректный e-mail": "Please enter a valid e-mail address",
+	"Поле должно содержать только цифры": "Only numbers is allowed",
+	
+	"Имя сайта должно содержать только латинские буквы, цифры, знак минус, ": "Sitename should contain only letters, digits and minus",
+	"Имя содержит недопустимые символы": "Name contains unacceptable symbols",
+	"Имя файла содержит недопустимые символы": "Filename contains unacceptable symbols",
+	"Дата указана некорректно": "Date is incorrect",
+	
+	"Расширение импортируемого файла должно быть TXT или CSV": "Extension of the imported file should be .txt or .csv",
+
+}

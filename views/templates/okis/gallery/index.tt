@@ -1,0 +1,58 @@
+: if $albums.0 || $unsorted.0 {
+
+	<table align="center" width="100%" cellpadding="5" cellspacing="5" class="galleryTable" style="width:100%;border:none">
+		<tbody>
+			: my $size = $album.size // 150;
+			: my $route = $production ? '/resize/' ~ $size ~ '/-/gallery' : '/resize/gallery?width=' ~ $size ~ '&file=';
+			: if $albums.size() {
+				<tr>
+				: for $albums -> $album {
+					: next if not $album.cover
+					: my $show_hr = 1;
+					: raw('</tr><tr>') if $~album > 0 && $~album % 3 == 0
+					<td style='text-align:center;border:none'>
+						<h4 style='text-align:center;margin-bottom:0'><: $album.title :></h4>
+						<a href="/gallery/album/<: $album.album_id :>/">
+							<img src="<: $route :>/<: $vars.site.dir :>/<: $album.album_id :>/<: $album.cover :>" 
+								alt="<: $album.title :>">
+						</a>
+					</td>
+				: }
+				</tr>
+				: if $show_hr {
+					<tr><td colspan="2"><hr size="1"></td></tr>
+				: }
+			: }
+			
+			: if $unsorted.size() {
+			<tr>
+				: for $unsorted -> $photo {
+				: raw('</tr><tr>') if $~photo > 0 && $~photo % 2 == 0
+					<td style='text-align:center;border:none'>
+						<h4 style='text-align:center;margin-bottom:0'><: $photo.title :></h4>
+						<a rel="group" title="<: $photo.title :>" class="fancybox" 
+							href="/gallery/<: $vars.site.dir :>/0/<: $photo.filename :>">
+							<img src="<: $route :>/<: $vars.site.dir :>/0/<: $photo.filename :>" alt="<: $photo.title :>">
+						</a>
+					</td>
+				: }
+			</tr>
+			: }
+		</tbody>
+	</table>
+
+: } else {
+	<div class="alert">
+		<: loc('Ничего не найдено') :>
+	</div>
+: }
+
+<script src="/assets/javascripts/jquery-2.1.1.min.js"></script>
+<script src="/assets/javascripts/jquery.fancybox.js"></script>
+<link rel="stylesheet" type="text/css" href="/assets/stylesheets/jquery.fancybox.css" media="screen">
+
+<script>
+	$(document).ready(function() {
+		$('.fancybox').fancybox();
+	});
+</script>

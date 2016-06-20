@@ -1,0 +1,37 @@
+: if $album {
+	<table align="center" width="100%" cellpadding="5" cellspacing="5" class="galleryTable">
+		<tbody>
+			<tr>
+				: for $photos -> $photo {
+					: raw('</tr><tr>') if $~photo > 0 && $~photo % 2 == 0 
+					: my $file = $vars.site.dir ~ "/" ~ $album.album_id ~ "/" ~ $photo.filename
+					<td>
+						<h4><: $photo.title :></h4>
+						<a rel="group" class="fancybox" href="/gallery/pics/<: $file :>">
+							<img src="/gallery/resize/pics/<: $file :>" alt="<: $photo.title :>">
+						</a>
+					</td>
+				: }
+			</tr>
+		</tbody>
+	</table>
+	: if !$photos.0 {
+	<div class="alert">
+		<: loc('Ничего не найдено') :>
+	</div>
+	: }
+: } else {
+	<div class="alert">
+		<: loc('Ничего не найдено') :>
+	</div>
+: }
+
+<script src="/assets/javascripts/jquery-2.1.1.min.js"></script>
+<script src="/assets/javascripts/jquery.fancybox.js"></script>
+<link rel="stylesheet" type="text/css" href="/assets/stylesheets/jquery.fancybox.css" media="screen">
+
+<script>
+	$(document).ready(function() {
+		$('.fancybox').fancybox();
+	});
+</script>

@@ -1,0 +1,40 @@
+: my $size = $vars.site.store_imgsize_category || 100
+: my $route = $production ? "/resize/" ~ $size ~ "/-/store" : "/resize/store?width=" ~ $size ~ "&file="
+
+: for $items -> $item {
+<div class="store_item">
+	: if $item.cover {
+	<a href="/store/item/<: $item.item_id :>">
+		<img src="<: $route :>/<: $vars.site.dir :>/<: $item.cover :>" border="0" title="<: $item.title :>">
+	</a>
+	: }
+	<a href="/store/item/<: $item.item_id :>"><: $item.title :></a>
+	<span class="store_preview_price">
+	: if $item.price_sale {
+		<span class="store_preview_price_old"><: $item.price :></span>
+		<span class="store_preview_price_new"><: $get_price($item.price_sale) | raw :></span>
+	: } else {
+		<span class="store_preview_price"><: $get_price($item.price) | raw :></span>
+	: }
+	</span>
+	<a href="#" class="to_cart" onclick="add_to_cart(<: $item.item_id :>)"><: loc('Купить') :></a>
+</div><: } :>
+
+<script src="/assets/javascripts/jquery-2.1.1.min.js"></script>
+<script>
+	function add_to_cart(id) {
+		$.ajax({
+			type: 'post',
+			url: '/store/cart/item',
+			data: JSON.stringify({ 'id' :id }),
+			dataType: "json",
+			contentType: "application/json",
+			success: function(response) {
+				$('#n_cart_items').text(response.cart_items_cnt);
+			},
+			error: function() {
+				alert('<: loc("Ошибка") :>');
+			}
+		});
+	}
+</script>

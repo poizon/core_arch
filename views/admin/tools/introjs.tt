@@ -1,0 +1,22 @@
+<link href="//cdn.jsdelivr.net/intro.js/1.0.0/introjs.min.css" rel="stylesheet" type="text/css">
+<script src="//cdn.jsdelivr.net/intro.js/1.0.0/intro.min.js"></script>
+
+<script type="text/javascript">
+	function startIntro(){
+		var intro = introJs();
+		intro.setOptions({
+			doneLabel: '<: loc("Закончить") :>',
+			skipLabel: '<: loc("Пропустить") :>',
+			nextLabel: '<: loc("Далее") :> &rarr;',
+			prevLabel: '&larr; <: loc("Назад") :>',
+			showStepNumbers: false,
+			showBullets: false,
+			showButtons: true,
+			showProgress: true
+		});
+		intro.start();
+	}
+	init.push(function () {
+		startIntro();
+	});
+</script>

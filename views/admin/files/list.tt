@@ -1,0 +1,138 @@
+: if $files.size() {
+<div class="panel">
+	<div class="panel-body no-padding-b">
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<th class="col-md-8"><: loc('Имя файла') :></th>
+					<th class="col-md-2"><: loc('Размер') :></th>
+					<th class="col-md-1"></th>
+					<th class="col-md-1"></th>
+				</tr>
+			</thead>
+			<tbody>
+			: my $size   = 150;
+			: my $resize = $production ? '/resize/' ~ $size ~ '/-/files' : '/resize/files?width=' ~ $size ~ '&file=';
+			: my $dir    = $vars.site.dir ~ ( $folder != 'root' ? '/' ~ $folder : '' );
+
+			: for $files -> $f {
+				<tr>
+					<td nowrap>
+						<span class="fa fa-file-o"></span>
+						: if ( match( $f.name, rx("\.(jpe?g|png|gif|JPE?G|GIF|PNG)$") ) ) {
+							<a href="/files/<: $dir :>/<: $f.name :>" class="screenshot" 
+								rel="<: $resize :>/<: $dir :>/<: $f.name :>">
+								<: $f.name :>
+							</a>
+						: }
+						: else {
+							<a href="/files/<: $dir :>/<: $f.name :>" target="_blank">
+								<: $f.name :>
+							</a>
+						: }
+					</td>
+					<td><: raw($f.size != '0.00' ? $f.size ~ '&nbsp;kB' : '&mdash;') :></td>
+					<td class="text-right">
+						<a class="copy-link" data-url="/files/<: $dir :>/<: $f.name :>" 
+							title="<: loc('Скопировать ссылку') :>">
+							<span class="fa fa-copy"></span>
+						</a>
+					</td>
+					<td>
+						<a class="delete-file" data-name="<: $f.name :>"
+							title="<: loc('Удалить') :>">
+							<span class="fa fa-close"></span>
+						</a>
+					</td>
+				</tr>
+			: }
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<style>
+	.copy-link, .delete-file{cursor:pointer}
+	#screenshot{position:absolute;background:#FAFAFA;padding:2px;display:none}
+</style>
+
+<script>
+	$(document).ready(function(){
+		$('a.copy-link, a.delete-file').tooltip();
+		screenshotPreview();
+	});
+	
+	$('.copy-link').on('click', function() {
+		$(this).addClass('text-muted');
+		CopyToClipboard( $(this).data('url') );
+	});
+	
+	$('.delete-file').on('click', function() {
+		var $this   = $(this),
+			$folder = '<: $folder :>',
+			$file   = $this.data('name');
+		
+		$.ajax({
+			type: 'delete',
+			url: '/admin/api/files/' + $folder + '/' + $file + '.json',
+			success: function(response) {
+				if (response.result == 'ok') {
+					$this.parents('tr').remove();
+				}
+			},
+			error: function() {
+				bootbox.alert('<: loc("Ошибка") :>');
+			}
+		})
+		
+	});
+
+	function CopyToClipboard(text) {
+		var host = window.location.protocol + '//' + window.location.hostname;
+		if (window.location.port != 80)
+			host = host + ':' + window.location.port;
+		text = host + text;
+		var copyElement = document.createElement('input');
+		copyElement.setAttribute('type', 'text');
+		copyElement.setAttribute('value', text);
+		copyElement = document.body.appendChild(copyElement);
+		copyElement.select();
+		try {
+			if(!document.execCommand('copy')) throw '<: loc("Ошибка") :>';
+		} catch(e) {
+			copyElement.remove();
+			prompt('Copy the text below. (ctrl c, enter)', text);
+		} finally {
+			if (typeof e == 'undefined') {
+				copyElement.remove();
+			}
+		}
+	}
+
+	function screenshotPreview() {
+		xOffset = 10;
+		yOffset = 30;
+
+		$("a.screenshot").hover(
+			function(e) {
+				$("body").append("<p id='screenshot'><img src='" + this.rel + "' alt='' /></p>");
+				$("#screenshot")
+					.css("top", (e.pageY - xOffset) + "px")
+					.css("left", (e.pageX + yOffset) + "px")
+					.fadeIn("fast");
+			},
+			function() {
+				this.title = this.t;
+				$("#screenshot").remove();
+			}
+		);
+		
+		$("a.screenshot").mousemove(function(e){
+			$("#screenshot")
+				.css("top",(e.pageY - xOffset) + "px")
+				.css("left",(e.pageX + yOffset) + "px");
+		});
+	}
+
+</script>
+: }

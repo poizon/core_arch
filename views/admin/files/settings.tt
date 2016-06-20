@@ -1,0 +1,32 @@
+<div class="page-header">
+	<h1>
+		<i class="fa fa-archive page-header-icon"></i>
+		<span class="text-light-gray"><a href="/admin/files"><: loc('Файлы') :></a> / </span>
+		<span class="text-light-gray"><a href="/admin/files?folder=<: $folder :>"><: $folder :></a> / </span>
+		<: loc('Настройки') :>
+	</h1>
+</div> <!-- / .page-header -->
+
+<div class="row">
+	<div class="col-md-12">
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title"><: loc('Изменить название') :></span>
+			</div>
+			<div class="panel-body">
+				<form class="form-inline" method="post">
+					<div class="form-group <: 'has-error' if $p.err_new_folder_name :>">
+						<label class="sr-only" for="new_folder_name"><: loc('Название') :></label>
+						<input type="text" class="form-control" id="new_folder_name" placeholder="<: loc('Название') :>" 
+							name="new_folder_name" value="<: $p.new_folder_name || $folder :>" required>
+
+					</div>
+					<button type="submit" class="btn btn-primary"><: loc('Сохранить') :></button>
+					: if defined($p.err_new_folder_name) {
+						<span class="text-danger"><: loc($p.err_new_folder_name) :></span>
+					: }
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

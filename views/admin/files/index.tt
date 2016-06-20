@@ -1,0 +1,220 @@
+<div class="page-header">
+	<div class="row">
+		<h1 class="col-xs-12 col-sm-4 text-left-sm">
+			<i class="fa fa-archive page-header-icon"></i>
+			: if $folder != 'root' {
+				<span class="text-light-gray"><a href="/admin/files"><: loc('Файлы') :></a> / </span>
+				<: $folder :>
+			: } else {
+				<: loc('Файлы') :>
+			: }
+		</h1>
+		: if $folder != 'root' {
+			<div class="col-xs-12 col-sm-8">
+				<div class="row">
+					<hr class="visible-xs no-grid-gutter-h">
+
+					<div class="pull-right col-xs-12 col-sm-auto">
+						<button id="delete-folder" class="btn btn-danger btn-labeled" style="width:100%">
+							<span class="btn-label icon fa fa-trash-o"></span> <: loc('Удалить') :>
+						</button>
+					</div>
+
+					<!-- Margin -->
+					<div class="visible-xs clearfix form-group-margin"></div>
+
+					<div class="pull-right col-xs-12 col-sm-auto">
+						<a href="/admin/files/settings?folder_name=<: $folder :>" 
+							class="btn btn-primary btn-labeled" style="width:100%">
+							<span class="btn-label icon fa fa-cogs"></span> 
+							<: loc('Настройки') :>
+						</a>
+					</div>
+
+				</div>
+			</div>
+		: }
+	</div>
+</div> <!-- / .page-header -->
+
+<div class="row">
+	<div class="col-lg-3 col-sm-4">
+
+		<div class="panel panel-transparent">
+			<div class="panel-heading">
+				<span class="panel-title"><: loc('Категории') :></span>
+			</div>
+			<div class="list-transparent panel-padding-h">
+
+				<div class="list-group">
+					<a href="/admin/files?folder=root" class="list-group-item">
+						<i class="fa fa-<: $folder == 'root' ? 'folder-open-o' : 'folder-o' :>"></i>
+						<: loc("Без категории") :>
+					</a>
+
+					: for $folders -> $f {
+						<a href="/admin/files?folder=<: $f :>" class="list-group-item">
+							<i class="fa fa-<: $f == $folder ? 'folder-open-o' : 'folder-o' :>"></i>
+							<: $f :>
+						</a>
+					: }
+				</div>
+
+				<a href="#" class="btn btn-info btn-labeled" onclick="$(this).hide(); $('#create-folder-form').show()">
+					<span class="btn-label icon fa fa-plus"></span>
+					<: loc('Новая категория') :>
+				</a>
+
+				<form id="create-folder-form" style="display:none">
+
+					<div class="input-group">
+						<input type="text" class="form-control" change="create_folder()" name="folder_name">
+						<span class="input-group-btn">
+							<button class="btn" type="button" onclick="create_folder()" >
+								<span class="fa fa-check"></span>
+							</button>
+						</span>
+					</div> <!-- / .input-group -->
+					<span class="text-danger text-sm" id="create-folder-error-msg"></span>
+				</form>
+			</div>
+		</div>
+
+	</div>
+	<div class="col-lg-9 col-sm-8">
+
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title">
+					<i class="panel-title-icon fa fa-upload"></i>
+					<: loc('Загрузить') :>
+				</span>
+			</div>
+			<div class="panel-body">
+				<div id="dropzonejs" class="dropzone-box">
+					<div class="dz-default dz-message">
+						<i class="fa fa-cloud-upload hidden-xs hidden-sm"></i>
+						<: loc('Перетащите файлы') :><br>
+						<span class="dz-text-small"><: loc('или выберите их вручную') :></span>
+					</div>
+					<form action="/admin/api/files/upload">
+						<div class="fallback">
+							<input name="file" type="file" multiple="">
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<div id="files-list-table"></div>
+
+	</div>
+</div>
+
+<script>
+	init.push(function () {
+		$('#files-list-table a').tooltip();
+		
+		load_files_list();
+		
+		var dz = new Dropzone('div#dropzonejs', {
+			url: "/admin/api/files/upload",
+			paramName: "file", // The name that will be used to transfer the file
+			params: { folder: '<: $folder :>' },
+		
+			: include admin::tools::dropzonejs
+		});
+
+		dz.on('success', function(file) {
+			load_files_list();
+		});
+		dz.on('removedfile', function(file) {
+			var folder = '<: $folder :>';
+			$.ajax({
+				type: 'DELETE',
+				url: '/admin/api/files/' + folder + '/' + file.name + '.json',
+				success: function(response) {
+					load_files_list();
+				}
+			});
+		});
+	});
+	
+	$('#delete-folder').on('click', function() {
+		bootbox.confirm({
+			message: '<: loc("Вы подтверждаете удаление?") :>',
+			buttons: {
+				confirm: {
+					label: '<: loc("Удалить") :>',
+					className: 'btn-danger'
+				},
+				cancel: {
+					label: '<: loc("Не сейчас") :>',
+					className: 'pull-left btn-outline'
+				}
+			},
+			callback: function(result) {
+				if (result == true) {
+					delete_folder("<: $folder :>");
+				}
+			},
+			className: "bootbox-sm"
+		})
+	})
+	
+	function delete_folder(name) {
+		$.ajax({
+			type: 'delete',
+			url: '/admin/api/files/folder/' + name + '.json',
+			success: function(response) {
+				if (response.result == 'ok') {
+					window.location.href = '/admin/files';
+				}
+			},
+			error: function() {
+				alert('Server Error');
+			}
+		})
+	}
+
+	function create_folder() {
+		var form = $('#create-folder-form');
+		var input = form.find('input[name="folder_name"]');
+
+		$.ajax({
+			type: 'post',
+			url: '/admin/api/files/folder/create.json',
+			data: {
+				"folder_name": input.val()
+			},
+			success: function(response) {
+				if (response.result == 'ok') {
+					window.location.reload();
+				} else {
+					$('#create-folder-form').addClass('has-error');
+					$('#create-folder-error-msg').text(response.error);
+				}
+			},
+			error: function() {
+				alert('Server Error');
+			}
+		})
+	}
+	$('#create-folder-form').on('submit', create_folder);
+
+	function load_files_list() {
+		var files_list = $('#files-list-table');
+		//files_list.html('...');
+		var folder = '<: $folder :>';
+		$.ajax({
+			type: 'get',
+			url: '/admin/api/files/' + folder + '.html',
+			success: function(response) {
+				files_list.html(response);
+			},
+			error: function() {
+				alert('Server Error');
+			}
+		});
+	}
+</script>

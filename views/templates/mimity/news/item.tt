@@ -1,0 +1,6 @@
+: if $status == 404 {
+	<div class="alert"><: loc('Ничего не найдено') :></div>
+: } else {
+	<span class="date"><: $item.date | format_date($date.formatter) :></span>
+	<: $item.body | raw :>
+: }

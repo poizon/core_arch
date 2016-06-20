@@ -1,0 +1,27 @@
+: include templates::okis::store::navigation
+
+<div class="store_topnav">
+	<: loc('Сортировать по') :>
+	<a href="?order=title"<: raw(' class="category_selected"') if $params.order == 'title' :>><: loc('названию') :></a> /
+	<a href="?order=price"<: raw(' class="category_selected"') if $params.order == 'price' :>><: loc('цене') :></a>
+</div>
+
+: include templates::okis::store::items_list { items => $items }
+
+<script src="/assets/javascripts/jquery-2.1.1.min.js"></script>
+<script>
+	function add_to_cart(params) {
+		$.ajax({
+			type: 'post',
+			url: '/store/cart/item',
+			data: params,
+			dataType: "json",
+			success: function(response) {
+				$('#n_cart_items').text(response.cart_items_cnt);
+			},
+			error: function() {
+				alert('<: loc("Ошибка") :>');
+			}
+		});
+	}
+</script>

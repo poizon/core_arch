@@ -1,0 +1,158 @@
+
+: include templates::v1::store::navigation
+<form class="store_form" method="post">
+	
+<table cellspacing="0" width="100%" class="store_cart">
+	<tr>
+		<th></td>
+		<th></td>
+		<th><: loc('Количество') :></td>
+		<th><: loc('Цена') :></td>
+	</tr>
+	: for $items -> $item {
+	<tr id="tr_<: $item.cart_id :>" class="items_row">
+		<td width="70px">
+			: if $item.cover {
+			<img src="/store/item/<: $item.item_id :>/cover/thumbnail" border="0" title="<: $item.title :>">
+			: }
+		</td>
+		<td class="info">
+			<a href="/store/item/<: $item.item_id :>"><: $item.title :></a>
+			<dl class="param">
+			: for $item.params -> $param {
+				<dt><: $param.0 :></dt>
+				<dd><: $param.1 :></dd>
+			: }
+		    </dl>
+		    <div class="price"><: $item.price_sale != '0.00' ? $item.price_sale : $item.price :></div>
+		</td>
+		<td class="price">
+			<input type="text" onchange="change_item_quantity(this)" name="<: $item.cart_id :>" class="cartcount jRecalc" value="<: $item.quantity :>"><a href="#" onclick="remove_from_cart('<: $item.cart_id :>')" class="store_del_icon jCartDel">x</a>
+		</td>
+		<td class="price"><: $item.total_price :></td>
+	</tr>
+	: }
+	<tr>
+		<td>&nbsp;</td>
+		<td class="info">&nbsp;</td>
+		<td class="price"><: loc('Всего') :></td>
+		<td class="price"><span id="storeTotal"><: $total_price :></span></td>
+	</tr>
+
+</table>
+
+<h3><: loc('Оформить заказ') :></h3>
+
+<div class="store_form_field<: ' error' if $p.err_name :>">
+	<label><: loc('Имя') :></label>
+	<input type="text" class="text" name="fio" value="<: $p.name :>">
+	: if $p.err_name {
+		<div class="store_field_error"><: loc($p.err_name) :></div>
+	: }
+</div>
+
+<div class="store_form_field<: ' error' if $p.err_email :>">
+	<label><: loc('E-mail') :></label>
+	<input type="text" class="text" name="email" value="<: $p.email :>">
+	: if $p.err_email {
+		<div class="store_field_error"><: loc($p.err_email) :></div>
+	: }
+</div>
+
+<div class="store_form_field<: ' error' if $p.err_phone :>">
+	<label><: loc('Телефон') :></label>
+	<input type="text" class="text" name="phone" value="<: $p.phone :>">
+	: if $p.err_phone {
+		<div class="store_field_error"><: loc($p.err_phone) :></div>
+	: }
+</div>
+
+<div class="store_form_field">
+	<label><: loc('Адрес') :></label>
+	<input type="text" class="text" name="address" value="<: $p.address :>">
+</div>
+
+<div class="store_form_field">
+	<label><: loc('Комментарий') :></label>
+	<textarea name="comment"><: $p.comment :></textarea>
+</div>
+
+: if $check_coupons {
+<div class="store_form_field">
+	<label><: loc('Промокод') :></label>
+	<input type="text" class="text" name="promocode" value="<: $p.promocode :>">
+</div>
+: }
+
+<div class="store_form_button">
+	<input type="submit" value="<: loc('Отправить') :>">
+</div>
+
+</form>
+
+<script src="/assets/javascripts/jquery-2.1.1.min.js"></script>
+<script>
+	function change_item_quantity(input) {
+		var inp = $(input);
+		var td  = inp.parent('.price');
+		var row = td.parent('tr');
+
+		var price_div = row.find('div[class="price"]');
+		var quantity = inp.val();
+		$.ajax({
+			type: 'put',
+			url: '/store/cart/item',
+			data: {
+				cart_item_id: inp.attr('name'),
+				quantity: quantity
+			},
+			dataType: 'json',
+			success: function(response) {
+				if (response.result == 'ok') {
+					var price = parseInt(quantity) * parseFloat(price_div.text());
+					td.next().text(price);
+					var total_price = counted_total_price();
+					$('#storeTotal').html(total_price);
+				}
+			},
+			error: function() {
+				alert('<: loc("Ошибка") :>')
+			}
+		})
+	}
+
+	function remove_from_cart(item_cart_id) {
+		if (confirm('<: loc("Вы подтверждаете удаление?") :>') == false) {
+			return;
+		}
+
+		var tr = $('#tr_' + item_cart_id);
+		$.ajax({
+			type: 'delete',
+			dataType: 'json',
+			url: '/store/cart/item/' + item_cart_id,
+			success: function(response) {
+				if (response.result == 'ok') {
+					tr.remove();
+					var total_price = counted_total_price();
+					$('#storeTotal').text(total_price);
+				}
+			},
+			error: function() {
+
+			}
+		})
+	}
+
+	function counted_total_price() {
+		var total = 0;
+		$('tr[class="items_row"]').each(function(i, tr) {
+			var trobj = $(tr);
+			var quantity = parseInt(trobj.find('input').val());
+			var price = parseFloat(trobj.find('div[class="price"]').html());
+			total += price * quantity;
+		});
+
+		return total;
+	}
+</script>

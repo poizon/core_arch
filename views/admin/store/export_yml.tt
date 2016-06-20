@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE yml_catalog SYSTEM "shops.dtd">
+<yml_catalog date="<: $date.current :> <: $time :>">
+<shop>
+	<name><: $vars.site.title :></name>
+	<url>http://<: $vars.site.domain :></url>
+	<currencies>
+		<currency id="<: $vars.site.store_currency :>" rate="1"/>
+	</currencies>
+	<categories>
+	: for $categories-> $category {
+		<category id="<: $category.category_id :>"><: $category.title :></category>
+	: }
+	</categories>
+	<offers>
+	: for $items-> $item {
+		<offer id="<: $item.item_id :>">
+			<url>http://<: $vars.site.domain :>/store/item/<: $item.item_id :></url>
+			: if $item.price_sale {
+			<price><: $item.price_sale :></price>
+			<oldprice><: $item.price :></oldprice>
+			: } else {
+			<price><: $item.price :></price>
+			: }
+			<currencyId><: $vars.site.store_currency :></currencyId>
+			: if $item.category_id {
+			<categoryId><: $item.category_id :></categoryId>
+			: }
+			: if $item.cover {
+			<picture>http://<: $vars.site.domain :>/store/<: $vars.site.dir :>/<: $item.cover :></picture>
+			: }
+			<name><: $item.title :></name>
+			<description><: $item.body :></description>
+		</offer>
+	: }
+	</offers>
+</shop>
+</yml_catalog>

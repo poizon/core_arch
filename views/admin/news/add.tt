@@ -1,0 +1,62 @@
+: include admin::tools::wysiwyg { id => "textarea-body" }
+
+<div class="page-header">
+	<h1>
+		<i class="fa page-header-icon fa-newspaper-o"></i>
+		<span class="text-light-gray"><a href="/admin/news"><: loc('Новости') :></a> / </span>
+		<: $title :>
+	</h1>
+</div> <!-- / .page-header -->
+
+<div class="panel">
+	<form class="form-horizontal" method="post">
+	<div class="panel-body">
+
+		<div class="form-group <: 'has-error' if $news.err_title :>" id="add-title-group">
+			<label class="col-sm-2 control-label" for="input-title"><: loc('Заголовок') :></label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" name="title" id="input-title" value="<: $news.title :>" required>
+				: if $news.err_title {
+					<p class="help-block"><: $news.err_title :></p>
+				: }
+			</div>
+		</div>
+
+		<div class="form-group <: 'has-error' if $news.err_date :>" id="add-date-group">
+			<label class="col-sm-2 control-label" for="date"><: loc('Дата') :></label>
+			<div class="col-sm-10">
+				<div class="input-date input-group" id="bs-datepicker">
+					<input type="text" class="form-control" name="date" id="date" 
+						value="<: $news.date | format_date($date.formatter) || $date.current | format_date($date.formatter) :>" required>
+					: if $news.err_date {
+						<p class="text-danger"><: $news.err_date :></p>
+					: }
+				</div>
+			</div>
+		</div>
+		
+		: if $settings.compatibility {
+		: include admin::tools::wysiwyg { id => "textarea-preview" }
+		<div class="form-group">
+			<div class="col-sm-offset-2 col-sm-10">
+				<textarea class="form-control" rows="5" name="preview"  id="textarea-preview" data-height="100"><: $news.preview :></textarea>
+			</div>
+		</div>
+		: }
+
+		<div class="form-group <: 'has-error' if $news.err_body :>" id="add-body-group">
+			<div class="col-sm-offset-2 col-sm-10">
+				<textarea class="form-control" rows="10" name="body" id="textarea-body"><: $news.body :></textarea>
+				: if $news.err_text {
+					<p class="help-block"><: $news.err_body :></p>
+				: }
+			</div>
+		</div>
+	</div>
+	<div class="panel-footer text-right">
+		: include admin::submit
+	</div>
+	</form>
+</div>
+
+: include admin::tools::datepicker { id => "date" }

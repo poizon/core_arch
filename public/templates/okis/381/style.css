@@ -1,0 +1,553 @@
+/*  Сброс стилей  */
+
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6,  
+pre, form, input, textarea, p, th, td {  
+padding: 0;  
+margin: 0;  
+}  
+
+img {  
+border: 0;  
+}  
+
+table {  
+border-collapse: collapse;  
+border-spacing: 0;  
+}  
+
+ol, ul {  
+list-style: none;  
+}  
+
+address, caption, cite, code, dfn, em, strong, th, var {  
+font-weight: normal;  
+font-style: normal;  
+}  
+
+caption, th {  
+text-align: left;  
+}  
+
+h1, h2, h3, h4, h5, h6 {  
+font-weight: normal;  
+font-size: 100%;  
+}  
+
+/*  Шрифты  */
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Open Sans'), local('OpenSans'), url(http://themes.googleusercontent.com/static/fonts/opensans/v8/RjgO7rYTmqiVp7vzi-Q5UaCWcynf_cDxXwCLxiixG1c.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 600;
+  src: local('Open Sans Semibold'), local('OpenSans-Semibold'), url(http://themes.googleusercontent.com/static/fonts/opensans/v8/MTP_ySUJH_bn48VBG8sNSvOEPOIfcPv-fZ-WyMUtx48.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: 400;
+  src: local('Open Sans Italic'), local('OpenSans-Italic'), url(http://themes.googleusercontent.com/static/fonts/opensans/v8/xjAJXh38I15wypJXxuGMBpp-63r6doWhTEbsfBIRJ7A.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: 600;
+  src: local('Open Sans Semibold Italic'), local('OpenSans-SemiboldItalic'), url(http://themes.googleusercontent.com/static/fonts/opensans/v8/PRmiXeptR36kaC0GEAetxq-J15ovKwtyXSGSllVf0Y8.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Ubuntu Condensed';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Ubuntu Condensed'), local('UbuntuCondensed-Regular'), url(http://themes.googleusercontent.com/static/fonts/ubuntucondensed/v4/DBCt-NXN57MTAFjitYxdrNbQxvdFQproHqwx84HIuqM.ttf) format('truetype');
+}
+
+/*  Ссылки  */
+
+a:link {
+color: #DA5BCA;
+text-decoration: underline;
+} 
+
+a:visited {
+color: #2980b9;
+} 
+
+a:hover {
+color: #ff0000;
+text-decoration: none;
+} 
+
+a:active {
+color: #ff0000;
+} 
+
+/*  Элементы  */
+
+b, strong {
+font-weight: 600;
+}
+
+i, em {
+font-style: italic;
+}
+
+/*  Заголовки H1-H6  */
+
+h1, h2, h3, h4, h5, h6,caption {
+font-family: 'Ubuntu Condensed', sans-serif;
+padding: .5em 0;
+}
+
+h1 {
+font-size: 24px;
+color: #000;
+}
+
+h2 {
+font-size: 22px;
+}
+
+h3 {
+font-size: 20px;
+}
+
+h4, h5, h6,caption {
+font-size: 18px;
+}
+
+/*  Структура сайта  */
+
+body {
+background-image: url("images/bg.jpg");
+background-color: #34495e;
+background-attachment: fixed;
+background-position: 50% 0%;
+background-repeat: no-repeat;
+color: #8e99a8;
+font-family: Open Sans, Arial, Helvetica, sans-serif;
+font-size: 13px;
+}
+
+#art-main {
+width: 960px;
+margin: 20px auto;
+}
+
+.art-sheet {
+background-color:transparent;
+width: 100%;
+}
+
+.art-content-layout {
+width: 100%;
+}
+
+.art-content-layout-row {
+width: 100%;
+position: relative;
+}
+
+.art-content-layout-row:after {
+display: block;
+clear: both;
+content: '';
+}
+
+.art-layout-cell.art-sidebar1 {
+width:260px;
+float: left;
+overflow: hidden;
+position: relative;
+}
+
+div.art-vmenublock {
+background-color: #f5b211;
+margin: 10px 5px 5px  10px;
+border-radius: 5px;
+box-shadow: 2px 2px 5px 0px rgba(50, 50, 50, 0.3);
+}
+
+.art-layout-cell.art-content {
+width:700px;
+float: right;
+overflow: hidden;
+position: relative;
+}
+
+div.art-post {
+background-color: #FFF;
+margin: 10px 10px 10px 5px;
+padding: 20px;
+border: 1px solid #fff;
+border-radius: 5px;
+box-shadow: 2px 2px 5px 0px rgba(50, 50, 50, 0.3);
+}
+
+.art-layout-cell.art-sidebar2 {
+width:260px;
+float: left;
+clear: left;
+overflow: hidden;
+position: relative;
+}
+
+div.art-block {
+background-color: #FFF;
+margin:  5px 5px 5px 10px;
+padding: 10px;
+border: 1px solid #fff;
+border-radius: 5px;
+box-shadow: 2px 2px 5px 0px rgba(50, 50, 50, 0.3);
+}
+
+div.art-footer {
+background-color: #FFF;
+margin: 5px 10px 10px 10px;
+padding: 20px;
+border-top: 1px solid #fff;
+border-radius: 5px;
+box-shadow: 2px 2px 5px 0px rgba(50, 50, 50, 0.3);
+position: relative;
+}
+
+/*  Шапка сайта  */
+
+div.art-header {
+height: 150px;
+margin: 0 10px 0 10px;
+padding: 10px;
+position: relative;
+border-radius: 5px;
+}
+
+div.art-logo {
+background-image: url("images/logo_ikons.png");
+background-repeat: no-repeat;
+background-position: left bottom;
+padding: 30px 0 0 100px;
+}
+
+h1#name-text.art-logo-name a {
+font-family: 'Ubuntu Condensed', sans-serif;
+font-size: 48px;
+text-decoration: none;
+text-transform: uppercase;
+  text-shadow: 1px 1px 0 rgba(201, 117, 20,.8),
+               2px 2px 0 rgba(201, 117, 20,.7),
+               3px 3px 0 rgba(201, 117, 20,.6),
+               4px 4px 0 rgba(201, 117, 20,.5),
+               5px 5px 0 rgba(201, 117, 20,.4),
+               6px 6px 0 rgba(201, 117, 20,.3),
+               7px 7px 0 rgba(201, 117, 20,.2),
+               8px 8px 0 rgba(201, 117, 20,.1);
+  color: rgba(247, 184, 34, 1);
+  }
+} 
+
+h1.art-logo-name {
+padding: 0!important;   
+margin: 0!important;  
+} 
+
+h1#name-text.art-logo-name a:hover {
+color: #ffcd56;
+} 
+
+div#slogan-text.art-logo-text {
+font-size: 14px;
+font-style: italic;
+text-shadow: 1px 1px rgba(255, 255, 255, 0.5);
+padding-left: 50px;
+color: #397972;
+}
+
+h2.art-postheader {
+font-family: 'Ubuntu Condensed', sans-serif;
+font-size: 24px;
+color: #000;
+padding: 0!important;   
+margin: 0!important;  
+}
+
+div.art-postcontent p {
+margin: 1em 0;
+}
+
+div.art-postcontent img {
+background-color: #fbfffa;
+border: 1px solid #bbd3b3;
+margin: 0 10px;
+padding: 10px;
+}
+
+/*  Блок новостей  */
+
+div.art-blockcontent-body b {
+font-size: 13px;
+}
+
+div.art-blockcontent-body p, div.art-footer-text p {
+font-size: 12px;
+margin: 0 0 1em 0;
+padding: 10px 10px 0 10px;
+}
+
+div.newsListData br {
+display: none;
+}
+
+div.newsListData a {
+display: block;
+color: #fff;
+background-color: #20c095;
+background-image: url("images/news_link_ikons.png");
+background-repeat: no-repeat;
+background-position: left;
+font-size: 12px;
+font-weight: 600;
+padding: 10px 0 10px 35px;
+margin: 10px 5px 5px 5px;
+border-radius: 5px;
+text-decoration: none;
+text-transform: uppercase;
+text-align: left!important;
+}  
+
+div.newsListData a:hover {
+background-color: #37d5ab;
+}
+
+/*  Меню сайта  */
+
+div.art-vmenublockheader {
+color: #000;
+background-color: #fff;
+background-image: url("images/menu_ikons.png");
+background-repeat: no-repeat;
+background-position: left;
+padding: 15px 0 15px 47px;
+font-family: 'Ubuntu Condensed', sans-serif;
+font-size: 18px;
+text-transform: uppercase;
+border-radius: 4px 4px 0 0;
+}
+
+ul.art-vmenu {
+border-bottom: 10px solid #fff;
+border-radius: 0 0 4px 4px;
+}
+
+ul.art-vmenu li {
+border-bottom: 1px solid #f1a219;
+}
+
+ul.art-vmenu li:hover {
+background-color: #f1a219;
+}
+
+ul.art-vmenu li a {
+color: #fff;
+text-shadow: 1px 1px rgba(0, 0, 0, 0.3);
+display: block;
+font-size: 12px;
+font-weight: 600;
+text-transform: uppercase;
+text-decoration: none;
+padding: 10px 20px;
+}
+
+ul.art-vmenu li a:hover {
+color: #fff;
+}
+
+ul.art-vmenu ul, ul.art-vmenu li ul {
+display: none;
+}
+
+ul.art-vmenu ul.active, ul.art-vmenu li ul.active {
+  display: block;
+}
+
+ul.art-vmenu li:hover ul {
+display: block;
+}
+
+ul.art-vmenu ul li {
+background-color: #f1a219;
+border: 0;
+padding-left: 10px;
+}
+
+ul.art-vmenu ul li:hover {
+background-color: #d57c14;
+}
+
+ul.art-vmenu ul li a {
+color: #F3F7C3;
+font-size: 10px;
+transition: all 0.5s ease;
+-o-transition: all 0.5s ease;
+-moz-transition: all 0.5s ease;
+-webkit-transition: all 0.5s ease;
+}
+
+ul.art-vmenu ul li a:hover {
+margin-left: 15px;
+}
+
+/*  Интернет магазин  */
+
+div.store_category, div.store_item { 
+width: 200px!important; 
+margin: 0 10px 20px 10px!important; 
+}
+
+.store_item img {
+border-radius: 0!important;
+margin: 10px 0 0 0!important;
+}
+
+ul.store_menu {
+text-align: left!important;
+margin: 10px 0 20px 0!important; 
+}
+
+.store_menu li {
+margin: 0 10px 0 0!important;
+background-color: #20c095;
+border-radius: 5px;
+}
+
+.store_menu li:hover {
+background-color: #37d5ab
+}
+
+.store_menu a {
+color: #fff;
+display: block;
+font-weight: 600;  
+padding: .5em .9em;
+text-decoration: none;
+text-transform: uppercase;
+}
+
+.store_item_images { 
+display: inline-block; 
+vertical-align: top; 
+width: 320px; 
+margin: 0 20px 0 0;
+}
+
+.store_item_images img {
+  margin-top: 0px;
+  margin-right: 0px;
+  margin-bottom: 0px;
+  margin-left: 0px!important;
+}
+
+.store_cart td img {
+border-radius: 0!important;
+padding: 5px;
+}
+
+.store_cart dl.param {
+margin-left: 0!important;
+}
+
+.store-quickcart-button { 
+background-color: #3f8468!important;
+text-decoration: none; 
+color: #fff !important; 
+font-size: 12px;
+font-weight: 600;  
+text-transform: uppercase;
+}
+
+.store-quickcart-button:hover { 
+background-color: #009933!important;
+}
+
+a.store-quickcart-button {  
+text-decoration: none;
+}
+
+#quickCart { 
+background: #fff!important; 
+border: 1px solid #bbd3b3!important;
+outline: 1px solid #fff;
+border-radius: 0!important; 
+}
+
+.store_item_params .to_cart { 
+background: #3ab181!important;
+}
+
+.store_item_params .to_cart:hover { 
+background:  #009933!important;
+}
+
+ul.cart-data li { 
+background: #b7d4ae!important; 
+border-bottom: 1px solid #aac9a0!important; 
+}
+
+/*  Таблицы  */
+
+table {
+background-color: transparent;
+border: 1px solid #8e99a8;
+outline: 1px solid #fff;
+width: 100%;
+}
+
+td, th {
+border: 1px solid #ecf0f1;
+padding: 7px;
+background-color: transparent;
+}
+
+table.store_cart {
+background-color: transparent;
+border: 0;
+outline: 0;
+}
+
+/* Счетчики */
+
+div.counters {
+background-color: #fff;
+border: 1px solid #bbd3b3;
+outline: 1px solid #fff;
+padding: 10px 0;
+margin: 20px 0!important;
+width: 100%;
+}
+
+/*  Иконка RSS  */
+
+.art-rss-tag-icon {
+position: relative;
+display: block;
+float: left;
+background-color: #20c095;
+background-image: url("images/rss_ikons.png");
+background-position: center;
+background-repeat: no-repeat;
+padding: 5px;
+margin: 0 20px 20px 0;
+height: 32px;
+width: 32px;
+cursor: pointer;
+border-radius: 3px;
+}
+
+.art-rss-tag-icon:hover {
+background-color: #37d5ab;
+    
+
+}

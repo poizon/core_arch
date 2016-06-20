@@ -1,0 +1,147 @@
+: macro item -> ($c) {
+<div class="ticket js-category js-item" id="category-<: $c.category_id :>" data-id="<: $c.category_id :>">
+	<div class="pull-right controls">
+		<!-- Edit -->
+		<a class="btn btn-sm btn-primary" title="<: loc('Изменить') :>" href="/admin/store/categories/<: $c.category_id :>/edit">
+			<span class="fa fa-edit"></span>
+		</a>
+
+		<!-- Delete -->
+		<a class="btn btn-sm btn-danger" title="<: loc('Удалить') :>"
+			onclick="delete_store_category(<: $c.category_id :>)">
+			<span class="fa fa-times"></span>
+		</a>
+	</div>
+	<span class="handle">
+		<span class="icon fa fa-bars std-icon"></span>
+	</span>
+	<a href="/admin/store/categories/<: $c.category_id :>/edit" <: 'class="text-muted"' | raw if $c.hidden :>>
+		<: $c.title :>
+	</a>
+	: if $c.count {
+	<a href="/admin/store/products/<: $c.category_id :>">
+		<span class="badge" title="<: loc('Перейти к товарам') :>"><: $c.count :></span>
+	</a>
+	: }
+</div>
+: }
+
+: macro list -> ($items, $class) {
+	<ul class="<: $class :>">
+	: for $items -> $item {
+		<li class="list-group-item">
+			: item($item)
+			: list($item.children, nil) if $item.children
+		</li>
+	: }
+	</ul>
+: }
+
+: cascade admin::store::navigation
+
+: around header -> {
+	<: loc("Категории") :>
+	<a href="/admin/store/categories/add" class="btn btn-sm btn-primary btn-labeled btn-outline pull-right">
+		<span class="btn-label fa fa-plus"></span> <: loc("Добавить") :>
+	</a>
+: }
+
+: around body -> {
+
+<div class="panel widget-support-tickets no-border" id="categories">
+	: list($categories, 'sortable')
+</div>
+
+<script>
+	init.push(function () {
+		$('#categories a').tooltip();
+		$('#categories span').tooltip();
+		
+		$('.js-item').hover(
+			function () {
+				$(this).find('.std-icon').removeClass('fa-bars').addClass('fa-arrows');
+			}, function () {
+				$(this).find('.std-icon').removeClass('fa-arrows').addClass('fa-bars');
+			}
+		);
+	});
+
+	function delete_store_category(id) {
+		var li = $('#category-' + id);
+		bootbox.confirm({
+			message: '<: loc("Вы подтверждаете удаление?") :>',
+			buttons: {
+				confirm: {
+					label: '<: loc("Удалить") :>',
+					className: 'btn-danger'
+				},
+				cancel: {
+					label: '<: loc("Не сейчас") :>',
+					className: 'pull-left btn-outline'
+				}
+			},
+			callback: function(result){
+				if (result) {
+					$.ajax({
+						type: 'delete',
+						url: '/admin/api/store/category/' + id + '.json',
+						success: function(response) {
+							if (response.result == 'ok') {
+								li.remove();
+							}
+						},
+						error: function() {
+							bootbox.alert('<: loc("Ошибка") :>');
+						}
+					})
+				}
+			},
+			className: "bootbox-sm"
+		});
+		return false;
+	}
+
+	$('.sortable').nestedSortable({
+		handle: 'span.handle',
+		listType: 'ul',
+		items: 'li',
+		maxLevels: 4,
+		tabSize: 40,
+		placeholder: 'sortPlaceholder',
+		errorClass: 'sortError',
+		rtl: false,
+		forcePlaceholderSize: true,
+		forceHelperSize: true,
+		stop: function (event, ui) {
+			var id  = ui.item.find('.js-item').data('id'),
+				ids	= [],
+				new_parent = ui.item.parent().prev().data('id') || 0;
+			ui.item.parent().children().each(function() {
+				ids.push($(this).find('.js-item').data('id'));
+			});
+
+			$.ajax({
+				type: 'POST',
+				url: '/admin/api/store/category/move.json',
+				data: {
+					'id'  : id,
+					'ids' : ids.join(),
+					'new_parent': new_parent
+				}
+			});
+		}
+
+	});
+</script>
+<style>
+	.sortPlaceholder{padding:0;margin:1px 10px}
+	.list-group-item{border:none!important;padding:0 !important}
+	.ticket{padding:12px 30px!important}
+	a{color:#0579C2;text-decoration:none}
+	.widget-support-tickets li{border-radius:3px;border:1px solid transparent}
+	ul{list-style-type:none;padding:0}
+	ul ul{margin-left:30px}
+	li span.item{display:block;border-radius:5px;line-height:32px;background-color:#FFF;border:1px solid transparent;margin:2px 0}
+	.handle .icon {width:15px;cursor:move}
+</style>
+: }

@@ -1,0 +1,597 @@
+/*  Сброс стилей  */
+
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6,  
+pre, form, input, textarea, p, th, td {  
+padding: 0;  
+margin: 0;  
+}  
+
+img {  
+border: 0;  
+}  
+
+table {  
+border-collapse: collapse;  
+border-spacing: 0;  
+}  
+
+ol, ul {  
+list-style: none;  
+}  
+
+address, caption, cite, code, dfn, em, strong, th, var {  
+font-weight: normal;  
+font-style: normal;  
+}  
+
+caption, th {  
+text-align: left;  
+}  
+
+h1, h2, h3, h4, h5, h6 {  
+font-weight: normal;  
+font-size: 100%;  
+}  
+
+/*  Шрифты  */
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Open Sans'), local('OpenSans'), url(http://themes.googleusercontent.com/static/fonts/opensans/v8/RjgO7rYTmqiVp7vzi-Q5UaCWcynf_cDxXwCLxiixG1c.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 600;
+  src: local('Open Sans Semibold'), local('OpenSans-Semibold'), url(http://themes.googleusercontent.com/static/fonts/opensans/v8/MTP_ySUJH_bn48VBG8sNSvOEPOIfcPv-fZ-WyMUtx48.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: 400;
+  src: local('Open Sans Italic'), local('OpenSans-Italic'), url(http://themes.googleusercontent.com/static/fonts/opensans/v8/xjAJXh38I15wypJXxuGMBpp-63r6doWhTEbsfBIRJ7A.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: 600;
+  src: local('Open Sans Semibold Italic'), local('OpenSans-SemiboldItalic'), url(http://themes.googleusercontent.com/static/fonts/opensans/v8/PRmiXeptR36kaC0GEAetxq-J15ovKwtyXSGSllVf0Y8.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Ubuntu Condensed';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Ubuntu Condensed'), local('UbuntuCondensed-Regular'), url(http://themes.googleusercontent.com/static/fonts/ubuntucondensed/v4/DBCt-NXN57MTAFjitYxdrNbQxvdFQproHqwx84HIuqM.ttf) format('truetype');
+}
+
+/*  Ссылки  */
+
+a:link {
+color: #524a45;
+text-decoration: none;
+} 
+
+a:visited {
+color: #775f4e;
+} 
+
+a:hover {
+color: #4b3e35;
+text-decoration: underline;
+} 
+
+a:active {
+color: #524a45;
+} 
+
+
+/*  Элементы  */
+
+b, strong {
+font-weight: 600;
+}
+
+i, em {
+font-style: italic;
+}
+
+/*  Заголовки H1-H6  */
+
+h1, h2, h3, h4, h5, h6,caption {
+font-family: 'Ubuntu Condensed', sans-serif;
+padding: .5em 0;
+}
+
+h1 {
+font-size: 24px;
+}
+
+h2 {
+font-size: 22px;
+}
+
+h3 {
+font-size: 20px;
+}
+
+h4, h5, h6,caption {
+font-size: 18px;
+}
+
+/*  Структура сайта  */
+
+body {
+background-image: url("images/bg.jpg");
+
+background-repeat: repeat-x repeat-y;
+color: #733d0c;
+font-family: Open Sans, Arial, Helvetica, sans-serif;
+font-size: 13px;
+}
+
+#art-main {
+width: 1000px;
+margin: 5px auto;
+}
+
+.art-sheet {
+background-image: none;
+background-repeat: repeat-x;
+background-color: #fbec99;
+border: 1px solid #fff;
+outline: 1px solid #F0D9B0;
+width: 100%;
+}
+
+.art-content-layout {
+width: 100%;
+}
+
+.art-content-layout-row {
+width: 100%;
+position: relative;
+}
+
+.art-content-layout-row:after {
+display: block;
+clear: both;
+content: '';
+}
+
+.art-layout-cell.art-sidebar1 {
+width:260px;
+float: left;
+overflow: hidden;
+position: relative;
+}
+
+div.art-vmenublock {
+width: 241px;
+background: url("images/menu_bg.png") no-repeat;
+background-position: top center;
+background-color: none;
+margin: 0px;
+margin-left: 10px;
+padding: 0;
+border: none;
+outline: none;
+padding-top: 35px;
+
+}
+
+div.art-vmenublockcontent {
+background-color: #fbec99;
+}
+.art-layout-cell.art-content {
+background: url("images/content_top.png") no-repeat;
+background-position: top center;
+background-color: none;
+width:718px;
+float: right;
+overflow: hidden;
+position: relative;
+margin-top: -35px;
+margin-right: 15px;
+min-height: 550px;
+}
+
+div.art-post {
+background-color: #fdf4c1;
+margin: 0;
+padding: 10px;
+border: none;
+outline: none;
+padding-top: 15px;
+padding-bottom: 12px;
+margin-top: 61px;
+}
+div.art-post-body{
+margin-top: -25px;
+}
+.art-layout-cell.art-sidebar2 {
+width:260px;
+float: left;
+overflow: hidden;
+position: relative;
+}
+
+div.art-block {
+background-color: #fdf4c1;
+margin: 10px;
+padding: 0;
+border: none;
+outline: none;
+}
+
+div.art-footer {
+font-family: 'Times New Roman';
+font-style: italic;
+font-size: 18px;
+background-color: #fdf4c1;
+margin: 25px 0 0 0;
+padding: 7px;
+outline: none;
+border-top: none;
+border-bottom: 10 px solid #fdf4c1;
+position: relative;
+}
+
+/*  Шапка сайта  */
+
+div.art-header {
+background-color: #f4faff;
+background-image: url("images/header_bg.jpg");
+height: 300px; 
+border-bottom: 0; 
+outline: none;
+padding: 0; 
+margin: 0; 
+border-top: none;
+position: relative;
+}
+
+div.art-logo {
+background-image:none;
+background-repeat: no-repeat;
+background-position: center;
+padding: 0;
+margin-left: 0;
+}
+
+h1#name-text.art-logo-name a { 
+background-image: none;
+color: #686b0b;
+font-family: 'Times New Roman', sans-serif;
+font-size: 54px;
+font-weight: 400;
+font-style: italic;
+text-decoration: none;
+text-transform: none;
+text-shadow: none;
+text-align: center;
+position: relative;
+top: 18px;
+margin: 0 auto;
+} 
+
+h1.art-logo-name {
+background-image: none;
+text-align: center;
+margin: 0;
+padding: 0;
+
+} 
+
+h1#name-text.art-logo-name a:hover {
+color: #f78d12;
+} 
+
+div#slogan-text.art-logo-text {
+color: #6a4921;
+font-family: 'Times New Roman';
+font-size: 19px;
+font-style: italic;
+padding-left: 0px;
+margin-top: 210px;
+text-shadow: 1px 1px #fff;
+margin: 0 auto;
+position: absolute;
+top: 82px;
+margin: auto;
+left: 54%;
+margin-left: -18.2%;
+}
+
+h2.art-postheader {
+font-family: 'Ubuntu Condensed', sans-serif;
+font-size: 24px;
+padding: 0!important;   
+margin: 0!important;  
+}
+
+div.art-postcontent p {
+margin: 1em 0;
+}
+
+div.art-postcontent img {
+background-color: #fff;
+border: 1px solid #c6d1dc;
+margin: 0 10px;
+padding: 10px;
+}
+
+/*  Блок новостей  */
+
+div.art-blockcontent-body b {
+font-size: 13px;
+}
+
+div.art-blockcontent-body p {
+font-size: 12px;
+margin: 0 0 1em 0;
+}
+div.art-footer-text p{
+text-align: center;
+font-size: 16px;
+margin: 0;
+}
+
+div.art-blockcontent-body p {
+margin-left: 0px;
+margin-top: 10px;
+padding-left: 10px;
+padding-top: 10px;
+padding-bottom: 7px;
+}
+
+div.newsListData br {
+display: none;
+}
+
+div.newsListData a {
+display: block;
+color: #733d11;
+background-color: #fdf0ab;
+background-image: url("images/subscribe_ikon.png");
+background-repeat: no-repeat;
+background-position: 10px 3px;
+font-weight: 400;
+font-family: 'Times New Roman', 'Monotype Corsiva', 'Ubuntu Condensed', sans-serif;
+font-size: 20px;
+font-style: italic;
+padding: 8px 0 8px 48px;
+margin: 5px 0 0 0;
+text-decoration: none;
+text-transform: none;
+text-align: left!important;
+}  
+
+div.art-blockcontent-body{
+    padding: 0;
+    margin: 0;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+div.newsListData a:hover {
+background-color: #f8efb9;
+color: #580e05;
+}
+
+/*  Меню сайта  */
+
+div.art-vmenublockheader {
+color: #733d0c;
+background-color: #fdf0ab;
+background-image: url("images/menu_ikon.png");
+background-repeat: no-repeat;
+background-position: 10px 6px;
+padding: 5px 0 0px 50px;
+font-family: 'Monotype Corsiva', 'Ubuntu Condensed', sans-serif;
+font-size: 30px;
+text-transform: none;
+font-weight: 400;
+margin: 0;
+}
+
+ul.art-vmenu {
+border-bottom: 7px solid #fdf4c1;
+}
+
+ul.art-vmenu li {
+background-color: #fdf4c1;
+border-top: none;
+border-bottom: none;
+margin: 0px;
+padding: 7px 0px;
+}
+
+ul.art-vmenu li:hover {
+background-color: #f8efb9;
+}
+
+ul.art-vmenu li a {
+color: #733d0c;
+display: block;
+font-weight: 400;
+font-family: 'Ubuntu Condensed', sans-serif;
+font-size: 18px;
+text-transform: none;
+text-decoration: none;
+font-style: none;
+padding: 2px 10px;
+}
+
+ul.art-vmenu li a:hover {
+color: #580e05;
+}
+
+ul.art-vmenu ul, ul.art-vmenu li ul {
+display: none;
+}
+
+ul.art-vmenu ul.active, ul.art-vmenu li ul.active {
+  display: block;
+}
+
+ul.art-vmenu li:hover ul {
+display: block;
+}
+
+ul.art-vmenu ul li {
+background-color: #fdf4c1;
+border: 0;
+margin: 3px 0;
+}
+
+ul.art-vmenu ul li:hover {
+background-color: #580e05;
+}
+
+ul.art-vmenu ul li a {
+color: #733d11;
+font-size: 10px;
+transition: all 0.5s ease;
+-o-transition: all 0.5s ease;
+-moz-transition: all 0.5s ease;
+-webkit-transition: all 0.5s ease;
+}
+
+ul.art-vmenu ul li a:hover {
+margin-left: 10px;
+}
+
+/*  Интернет магазин  */
+
+div.store_category, div.store_item { 
+width: 200px!important; 
+margin: 0 10px 20px 10px!important; 
+}
+
+.store_item img {
+border-radius: 0!important;
+margin: 10px 0 0 0!important;
+}
+
+ul.store_menu {
+text-align: left!important;
+margin: 10px 0 20px 0!important; 
+}
+
+.store_menu li {
+margin: 0 10px 0 0!important;
+background-color: #389cff;
+}
+
+.store_menu li:hover {
+background-color: #cc33cc;
+}
+
+.store_menu a {
+color: #fff;
+display: block;
+font-weight: 600;  
+padding: .5em .9em;
+text-decoration: none;
+text-transform: uppercase;
+}
+
+.store_item_images { 
+display: inline-block; 
+vertical-align: top; 
+width: 320px; 
+margin: 0 20px 0 0;
+}
+
+.store_item_images img {
+  margin-top: 0px;
+  margin-right: 0px;
+  margin-bottom: 0px;
+  margin-left: 0px!important;
+}
+
+.store_cart td img {
+border-radius: 0!important;
+padding: 5px;
+}
+
+.store_cart dl.param {
+margin-left: 0!important;
+}
+
+.store-quickcart-button { 
+background-color: #389cff!important;
+text-decoration: none; 
+color: #fff !important; 
+font-size: 12px;
+font-weight: 600;  
+text-transform: uppercase;
+}
+
+.store-quickcart-button:hover { 
+background-color: #cc33cc!important;
+}
+
+a.store-quickcart-button {  
+text-decoration: none;
+}
+
+#quickCart { 
+background: #e5eaf0!important; 
+border: 1px solid #c6d1dc!important;
+outline: 1px solid #fff;
+border-radius: 0!important; 
+}
+
+/*  Таблицы  */
+
+table {
+background-color: #fdf0ab;
+border: 1px solid #f2e4c0;
+outline: 1px solid #fff;
+width: 100%;
+}
+
+td, th {
+border: 1px solid #c6d1dc;
+padding: 10px;
+}
+
+table.store_cart {
+background-color: transparent;
+border: 0;
+outline: 0;
+}
+
+/* Счетчики */
+
+div.counters {
+background-color: #e5eaf0;
+border: 1px solid #c6d1dc;
+outline: 1px solid #fff;
+padding: 10px 0;
+margin: 20px 0!important;
+width: 100%;
+}
+
+/*  Иконка RSS  */
+
+.art-rss-tag-icon {
+position: relative;
+display: none;
+float: left;
+background-color: #0778ba;
+background-image: none;
+background-position: center;
+background-repeat: no-repeat;
+padding: 5px;
+margin: 0 20px 20px 0;
+height: 32px;
+width: 32px;
+cursor: pointer;
+}
+
+.art-rss-tag-icon:hover {
+background-color: #ed8a16;
+}

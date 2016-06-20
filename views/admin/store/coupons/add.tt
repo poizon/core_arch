@@ -1,0 +1,68 @@
+: cascade admin::store::navigation
+
+: around header -> {
+	<: loc('Промокоды') :>
+: }
+
+: around body -> {
+: 	include admin::tools::datepicker { id => 'bs-datepicker-range' };
+<form method="post" class="form-horizontal col-md-10 col-sm-12">
+
+	<div class="form-group <: 'has-error' if $p.err_title :>">
+		<label for="title" class="col-sm-4 control-label"><: loc('Название') :></label>
+		<div class="col-sm-8">
+			<input type="text" value="<: $p.title :>" class="form-control" name="title" id="title" required>
+			<p class="help-block"><: loc($p.err_title) :></p>
+		</div>
+	</div>
+
+	<div class="form-group <: 'has-error' if $p.err_code :>">
+		<label for="code" class="col-sm-4 control-label"><: loc('Код') :></label>
+		<div class="col-sm-8">
+			<input type="text" value="<: $p.code :>" class="form-control" name="code" id="code" required>
+			<p class="help-block"><: loc($p.err_code) :></p>
+		</div>
+	</div>
+
+	<div class="form-group <: 'has-error' if $p.err_discount :>">
+		<label for="discount" class="col-sm-4 control-label"><: loc('Скидка') :></label>
+		<div class="col-sm-4">
+			<input id="discount" value="<: $p.discount :>" class="form-control" type="text" name="discount" required>
+			<p class="help-block"><: loc($p.err_discount) :></p>
+		</div>
+		<div class="col-sm-4">
+			<select class="form-control" name="type">
+				<option value="REL" <: if $p.type == 'REL' { 'selected' }:> >%</option>
+				: if $vars.site.store_currency {
+				<option value="ABS" <: if $p.type == 'ABS' { 'selected' }:> ><: $vars.site.store_currency :></option>
+				: }
+			</select>
+		</div>
+	</div>
+
+	<div class="form-group <: 'has-error' if $p.err_date_start || $p.err_date_end :>">
+		<label class="col-sm-4 control-label"><: loc('Действителен') :></label>
+		<div class="col-sm-8">
+			<div class="input-daterange input-group" id="bs-datepicker-range">
+				<input value="<: $p.date_start | format_date($date.formatter) :>" class="form-control" name="date_start">
+				<span class="input-group-addon"><: loc("до") :></span>
+				<input value="<: $p.date_end | format_date($date.formatter) :>" class="form-control" name="date_end">
+			</div>
+		</div>
+	</div>
+
+	<div class="form-group <: 'has-error' if $p.err_limit :>">
+		<label for="limit" class="col-sm-4 control-label"><: loc('Ограничение купона') :></label>
+		<div class="col-sm-8">
+			<input type="text" value="<: $p.limit :>" class="form-control" name="limit" id="limit">
+			<p class="help-block"><: $p.err_limit :></p>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<div class="col-sm-8 col-sm-offset-4">
+			<input type="submit" value="<: loc('Сохранить') :>" class="btn btn-lg btn-primary">
+		</div>
+	</div>
+</form>
+: }

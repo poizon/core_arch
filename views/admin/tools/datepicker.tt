@@ -1,0 +1,19 @@
+: set_default_date_format($date.formatter);
+
+: if $lang != 'en' {
+<script src="/assets/javascripts/datepicker-langs/bootstrap-datepicker.<: $lang :>.js" charset="UTF-8"></script>
+: }
+
+<script>
+	init.push(function () {
+		$('#<: $id :>').datepicker({
+			todayBtn: 'linked',
+			format: '<: $date.datepicker :>',
+			language: '<: $lang :>',
+			weekStart: <: $date.week_start :>,
+			todayHighlight: true,
+			autoclose: true
+		});
+	});
+</script>
+

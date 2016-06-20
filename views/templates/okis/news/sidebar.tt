@@ -1,0 +1,27 @@
+<div class="art-block-tl"></div>
+<div class="art-block-tr"></div>
+<div class="art-block-bl"></div>
+<div class="art-block-br"></div>
+<div class="art-block-tc"></div>
+<div class="art-block-bc"></div>
+<div class="art-block-cl"></div>
+<div class="art-block-cr"></div>
+<div class="art-block-cc"></div>
+
+<div class="art-block-body">
+	<div class="art-blockcontent">
+		<div class="art-blockcontent-body">
+			<div>
+			: for $news -> $item {
+				<p>
+					<!--b><: $item.date | format_date($date.formatter) :></b-->
+					<b><a href="/news/<: $item.news_id :>"><: $item.title | raw :></a></b>
+					<: raw('<br>' ~ $item.preview) if $item.preview :>
+				</p>	
+			: }	
+			</div>
+			<div class="cleared"></div>
+		</div>
+	</div>
+	<div class="cleared"></div>
+</div>

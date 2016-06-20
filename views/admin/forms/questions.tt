@@ -1,0 +1,74 @@
+<div class="col-sm-offset-2 panel question js-question">
+	<div class="panel-heading">
+		<span class="panel-title">
+			<i class="panel-title-icon fa fa-comments"></i>
+			<: $q.question || loc('Вопрос') :>
+		</span>
+		<div class="panel-heading-controls">
+			<button class="btn btn-labeled btn-sm js-question-required btn-outline"> 
+				<!--  <: 'btn-outline' if !$q.is_required :> -->
+				<span class="btn-label icon fa fa-<: $q.is_required ? 'bookmark' : 'bookmark-o' :>"></span> 
+				<: loc('Обязателеное поле') :>
+			</button>
+
+			<a class="btn btn-sm btn-outline js-question-delete question-delete">
+				<span class="fa fa-close"></span> 
+			</a>
+		</div> <!-- / .panel-heading-controls -->
+	</div> <!-- / .panel-heading -->
+
+	<div class="panel-body">
+
+		<div class="form-group <: 'has-error' if $error.questions[$q.priority].err_question :>">
+			<label class="col-sm-2 control-label" for="questions.<: $q.priority :>.question">
+				<: loc('Вопрос') :>
+			</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" value="<: $q.question :>" 
+					id="questions.<: $q.priority :>.question"
+					name="questions.<: $q.priority :>.question" required>
+				: if $error.questions[$q.priority].err_question {
+					<p class="help-block"><: loc($error.questions[$q.priority].err_question) :></p>
+				: }
+			</div>
+		</div>
+		<div class="form-group <: 'has-error' if $error.questions[$q.priority].err_descr  :>">
+			<label class="col-sm-2 control-label" for="questions.<: $q.priority :>.descr">
+				<: loc('Пояснение') :>
+			</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" value="<: $q.descr :>" 
+					id="questions.<: $q.priority :>.descr"
+					name="questions.<: $q.priority :>.descr">
+				: if $error.questions[$q.priority].err_descr {
+					<p class="help-block"><: loc($error.questions[$q.priority].err_descr) :></p>
+				: }
+			</div>
+		</div>
+		<div class="form-group <: 'has-error' if $error.questions[$q.priority].err_type :>">
+			<label class="col-sm-2 control-label" for="questions.<: $q.priority :>.type"><: loc('Тип вопроса') :></label>
+			<div class="col-sm-10">
+				<select class="form-control js-type-change" name="questions.<: $q.priority :>.type" id="questions.<: $q.priority :>.type">
+					<option <: 'selected' if $q.type == 'text'     :> value="text"><: loc('Текст') :></option>
+					<option <: 'selected' if $q.type == 'textarea' :> value="textarea"><: loc('Текст (абзац)') :></option>
+					<option <: 'selected' if $q.type == 'select'   :> value="select"><: loc('Выпадающий список') :></option>
+					<option <: 'selected' if $q.type == 'checkbox' :> value="checkbox"><: loc('Несколько из списка') :></option>
+					<option <: 'selected' if $q.type == 'radio'    :> value="radio"><: loc('Один из списка') :></option>
+					<option <: 'selected' if $q.type == 'file'     :> value="file"><: loc('Файл') :></option>
+				</select>
+				: if $error.questions[$q.priority].err_type {
+					<p class="help-block"><: loc($error.questions[$q.priority].err_type) :></p>
+				: }
+			</div>
+		</div>
+		<div class="options js-options">
+		: for $q.options.values() -> $o {
+		: 	include admin::forms::options { q => $q, error => $error, o => $o };
+		: }
+		</div>
+		<input class="js-required" type="hidden" value="<: $q.is_required ? 1 : 0 :>" 
+			name="questions.<: $q.priority :>.is_required">
+		<input type="hidden" value="<: $q.priority :>" name="questions.<: $q.priority :>.priority">
+
+	</div>
+</div>

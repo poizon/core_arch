@@ -1,0 +1,67 @@
+: cascade admin::store::navigation
+
+: around header -> {
+	<: loc('Платежи') :>
+: }
+
+: around body -> {
+	: if $vars.site.premium && $vars.site.package == 'Business' {
+	<div class="col-md-2">
+		<label><: loc('Метод') :></label>
+		<select name="paymethod" class="form-control" onchange="show_paymethod_options(this.value)">
+			<option value="robokassa"><: loc('Робокасса') :></option>
+		</select>
+	</div>
+	<div class="col-sm-1"></div>
+	<div class="col-md-4">
+		<div class="paymethod-options" id="robox">
+			<form method="post">
+				<input type="hidden" name="paymethod" value="robokassa"/>
+				<div class="form-group">
+					<label for="robokassa_mrh_login"><: loc('Идентификатор магазина') :></label>
+					<input class="form-control" id="robokassa_mrh_login" name="robokassa_mrh_login"
+						value="<: $paymethod.robokassa_mrh_login :>" >
+				</div>
+				<div class="form-group">
+					<label for="robokassa_mrh_pass1"><: loc('Пароль для инициализации оплаты') :></label>
+					<input class="form-control" id="robokassa_mrh_pass1" name="robokassa_mrh_pass1"
+						value="<: $paymethod.robokassa_mrh_pass1 :>">
+				</div>
+				<div class="form-group">
+					<label for="robokassa_mrh_pass2"><: loc('Пароль для уведомления об оплате') :></label>
+					<input class="form-control" id="robokassa_mrh_pass2" name="robokassa_mrh_pass2"
+						value="<: $paymethod.robokassa_mrh_pass2 :>">
+				</div>
+				<div class="form-group">
+					<input type="submit" value="<: loc('Сохранить') :>" class="btn btn-primary">
+				</div>
+			</form>
+			<hr>
+			<h4><: loc('Информация для подключения') :></h4>
+			<dl>
+				<dt><: loc('admin.store.payments.notify') :></dt>
+				<dd>http://<: $vars.site.domain :>/store/payments/robokassa/info</dd>
+	
+				<dt><: loc('admin.store.payments.success') :></dt>
+				<dd>http://<: $vars.site.domain :>/store/payments/robocassa/success</dd>
+	
+				<dt><: loc('admin.store.payments.fail') :></dt>
+				<dd>http://<: $vars.site.domain :>/store/payments/fail</dd>
+			</dl>
+		</div>
+	</div>
+	: } else {
+		<p>
+			<a href="http://<: $settings.appdomain :>/account/upgrade/<: $vars.site.site_id | encode_id :>/Business/year">
+				<: loc('Данная опция недоступна на вашем пакете услуг.') :>
+				<: loc('Необходимо повысить статус до пакета Бизнес.') :>
+			</a>
+		</p>
+	: }
+	<script>
+		function show_paymethod_options(method_name) {
+			$('.paymethod-options').hide();
+			$('#' + method_name).show();
+		}
+	</script>
+: }

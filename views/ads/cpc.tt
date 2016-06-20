@@ -1,0 +1,5 @@
+: if !$vars.site.noads && !$vars.site.premium && $vars.site.age > 7 {
+: 	if $internal {
+: 		include ads::yandex::poster	
+: 	}
+: }

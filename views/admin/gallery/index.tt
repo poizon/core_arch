@@ -1,0 +1,450 @@
+<div class="page-header">
+	<div class="row">
+		<h1 class="col-xs-12 col-sm-4 text-left-sm">
+			<i class="fa fa-camera page-header-icon"></i>
+			: if $album.album_id {
+				<span class="text-light-gray"><a href="/admin/gallery"><: loc('Галерея') :></a> / </span>
+				<: $album.title :>
+			: } else {
+				<: loc('Галерея') :>
+			: }
+		</h1>
+		
+		<div class="col-xs-12 col-sm-8">
+			<div class="row">
+				: if $album.album_id {
+				<hr class="visible-xs no-grid-gutter-h">
+					
+				<div class="pull-right col-xs-12 col-sm-auto hidden-sm">
+					<a href="#" onclick="delete_album_confirm(<: $album.album_id :>)" 
+						class="btn btn-danger btn-labeled" style="width:100%">
+						<span class="btn-label icon fa fa-trash-o"></span> <: loc('Удалить') :>
+					</a>
+				</div>
+
+				<!-- Margin -->
+				<div class="visible-xs clearfix form-group-margin"></div>
+
+				<div class="pull-right col-xs-12 col-sm-auto">
+					<a href="#" onclick="show_album(<: $album.album_id :>)" 
+						class="btn btn-labeled btn-album-show" 
+						style="width:100%;<: 'display:none' if !$album.hidden :>">
+						<span class="btn-label icon fa fa-eye"></span> <: loc('Показать') :>
+					</a>
+
+					<a href="#" onclick="hide_album(<: $album.album_id :>)" 
+						class="btn btn-warning btn-labeled btn-album-hide" 
+						style="width:100%;<: 'display:none' if $album.hidden :>">
+						<span class="btn-label icon fa fa-eye-slash"></span> <: loc('Скрыть') :>
+					</a>
+				</div>
+
+				<!-- Margin -->
+				<div class="visible-xs clearfix form-group-margin"></div>
+
+				<div class="pull-right col-xs-12 col-sm-auto">
+					<a href="/admin/gallery/album/<: $album.album_id :>/settings" 
+						class="btn btn-primary btn-labeled" style="width:100%">
+						<span class="btn-label icon fa fa-cogs"></span> <: loc('Настройки') :>
+					</a>
+				</div>
+				: } else {
+				<div class="pull-right col-xs-12 col-sm-auto hidden-xs">
+					<a href="/gallery" target="_blank"
+						class="btn btn-success btn-labeled" style="width:100%">
+						<span class="icon fa fa-external-link"></span>
+					</a>
+				</div>	
+				: }
+			</div>
+		</div>
+		
+	</div>
+</div> <!-- / .page-header -->
+
+<div class="row">
+	<div class="col-lg-3 col-sm-4">
+
+		<div class="panel panel-transparent">
+			<div class="panel-heading">
+				<span class="panel-title"><: loc('Альбомы') :></span>
+			</div>
+			<div class="list-transparent panel-padding-h">
+				<div class="list-group">
+					<a href="/admin/gallery" class="list-group-item">
+						<i class="fa fa-<: $album.album_id == 0 ? 'folder-open-o' : 'folder-o' :>"></i>
+						<: loc('Без категории') :>
+					</a>
+
+					: for $albums -> $a {
+						<a href="/admin/gallery/album/<: $a.album_id :>" class="list-group-item">
+							: if $a.count {
+								<span class="badge"><: $a.count :></span>
+							: }
+							<i class="fa fa-folder-<: $a.album_id == $album.album_id ? 'open-o' : 'o' :>"></i>
+							<: $a.title :>
+						</a>
+					: }
+				</div>
+
+				<a href="#" class="btn btn-info btn-labeled" onclick="$(this).hide(); $('#create-album-form').show()">
+					<span class="btn-label icon fa fa-plus"></span>
+					<: loc('Новый альбом') :>
+				</a>
+
+				<form id="create-album-form" style="display:none">
+
+					<div class="input-group">
+						<input type="text" class="form-control" change="create_album()" name="title">
+						<span class="input-group-btn">
+							<button class="btn" type="button" onclick="create_album()" >
+								<span class="fa fa-check"></span>
+							</button>
+						</span>
+					</div> <!-- / .input-group -->
+
+				</form>
+			</div>
+		</div>
+
+	</div>
+	<div class="col-lg-9 col-sm-8">
+
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title">
+					<i class="panel-title-icon fa fa-upload"></i>
+					<: loc('Загрузить') :>
+				</span>
+			</div>
+			<div class="panel-body">
+				<div id="dropzonejs" class="dropzone-box">
+					<div class="dz-default dz-message">
+						<i class="fa fa-cloud-upload hidden-xs hidden-sm"></i>
+						<: loc('Перетащите файлы') :><br>
+						<span class="dz-text-small"><: loc('или выберите их вручную') :></span>
+					</div>
+					<form action="/admin/api/gallery/album/<: $album.album_id :>/photo.json">
+						<div class="fallback">
+							<input name="file" type="file" multiple="">
+							<input type="hidden" name="album_id" value="<: $album.album_id :>">
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<div id="gallery_photo"></div>
+
+	</div>
+</div>
+
+<script>
+	$(document).ready(function() {
+		//load_files_list();
+		load_photo_list();
+		var name_id_map = {};
+
+		var dz = new Dropzone('div#dropzonejs', {
+			url: "/admin/api/gallery/album/<: $album.album_id :>/photo.json",
+			paramName: "file", // The name that will be used to transfer the file
+			acceptedFiles: "image/*",
+
+			: include admin::tools::dropzonejs
+		});
+
+		dz.on('success', function(file, response) {
+			load_photo_list();
+			if (response && response.id) {
+				name_id_map[ file.name ] = response.id;
+			}
+		});
+		dz.on('removedfile', function(file) {
+			delete_photo(name_id_map[ file.name ]);
+		});
+	});
+
+	function create_album() {
+		var form = $('#create-album-form');
+		var input = form.find('input[name="title"]');
+
+		$.ajax({
+			type: 'post',
+			url: '/admin/api/gallery/album/create.json',
+			data: {
+				"title": input.val()
+			},
+			success: function(response) {
+				if (response.result == 'ok') {
+					window.location.reload();
+				}
+				else {
+					$('#create-album-form').addClass('has-error');
+					//$('#create-album-error-msg').text(response.error);
+				}
+			},
+			error: function() {
+				alert('Server Error');
+			}
+		})
+	}
+	$('#create-album-form').on('submit', create_album);
+
+	function show_photo(id) {
+		$.ajax({
+			type: 'post',
+			url: '/admin/api/gallery/album/<: $album.album_id :>/photo/' + id + '/show.json',
+			success: function(response) {
+				//tr.removeClass('warning');
+				if (response.result == 'ok') {
+					$('.href-hide-photo-' + id).show();
+					$('.href-show-photo-' + id).hide();
+				}
+			},
+			error: function() {
+
+			}
+		})
+	}
+
+	function hide_photo(id) {
+		$.ajax({
+			type: 'post',
+			url: '/admin/api/gallery/album/<: $album.album_id :>/photo/' + id + '/hide.json',
+			success: function(response) {
+				//tr.removeClass('warning');
+				if (response.result == 'ok') {
+					$('.href-hide-photo-' + id).hide();
+					$('.href-show-photo-' + id).show();
+				}
+			},
+			error: function() {
+
+			}
+		})
+	}
+
+	function set_album_cover(id) {
+		var icon = $('div[id="div-photo-' + id + '"]').find('.fa-picture-o');
+		$.ajax({
+			type: 'put',
+			url: '/admin/api/gallery/album/<: $album.album_id :>.json',
+			data: {
+				"cover_id": id,
+				"title": "<: $album.title :>"
+			},
+			success: function(response) {
+				//tr.removeClass('warning');
+				$('.fa-picture-o').each(function(i, elem) {
+					$(elem).removeClass('text-info');
+				});
+				icon.addClass('text-info');
+			}
+		});
+	}
+
+	function update_photo_title(id) {
+		var title = $('#title_photo_id_' + id).val();
+		var cmt_text = $('div[id="div-photo-' + id + '"]').find('.comment-text');
+		cmt_text.addClass('warning');
+
+		$.ajax({
+			type: 'put',
+			url: '/admin/api/gallery/album/<: $album.album_id :>/photo/' + id + '.json',
+			data: {
+				"title": title
+			},
+			success: function(response) {
+				cmt_text.removeClass('warning');
+				if (response.result == 'ok') {
+					$.growl.notice({ 
+						message: "<: loc('Данные успешно сохранены') :>",
+						size: 'large',
+					});
+					
+					cmt_text.addClass('has-success');
+					setTimeout(function() {
+						cmt_text.removeClass('has-success');
+					}, 2000);
+				}
+				else {
+					$.growl.error({ 
+						message: "<: loc('Ошибка') :>"
+					});
+					
+					cmt_text.addClass('has-error');
+					setTimeout(function() {
+						cmt_text.removeClass('has-error');
+					}, 2000);
+				}
+			},
+			error: function() {
+				//alert('Server Error');
+				cmt_text.addClass('has-error');
+			}
+		});
+	}
+
+	function delete_photo_confirm(id) {
+		bootbox.confirm({
+			message: '<: loc("Вы подтверждаете удаление?") :>',
+			buttons: {
+				confirm: {
+					label: '<: loc("Удалить") :>',
+					className: 'btn-danger'
+				},
+				cancel: {
+					label: '<: loc("Не сейчас") :>',
+					className: 'pull-left btn-outline'
+				}
+			},
+			callback: function(result) {
+				if (result == true) {
+					delete_photo(id);
+				}
+			},
+			className: "bootbox-sm"
+		});
+	}
+
+	function delete_photo(id) {
+		var photo_div = $('#div-photo-' +id);
+		$.ajax({
+			type: 'delete',
+			url: '/admin/api/gallery/album/<: $album.album_id :>/photo/' + id + '.json',
+			success: function(response) {
+				//tr.remove;
+				//tr.removeClass('danger');
+				if (response.result == 'ok') {
+					//tr.remove();
+					photo_div.remove();
+				}
+			},
+			error: function() {
+				//tr.removeClass('danger');
+				alert('Server Error');
+			}
+		});
+	}
+
+	function load_photo_list() {
+		var container = $('#gallery_photo');
+		container.html('...');
+
+		$.ajax({
+			type: 'get',
+			url: '/admin/api/gallery/album/<: $album.album_id :>/photos.html',
+			success: function(response) {
+				container.html(response);
+				init_sort();
+			},
+			error: function() {
+				alert('Server Error');
+			}
+		})
+	}
+
+	function show_album(id) {
+		$.ajax({
+			type: 'post',
+			url: '/admin/api/gallery/album/' + id + '/show.json',
+			success: function(response) {
+				if (response.result == 'ok') {
+					$('.btn-album-hide').show();
+					$('.btn-album-show').hide();
+				}
+			},
+			error: function() {
+				alert('Server Error');
+			}
+		})
+	}
+
+	function hide_album(id) {
+		$.ajax({
+			type: 'post',
+			url: '/admin/api/gallery/album/' + id + '/hide.json',
+			success: function(response) {
+				if (response.result == 'ok') {
+					$('.btn-album-hide').hide();
+					$('.btn-album-show').show();
+				}
+			},
+			error: function() {
+				alert('Server Error');
+			}
+		})
+	}
+
+	function delete_album_confirm(id) {
+		bootbox.confirm({
+			message: '<: loc("Вы подтверждаете удаление?") :>',
+			buttons: {
+				confirm: {
+					label: '<: loc("Удалить") :>',
+					className: 'btn-danger'
+				},
+				cancel: {
+					label: '<: loc("Не сейчас") :>',
+					className: 'pull-left btn-outline'
+				}
+			},
+			callback: function(result) {
+				if (result == true) {
+					delete_album(id);
+				}
+			},
+			className: "bootbox-sm"
+		});
+	}
+
+	function delete_album(id) {
+		$.ajax({
+			type: 'delete',
+			url: '/admin/api/gallery/album/' + id + '.json',
+			success: function(response) {
+				if (response.result == 'ok') {
+					window.location.href = "/admin/gallery";
+				}
+			},
+			error: function() {
+				alert('Server Error');
+			}
+		})
+	}
+
+	function init_sort() {
+		$('.sortable').nestedSortable({
+			handle: 'img.handle',
+			listType: 'div.sortable',
+			items: 'div.comment',
+			maxLevels: 1,
+			tabSize: 40,
+			placeholder: 'sortPlaceholder',
+			errorClass: 'sortError',
+			rtl: false,
+			forcePlaceholderSize: true,
+			forceHelperSize: true,
+			stop: function (event, ui) {
+				var ids	= [];
+				ui.item.parent().children().each(function() {
+					ids.push($(this).data('id'));
+				});
+				if (ids.length) {
+					$.ajax({
+						type: 'POST',
+						url: '/admin/api/gallery/album/sort.json',
+						data: {
+							'ids' : ids.join()
+						}
+					});
+				}
+			}
+		});
+	}
+
+</script>
+
+<style type="text/css">
+.handle:hover{cursor:move}
+</style>

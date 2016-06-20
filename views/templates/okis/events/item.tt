@@ -1,0 +1,14 @@
+: if $status == 404 {
+	<div class="danger"><: loc('The requested event was not found.') :></div>
+	<p><: loc('See list of <a href="/calendar">upcoming events</a> or <a href="/events">all events</a>.') | raw :></p>
+: }
+: else {
+	<span class="date">
+		<: $item.date_start | format_date($date.formatter) :>
+		<: loc('-') :>
+		<: $item.date_end   | format_date($date.formatter) :>
+	</span>
+	<div class="location"><: $location :></div>
+	<div class="desc_short"><: $item.desc_short :></div>
+	<div class="desc_full"><: $item.desc_full | raw :></div>
+: }

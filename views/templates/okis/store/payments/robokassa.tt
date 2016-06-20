@@ -1,0 +1,9 @@
+<form action="https://merchant.roboxchange.com/Index.aspx" method=POST>
+	<input type="hidden" name="MrchLogin" value="<: $MrhLogin :>">
+	<input type="hidden" name="OutSum" value="<: $OutSum :>">
+	<input type="hidden" name="InvId" value="<: $InvId :>">
+	<input type="hidden" name="Desc" value="<: $Desc | raw :>">
+	<input type="hidden" name="SignatureValue" value="<: $SignatureValue :>">
+
+	<input type="submit" value="<: loc('Pay') :>">
+</form>

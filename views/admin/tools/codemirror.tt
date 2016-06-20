@@ -1,0 +1,19 @@
+<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/3.20.0/codemirror.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/3.20.0/theme/cobalt.min.css">
+
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/3.20.0/codemirror.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/3.20.0/mode/xml/xml.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/3.20.0/mode/css/css.min.js"></script>
+
+<script type="text/javascript">
+init.push(function () {
+	var editor = CodeMirror.fromTextArea(document.getElementById("<: $cm_id // 'codemirror' :>"), {
+		lineNumbers: <: $cm_ln // 'true' :>,
+		theme: "<: $cm_theme // 'cobalt' :>",
+		mode:  "<: $cm_mode // 'text/html' :>",
+		lineWrapping: true,
+		autofocus: <: $focus // 'true' :>
+	});
+	$('#<: $cm_id // "codemirror" :>').data('CodeMirrorInstance', editor);
+});
+</script>

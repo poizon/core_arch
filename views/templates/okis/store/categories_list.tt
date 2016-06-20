@@ -1,0 +1,13 @@
+: my $size  = $vars.site.store_imgsize_category || 100
+: my $route = $production ? "/resize/-/" ~ $size ~ "/store" : "/resize/store?width=" ~ $size ~ "&file=";
+
+: for $categories_list -> $c {
+	<div class="store_category store_item">
+		<a href="/store/category/<: $c.category_id :>">
+			: if $c.cover {
+			<img src="<: $route :>/<: $vars.site.dir :>/<: $c.cover :>" border="0" title="<: $c.title :>">
+			: }
+			<: $c.title :> <: '(' ~ $c.count ~ ')' if $c.count :>
+		</a>
+	</div>
+: }

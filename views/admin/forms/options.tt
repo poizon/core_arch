@@ -1,0 +1,26 @@
+<div class="form-group js-option no-margin-b">
+	<label class="col-sm-2 control-label sr-only">
+		<: loc('Возможный ответ') :>
+	</label>
+	<div class="col-sm-10">
+		<input type="text" id="questions.<: $q.priority :>.options.<: $o.priority :>.option"  
+			class="form-control option-input" value="<: $o.option :>" required
+			name="questions.<: $q.priority :>.options.<: $o.priority :>.option">
+			
+		<a class="btn btn-xs btn-primary js-option-add option-ctrl"  title="<: loc('Добавить') :>">
+			<span class="fa fa-plus"></span>
+		</a>
+		<a class="btn btn-xs btn-danger js-option-delete option-ctrl" title="<: loc('Удалить') :>">
+			<span class="fa fa-minus"></span>
+		</a>
+		<div></div>
+		<br>
+		<!--
+		: if defined($error.questions[$q.priority].options[$o.priority].err_option) {
+			<span class="text-danger" style="position:absolute;top:35px;left:15px">
+				<: loc($error.questions[$q.priority].options[$o.priority].err_option) :>
+			</span>
+		: }
+		-->
+	</div>
+</div>

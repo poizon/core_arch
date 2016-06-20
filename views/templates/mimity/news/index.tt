@@ -1,0 +1,15 @@
+: if $list.size() {
+	<ul>
+		: for $list -> $item {
+		<li>
+			<span class="date"><: $item.date | format_date($date.formatter) :></span>
+			<a href="/news/<: $item.news_id :>"><: $item.title :></a>
+		</li>
+		: }
+	</ul>
+	: include templates::v1::pagination
+: } else {
+	<div class="alert">
+		<: loc('Ничего не найдено') :>
+	</div>
+: }

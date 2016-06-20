@@ -1,0 +1,177 @@
+<div class="page-header">
+	<div class="row">
+		<h1 class="col-xs-12 col-sm-4 text-left-sm">
+			<i class="fa fa-bullhorn page-header-icon"></i>
+			<span class="text-light-gray"><: loc('Blog') :> /</span>
+            <: loc('Posts') :>
+		</h1>
+		<div class="col-xs-12 col-sm-8">
+			<div class="row">
+				<hr class="visible-xs no-grid-gutter-h">
+				<div class="pull-right col-xs-12 col-sm-auto">
+					<a href="/admin/blog/add" class="btn btn-primary btn-labeled" style="width:100%">
+						<span class="btn-label icon fa fa-plus"></span> <: loc('New Post') :>
+					</a>
+				</div>
+
+				<!-- Margin -->
+				<div class="visible-xs clearfix form-group-margin"></div>
+
+				<!-- Search field -->
+				<form action="" class="pull-right col-xs-12 col-sm-4">
+				<div class="input-group no-margin">
+					<span class="input-group-addon">
+						<i class="fa fa-search"></i>
+					</span>
+					<input type="text" name="filter" value="<: $filter :>"
+						placeholder="<: loc('Search') :>..."
+						class="form-control form-control-gray no-padding-hr">
+				</div>
+				</form>
+
+			</div>
+		</div>
+	</div>
+</div> <!-- / .page-header -->
+
+<div class="panel" id="blog-posts">
+	<div class="panel-body">
+		: if $blog_posts.size() {
+	    <table class="table table-hover">
+			<thead>
+				<tr>
+					<td class="col-md-2 col-sm-3 col-xs-2"><: loc('Date') :></td>
+				    <td class="col-md-8 col-sm-6 col-xs-6"><: loc('Title') :></td>
+				    <td class="col-md-2 col-sm-3 col-xs-4"></td>
+				</tr>
+			</thead>
+			<tbody>
+			: for $blog_posts -> $post {
+				<tr id="tr_post_id_<: $post.post_id :>">
+					<td class="col-md-2 col-sm-3 col-xs-2"><: $post.date | format_date($date.formatter) :></td>
+					<td class="col-md-8 col-sm-6 col-xs-6"><a href="#" target="_blank">
+						<: $post.title :></a></td>
+					<td class="col-md-2 col-sm-3 col-xs-4 text-right">
+						<a class="btn btn-xs btn-primary" title="<: loc('Edit') :>"
+							href="/admin/blog/<: $post.post_id :>/edit">
+							<span class="fa fa-edit"></span>
+						</a>
+						<a class="btn btn-xs btn-warning"
+							href="/admin/blog/<: $post.post_id :>/hide"
+							title="<: loc('Hide') :>"
+							id="button_hide_post_id_<: $post.post_id :>"
+							onclick="return hide_post('<: $post.post_id :>')"
+							<: raw('style="display:none"') if $post.hidden; :>>
+							<span class="fa fa-eye-slash"></span>
+						</a>
+						<a class="btn btn-xs btn-warning"
+							href="/admin/blog/<: $post.post_id :>/show"
+							title="<: loc('Show') :>"
+							id="button_show_post_id_<: $post.post_id :>"
+							onclick="return show_post('<: $post.post_id :>')"
+							<: raw('style="display:none"') if !$post.hidden :>>
+							<span class="fa fa-eye"></span>
+						</a>
+						<a class="btn btn-xs btn-danger" title="<: loc('Delete') :>"
+							href="/admin/blog/<: $post.post_id :>/delete"
+							onclick="return delete_post('<: $post.post_id :>')">
+							<span class="fa fa-times"></span>
+						</a>
+					</td>
+				</tr>
+			: }
+			</tbody>
+		</table>
+		: } else {
+			: include admin::empty
+		: }
+	</div>
+</div> <!-- / .panel -->
+
+<script type="text/javascript">
+	init.push(function () {
+		$('#blog-posts a').tooltip();
+	});
+
+	function delete_post(id) {
+		var tr = $('#tr_post_id_' + id);
+		tr.addClass('danger');
+
+		bootbox.confirm({
+			message: '<: loc("Do you really want to delete it?") :>',
+			buttons: {
+				confirm: {
+					label: '<: loc("Delete") :>',
+					className: 'btn-danger'
+				},
+				cancel: {
+					label: '<: loc("Not Now") :>',
+					className: 'pull-left btn-outline'
+				}
+			},
+			callback: function(result){
+				if (result) {
+					$.ajax({
+						type: 'delete',
+						url: '/admin/api/blog/' + id + '.json',
+						success: function(response) {
+							if (response.result == 'ok') {
+								tr.remove();
+							}
+						},
+						error: function() {
+							bootbox.alert('<: loc("Server Error") :>');
+						}
+					});
+				}
+				tr.removeClass('danger');
+			}
+		});
+
+		return false; // prevent fallback execution
+	}
+
+	function show_post(id) {
+		var tr = $('#tr_post_id_' + id);
+		tr.addClass('warning');
+
+		$.ajax({
+			type: 'post',
+			url: '/admin/api/blog/' + id + '/show.json',
+			success: function(response) {
+				tr.removeClass('warning');
+				if (response.result == 'ok') {
+					$('#button_hide_post_id_' + id).show();
+					$('#button_show_post_id_' + id).hide();
+				}
+			},
+			error: function() {
+				bootbox.alert('Server Error');
+				tr.removeClass('warning');
+			}
+		});
+		return false;
+	}
+
+	function hide_post(id) {
+		var tr = $('#tr_news_id_' + id);
+		tr.addClass('warning');
+
+		$.ajax({
+			type: 'post',
+			url: '/admin/api/blog/' + id + '/hide.json',
+			success: function(response) {
+				tr.removeClass('warning');
+				if (response.result == 'ok') {
+					$('#button_hide_post_id_' + id).hide();
+					$('#button_show_post_id_' + id).show();
+				}
+			},
+			error: function() {
+				bootbox.alert('Server Error');
+				tr.removeClass('warning');
+			}
+		});
+		return false;
+	}
+</script>

@@ -1,0 +1,25 @@
+: for $items -> $item {
+	<div class="col-lg-4 col-sm-4 hero-feature text-center">
+		<div class="thumbnail">
+			: if $item.cover {
+			<a href="/store/item/<: $item.item_id :>" class="link-p"><img src="/store/item/<: $item.item_id :>/cover/thumbnail" alt="<: $item.title :>"></a>
+			: }
+			<div class="caption prod-caption">
+				<h4><a href="/store/item/<: $item.item_id :>"><: $item.title :></a></h4>
+				<: $item.description | raw :>
+				<p>
+					<div class="btn-group">
+						: if $item.price_sale == '0.00' {
+							<a href="#" class="btn btn-default"><: $item.price :> <: $currency | raw :></a>
+						: } else {
+							<a href="#" class="btn btn-default"><: $item.price_sale :> <: $currency | raw :></a>
+						: }
+						<a href="#" class="btn btn-primary" onclick="add_to_cart('<: $item.json_params :>')" >
+							<i class="fa fa-shopping-cart"></i> <: loc('Купить') :>
+						</a>
+					</div>
+				</p>
+			</div>
+		</div>
+	</div>	
+: }

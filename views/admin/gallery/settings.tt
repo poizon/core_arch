@@ -1,0 +1,74 @@
+<div class="page-header">
+	<h1>
+		<i class="fa fa-camera page-header-icon"></i>
+		<span class="text-light-gray">
+			<a href="/admin/gallery"><: loc('Галерея') :></a> /
+			<a href="/admin/gallery/album/<: $album.album_id :>" id="album_title_href"><: $album.title :></a> /
+		</span>
+		<: loc('Настройки') :>
+	</h1>
+</div> <!-- / .page-header -->
+
+<div class="row">
+	<div class="col-md-6 col-sm-12">
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title"><: loc('Изменить название') :></span>
+			</div>
+			<div class="panel-body">
+				<form class="form-inline" method="post">
+					<div class="form-group <: 'has-error' if $p.err_title :>">
+						<label class="sr-only" for="title"><: loc('Название') :></label>
+						<input type="text" class="form-control" id="title" 
+							placeholder="<: loc('Название') :>" name="title" 
+							value="<: $p.title || $album.title :>" required>
+					</div>
+					<button type="submit" class="btn btn-primary"><: loc('Сохранить') :></button>
+					: if $p.err_title {
+						<span class="text-danger"><: loc($p.err_title) :></span>
+					: }
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-6 col-sm-12">
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title"><: loc('Размер картинок') :></span>
+			</div>
+			<div class="panel-body">
+				<form class="form-inline" method="post">
+					<div class="form-group <: 'has-error' if $p.err_size :>">
+						<label class="sr-only" for="size"><: loc('Размер картинок') :></label>
+						<input type="text" class="form-control" id="size" 
+							name="size" value="<: $album.size :>">
+					</div>
+					<button type="submit" class="btn btn-primary"><: loc('Сохранить') :></button>
+					: if $p.err_size {
+						<span class="text-danger"><: loc($p.err_size) :></span>
+					: }
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-6 col-sm-12">
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title"><: loc('Изображений на страницу') :></span>
+			</div>
+			<div class="panel-body">
+				<form class="form-inline" method="post">
+					<div class="form-group <: 'has-error' if $p.err_per_page :>">
+						<label class="sr-only" for="per_page"><: loc('Изображений на страницу') :></label>
+						<input type="text" class="form-control" id="per_page" 
+							name="per_page" value="<: $album.per_page || 10 :>">
+					</div>
+					<button type="submit" class="btn btn-primary"><: loc('Сохранить') :></button>
+					: if $p.err_per_page {
+						<span class="text-danger"><: loc($p.err_per_page) :></span>
+					: }
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

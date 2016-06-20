@@ -1,0 +1,90 @@
+: cascade admin::settings::navigation
+
+: around body -> {
+
+<style>
+.CodeMirror{border:1px solid #ddd}
+.CodeMirror,.CodeMirror-form{height:110px !important}
+</style>
+
+<div class="mail-container-header">
+	<: loc('SEO') :>
+</div>
+<div class="panel panel-transparent">
+	<div class="panel-body">
+		<form class="form-horizontal" method="post">
+			<div class="form-group">
+				<label class="col-sm-2 control-label" for="description"><: loc('Описание') :></label>
+				<div class="col-sm-10">
+					<input class="form-control" name="description" id="description" value="<: $vars.site.meta_description :>">
+					<p class="help-block"><: loc("Короткое описание страницы.") :></p>
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<label class="col-sm-2 control-label" for="keywords"><: loc('Ключевые слова') :></label>
+				<div class="col-sm-10">
+					<input class="form-control" name="keywords" id="keywords" value="<: $vars.site.meta_keywords :>">
+					<p class="help-block"><: loc("Список ключевых слов, разделенных запятыми.") :></p>
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<div class="col-sm-10 col-sm-offset-2">
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" class="px" name="noindex" value="1" <: raw('checked=""') if $vars.site.noindex :>>
+							<span class="lbl text-default"><: loc("Запретить поисковым системам индексировать сайт") :></span>
+						</label>
+					</div>
+				</div>
+			</div>
+			<hr>
+			
+			<div class="form-group">
+				<label class="col-sm-2 control-label" for="meta"><: loc('Мета-теги') :></label>
+				<div class="col-sm-10">
+					<textarea placeholder='<meta name="google-site-verification" content="XXXX" />' rows="6"
+						id="meta" class="form-control" name="header" ><: $vars.site.meta_header :></textarea>
+					<p class="help-block"><: loc("admin.meta") :></p>
+				</script>
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<label class="col-sm-2 control-label" for="robots">Robots.txt</label>
+				<div class="col-sm-10">
+					<textarea id="robots" class="form-control" name="robots" rows="4" 
+						<: raw('disabled="disabled"') if !$vars.site.premium :>><: $vars.site.robots :></textarea>
+					: if !$vars.site.premium {
+						<p class="help-block">
+							<a href="http://<: $settings.appdomain :>/account/upgrade/<: $vars.site.site_id | encode_id :>" target="_blank">
+								<: loc("Данная опция недоступна на вашем пакете услуг.") :>
+							</a>
+						</p>
+					: }
+				</script>
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<label class="col-sm-2 control-label" for="robots"><: loc("Sitemap") :></label>
+				<div class="col-sm-10">
+					<p class="text-muted"><: loc("admin.sitemap", [ $vars.site.domain ~ "/sitemap.xml" ]) :></p>
+				</script>
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<button type="submit" class="btn btn-lg btn-primary btn-labeled">
+						<span class="btn-label icon fa fa-save"></span>
+						<: loc('Сохранить') :>
+					</button>
+				</div>
+			</div>
+			
+		</form>
+	</div>
+</div>
+: }

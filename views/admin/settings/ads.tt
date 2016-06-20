@@ -1,0 +1,53 @@
+: cascade admin::settings::navigation
+
+: around menu -> {
+	<li <: 'class="active aa"' | raw if $area == 'header' :>>
+		<a href="/admin/settings/advertisement/header">
+			<div class="mail-nav-lbl bg-success"></div>
+			<: loc("Шапка") :>
+		</a>
+	</li>
+	<li <: 'class="active aa"' | raw if $area == 'menu' :>>
+		<a href="/admin/settings/advertisement/menu">
+			<div class="mail-nav-lbl bg-danger"></div>
+			<: loc("Меню") :>
+		</a>
+	</li>
+	<li <: 'class="active aa"' | raw if $area == 'news' :>>
+		<a href="/admin/settings/advertisement/news">
+			<div class="mail-nav-lbl bg-info"></div>
+			<: loc("Новости") :>
+		</a>
+	</li>
+	<li <: 'class="active aa"' | raw if $area == 'content' :>>
+		<a href="/admin/settings/advertisement/content">
+			<div class="mail-nav-lbl bg-warning"></div>
+			<: loc("Контент") :>
+		</a>
+	</li>
+: }
+
+: around option -> {
+	<div style="padding:5px 25px 10px 0">
+		<a onclick="$('#my-form').submit()" class="btn btn-info btn-labeled btn-block">
+			<i class="btn-label fa fa-save"></i>
+			<: loc('Сохранить') :>
+		</a>
+	</div>
+: }
+
+: around body -> {
+: 	my $content = { header => 'advTop', menu => 'advMenu', news => 'advNews', content => 'advBottom' }
+: 	include admin::tools::codemirror { cm_id => "adv" }
+
+<style>
+html,body,#main-wrapper,#content-wrapper,.mail-container,.CodeMirror,.CodeMirror-form{height:100% !important}
+@media (min-width:992px){.mail-container{padding-top:46px !important}}
+.mail-container-header{margin-top:46px !important} 
+</style>
+
+<form method="post" class="CodeMirror-form" id="my-form" action="/admin/settings/advertisement">
+	<textarea id="adv" name="<: $content[$area] :>"><: $meta[$content[$area]] :></textarea>
+</form>
+
+: }

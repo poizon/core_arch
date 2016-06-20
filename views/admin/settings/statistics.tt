@@ -1,0 +1,50 @@
+: cascade admin::settings::navigation
+
+: around body -> {
+
+<style>.CodeMirror{border:1px solid #ddd}</style>
+: include admin::tools::codemirror { cm_id => 'cm', cm_theme => 'default', cm_ln => 'false', focus => 'false' }
+
+<div class="mail-container-header">
+	<: loc('Статистика') :>
+</div>
+<div class="panel panel-transparent">
+	<div class="panel-body">
+		<p class="col-sm-offset-2 lead text-default">
+			<: loc("admin.stat") :>
+		</p>
+		<form method="post" class="form-horizontal">
+			<div class="form-group">
+				<label class="col-sm-2 control-label" for="stat_ga_key"><: loc("Гугл Аналитика") :></label>
+				<div class="col-sm-10">
+					<input class="form-control" id="stat_ga_key" name="stat_ga_key" 
+						value="<: $vars.site.stat_ga_key :>" placeholder="UA-12345678-9">
+				</div>
+			</div>
+			: if $lang == 'ru' {
+			<div class="form-group">
+				<label class="col-sm-2 control-label" for="stat_ym_key">Яндекс Метрика</label>
+				<div class="col-sm-10">
+					<input class="form-control" id="stat_ym_key" name="stat_ym_key" 
+						value="<: $vars.site.stat_ym_key :>">
+				</div>
+			</div>
+			: }
+			<div class="form-group">
+				<label class="col-sm-2 control-label" for="cm"><: loc('Другой счетчик посещаемости') :></label>
+				<div class="col-sm-10">
+					<textarea name="custom_tracking_code" id="cm"><: $vars.site.stat_tracking :></textarea>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<button type="submit" class="btn btn-lg btn-primary btn-labeled">
+						<span class="btn-label icon fa fa-save"></span>
+						<: loc('Сохранить') :>
+					</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+: }

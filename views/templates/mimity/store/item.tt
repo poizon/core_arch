@@ -1,0 +1,71 @@
+: include templates::v1::store::navigation
+
+: if defined($item.cover) {
+	: if $item.cover {
+	<img src="/store/item/<: $item.item_id :>/cover/thumbnail" class="store_item_image" border="0">
+	: }
+	<div class="store_item_params">
+	: if $item.price_sale == '0.00' {
+		<div class="price"><: $item.price :> <: $currency | raw :></div>
+	: } else {
+		<div class="price_old"><: $item.price :> <: $currency | raw :></div>
+		<div class="price_sale"><: $item.price_sale :> <: $currency | raw :></div>
+	: }
+
+		<dl class="info">
+		: for $item_info -> $info {
+			<dt><: $info.name :></dt>
+			<dd><: $info.value :></dd>
+		: }
+		</dl>
+
+		<dl class="param">
+		: for $item.params -> $param {
+			<dt><: $param.name :></dt>
+			<dd>
+				<select name="<: $param.name :>" class="item-param-select">
+					: for $param.param_values -> $option {
+					<option value="<: $option.value :>" data-price="<: $option.price :>">
+						<: $option.value :>
+						: if $option.price {
+							<: '+' if $option.price > 0 :><: $option.price ~ ' ' ~ $currency :>
+						: }
+					</option>
+					: }
+				</select>
+			</dd>
+		: }
+		</dl>
+		<a href="#" class="to_cart" onclick="add_to_cart(<: $item.item_id :>)"><: loc('В корзину') :></a>
+
+		<p><: $item.body | raw :></p>
+	</div>
+: }
+: if $item_more.size() {
+	<div><: loc("С этим товаром покупают") :></div>
+: }
+: include templates::v1::store::items_list { items => $item_more }
+
+<script src="/assets/javascripts/jquery-2.1.1.min.js"></script>
+<script>
+	function add_to_cart(id) {
+		var p = [];
+		$('.item-param-select').each(function(i, select) {
+			var s = $(select);
+			p.push([s.attr('name'), s.val(), s.find(':selected').attr('data-price')]);
+		});
+		$.ajax({
+			type: 'post',
+			url: '/store/cart/item',
+			data: JSON.stringify({ "id": id, "param": p }),
+			dataType: "json",
+			success: function(response) {
+				$('#n_cart_items').text(response.cart_items_cnt);
+			},
+			error: function() {
+				alert('<: loc("Ошибка") :>');
+			}
+		});
+	}
+</script>
+

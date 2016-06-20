@@ -1,0 +1,53 @@
+<div class="row">
+	<div class="col-lg-3 col-md-3 col-sm-12">
+
+		<!-- Categories -->
+		<div class="col-lg-12 col-md-12 col-sm-6">
+			<div class="no-padding">
+				<span class="title"><: loc('Все разделы') :></span>
+			</div>
+
+			<div id="main_menu">
+				<div class="list-group panel panel-cat">
+				: for $store_categories -> $c {
+					<a href="/store/category/<: $c.category_id :>" class="list-group-item">
+						<: $c.title :> <: '(' ~ $c.n_items ~ ')' if $c.n_items :>
+					</a>
+				: }
+				</div>
+			</div>
+		</div>
+		<!-- End Categories -->
+
+	</div>
+
+	<div class="clearfix visible-sm"></div>
+
+	<!-- Featured -->
+	<div class="col-lg-9 col-md-9 col-sm-12">
+		<div class="col-lg-12 col-sm-12">
+			<span class="title"><: loc('Интернет-магазин') :></span>
+		</div>
+		: include templates::mimity::store::items_list { items => $items }
+	</div>
+	<!-- End Featured -->
+
+</div>
+</div>
+	
+<script>
+	function add_to_cart(params) {
+		$.ajax({
+			type: 'post',
+			url: '/store/cart/item',
+			data: params,
+			dataType: "json",
+			success: function(response) {
+				$('#n_cart_items').text(response.cart_items_cnt);
+			},
+			error: function() {
+				alert('<: loc("Ошибка") :>');
+			}
+		});
+	}
+</script>

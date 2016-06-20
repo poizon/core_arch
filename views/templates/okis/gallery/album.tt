@@ -1,0 +1,40 @@
+: if $album {
+	<table align="center" width="100%" cellpadding="5" cellspacing="5" class="galleryTable" style="width:100%;border:none">
+		<tbody>
+			<tr>
+				: my $size = $album.size // 150;
+				: my $route = $production ? '/resize/' ~ $size ~ '/-/gallery' : '/resize/gallery?width=' ~ $size ~ '&file=';
+				: for $photos -> $photo {
+					: raw('</tr><tr>') if $~photo > 0 && $~photo % 3 == 0 
+					: my $file = $vars.site.dir ~ "/" ~ $album.album_id ~ "/" ~ $photo.filename
+					<td style='text-align:center;border:none'>
+						<h4 style='text-align:center;margin-bottom:0'><: $photo.title :></h4>
+						<a rel="group" class="fancybox" href="/gallery/<: $file :>">
+							<img src="<: $route :>/<: $file :>" alt="<: $photo.title :>">
+						</a>
+					</td>
+				: }
+			</tr>
+		</tbody>
+	</table>
+	: if !$photos.0 {
+	<div class="alert">
+		<: loc('Ничего не найдено') :>
+	</div>
+	: }
+	: include templates::okis::pagination
+: } else {
+	<div class="alert">
+		<: loc('Ничего не найдено') :>
+	</div>
+: }
+
+<script src="/assets/javascripts/jquery-2.1.1.min.js"></script>
+<script src="/assets/javascripts/jquery.fancybox.js"></script>
+<link rel="stylesheet" type="text/css" href="/assets/stylesheets/jquery.fancybox.css" media="screen">
+
+<script>
+	$(document).ready(function() {
+		$('.fancybox').fancybox();
+	});
+</script>

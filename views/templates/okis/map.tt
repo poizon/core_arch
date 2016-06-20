@@ -1,0 +1,12 @@
+: for $sitemap -> $section {
+	: if $section.list.size() {
+		: if $section.title {
+			<p><b><: $section.title :></b></p>
+		: }
+		<ul>
+		: for $section.list -> $item {
+			<li><a href="<: $item.url :>"><: $item.title | raw :></a></li>
+		: }
+		</ul>
+	: }
+: }

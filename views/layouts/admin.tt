@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<!--[if IE 8]>         <html class="ie8"> <![endif]-->
+<!--[if IE 9]>         <html class="ie9 gt-ie8"> <![endif]-->
+<!--[if gt IE 9]><!--> <html class="gt-ie8 gt-ie9 not-ie"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title><: $title ? $title ~ " / " ~ $vars.site.domain : $vars.site.domain :></title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+	: if $vars.site.favicon {
+	<link rel="shortcut icon" href="<: $vars.site.favicon :>">
+	: }
+	<link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin" rel="stylesheet" type="text/css">
+	
+	<link href="/assets/stylesheets/bootstrap.min.css" rel="stylesheet" type="text/css">
+	<link href="/assets/stylesheets/pixel-admin.min.css" rel="stylesheet" type="text/css">
+	<link href="/assets/stylesheets/widgets.min.css" rel="stylesheet" type="text/css">
+	<link href="/assets/stylesheets/pages.min.css" rel="stylesheet" type="text/css">
+	<link href="/assets/stylesheets/rtl.min.css" rel="stylesheet" type="text/css">
+	<link href="/assets/stylesheets/themes.min.css" rel="stylesheet" type="text/css">
+
+	<!--[if lt IE 9]>
+		<script src="/assets/javascripts/ie.min.js"></script>
+	<![endif]-->
+	
+	: if $production {
+	<script src="//cdn.jsdelivr.net/g/jquery@2.1.3,bootstrap@3.0.0,jquery.ui@1.11.3"></script>
+	<script src="/assets/javascripts/jquery.mjs.nestedSortable.js"></script>
+	<script src="/assets/javascripts/pixel-admin.min.js"></script>
+	: } else {
+	<script src="/assets/javascripts/jquery-2.1.1.min.js"></script>
+	<script src="/assets/javascripts/jquery-ui.min.js"></script>
+	<script src="/assets/javascripts/jquery.mjs.nestedSortable.js"></script>
+	<script src="/assets/javascripts/bootstrap.min.js"></script>
+	<script src="/assets/javascripts/pixel-admin.min.js"></script>
+	: }
+</head>
+<body class="theme-<: $admin_theme :> main-menu-animated 
+	main-navbar-fixed main-menu-fixed <: 'page-mail' if $path.2 == 'settings' || $path.2 == 'store' :>">
+
+<script>var init = [];</script>
+
+<div id="main-wrapper">
+
+	<div id="main-navbar" class="navbar navbar-inverse" role="navigation">
+		<!-- Main menu toggle -->
+		<button type="button" id="main-menu-toggle">
+			<i class="navbar-icon fa fa-bars icon"></i>
+			<span class="hide-menu-text"><: loc('СКРЫТЬ МЕНЮ') :></span>
+		</button>
+		
+		<div class="navbar-inner">
+			<!-- Main navbar header -->
+			<div class="navbar-header">
+
+				<!-- Logo -->
+				<a href="/" class="navbar-brand" target="_blank"><: $vars.site.domain.substr(0, 21) :></a>
+
+				<!-- Main navbar toggle -->
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-navbar-collapse">
+					<i class="navbar-icon fa fa-bars"></i>
+				</button>
+
+			</div> <!-- / .navbar-header -->
+
+			<div id="main-navbar-collapse" class="collapse navbar-collapse main-navbar-collapse">
+				<div>
+					<div class="right clearfix">
+						<ul class="nav navbar-nav pull-right right-navbar-nav">
+							<li class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+									<span><span class="fa fa-user"></span> <: $vars.site.email :></span>
+								</a>
+								<ul class="dropdown-menu">
+									<li>
+										<a href="http://<: $settings.appdomain :>/account">
+											<i class="dd fa fa-share-alt"></i> <: loc('Аккаунт') :>
+										</a>
+									</li>
+									<li>
+										<a href="/admin/logout">
+											<i class="dd fa fa-sign-out"></i> <: loc('Выйти') :>
+										</a>
+									</li>
+								</ul>
+							</li>
+							
+							<li class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+									<span><span class="fa fa-cog"></span> <: loc("Настройки") :></span>
+									
+								</a>
+								<ul class="dropdown-menu">
+									<li><a href="/admin/settings/"><i class="dd fa fa-desktop"></i> <: loc("Основное") :></a></li>
+									<li><a href="/admin/settings/statistics"><i class="dd fa fa-bar-chart"></i> <: loc("Статистика") :></a></li>
+									<li><a href="/admin/settings/redirect"><i class="dd fa fa-exchange"></i> <: loc("Переадресация") :></a></li>
+									<li><a href="/admin/settings/favicon"><i class="dd fa fa-star"></i> <: loc("Favicon") :></a></li>
+									<li><a href="/admin/settings/seo"><i class="dd fa fa-line-chart"></i> <: loc("SEO") :></a></li>
+									<li><a href="/admin/settings/css"><i class="dd fa fa-paint-brush"></i> CSS</a></li>
+									
+									: if $settings.compatibility {
+									<li><a href="/admin/settings/html"><i class="dd fa fa-code"></i> <: loc("HTML") :></a></li>
+									<li><a href="/admin/settings/advertisement"><i class="dd fa fa-signal"></i> <: loc("Реклама") :></a></li>
+									: }
+								</ul>
+							</li>
+							
+							<li class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span><: $languages[$lang] :></span></a>
+								<ul class="dropdown-menu">
+								: for $languages.kv() -> $language {
+									<li><a href="/admin/language/<: $language.key :>"><: $language.value :></a></li>
+								: }
+								</ul>
+							</li>
+						</ul> <!-- / .navbar-nav -->
+					</div> <!-- / .right -->
+				</div>
+			</div> <!-- / #main-navbar-collapse -->
+		</div> <!-- / .navbar-inner -->
+	</div> <!-- / #main-navbar -->
+
+	<div id="main-menu" role="navigation">
+		<div id="main-menu-inner">
+			<ul class="navigation">
+				<li<: raw(' class="active"') if $path.2 == 'pages' :>>
+					<a href="/admin/pages/" title="<: loc('Страницы') :>">
+						<i class="menu-icon fa fa-files-o"></i>
+						<span class="mm-text"><: loc('Страницы') :></span>
+					</a>
+				</li>
+				<li<: raw(' class="active"') if $path.2 == 'menu' :>>
+					<a href="/admin/menu/" title="<: loc('Меню') :>">
+						<i class="menu-icon fa fa-bars"></i>
+						<span class="mm-text"><: loc('Меню') :></span>
+					</a>
+				</li>
+				<li<: raw(' class="active"') if $path.2 == 'news' :>>
+					<a href="/admin/news/" title="<: loc('Новости') :>">
+						<i class="menu-icon fa fa-newspaper-o"></i>
+						<span class="mm-text"><: loc('Новости') :></span>
+					</a>
+				</li>
+				<li<: raw(' class="active"') if $path.2 == 'files' :>>
+					<a href="/admin/files/" title="<: loc('Файлы') :>">
+						<i class="menu-icon fa fa-archive"></i>
+						<span class="mm-text"><: loc('Файлы') :></span>
+					</a>
+				</li>
+				<li<: raw(' class="active"') if $path.2 == 'gallery' :>>
+					<a href="/admin/gallery/" title="<: loc('Галерея') :>">
+						<i class="menu-icon fa fa-camera"></i>
+						<span class="mm-text"><: loc('Галерея') :></span>
+					</a>
+				</li>
+				<li<: raw(' class="active"') if $path.2 == 'forms' :>>
+					<a href="/admin/forms/" title="<: loc('Формы') :>">
+						<i class="menu-icon fa fa-tasks"></i>
+						<span class="mm-text"><: loc('Формы') :></span>
+					</a>
+				</li>
+				
+				<li<: raw(' class="active"') if $path.2 == 'store' :>>
+					<a href="/admin/store/" title="<: loc('Интернет-магазин') :>">
+						<i class="menu-icon fa fa-shopping-cart"></i>
+						<span class="mm-text"><: loc('Интернет-магазин') :></span>
+					</a>
+				</li>
+				
+				: if !$production {
+				<li class="mm-dropdown <: 'open' if $path.2 == 'blog' :>">
+					<a href="/admin/blog/" title="<: loc('Блог') :>">
+						<i class="menu-icon fa fa-bullhorn"></i>
+						<span class="mm-text"><: loc('Блог') :></span>
+					</a>
+					<ul>
+						<li<: raw(' class="active"') if $path.2 == 'blog' && $path.3 != 'comments' :>>
+							<a href="/admin/blog/"><span class="mm-text"><: loc('Записи') :></span></a>
+						</li>
+						<li<: raw(' class="active"') if $path.2 == 'blog' && $path.3 == 'comments' :>>
+							<a href="/admin/blog/comments/"><span class="mm-text"><: loc('Комментарии') :></span></a>
+						</li>
+					</ul>
+				</li>
+				<li<: raw(' class="active"') if $path.2 == 'events' :>>
+					<a href="/admin/events/" title="<: loc('События') :>">
+						<i class="menu-icon fa fa-calendar"></i>
+						<span class="mm-text"><: loc('События') :></span>
+					</a>
+				</li>
+				: }
+			</ul> <!-- / .navigation -->
+			<div class="menu-content">
+				<a href="http://<: $settings.appdomain :>/account/domains/<: $vars.site.site_id | encode_id :>" 
+					class="btn btn-success btn-block btn-outline dark">
+					<: loc('Подключить домен') :>
+				</a>
+			</div>
+		</div> <!-- / #main-menu-inner -->
+	</div> <!-- / #main-menu -->
+
+	<div id="content-wrapper">
+		<: $content | raw :>
+	</div> <!-- / #content-wrapper -->
+	<div id="main-menu-bg"></div>
+</div> <!-- / #main-wrapper -->
+
+<script type="text/javascript">
+	init.push(function () {});
+	var settings = { main_menu: { detect_active : false } }
+	window.PixelAdmin.start(init, settings);
+</script>
+
+: include ads::stat
+
+</body>
+</html>

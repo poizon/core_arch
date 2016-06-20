@@ -1,0 +1,66 @@
+: include admin::tools::wysiwyg { id => "page-textarea" }
+
+<div class="page-header">
+	<h1>
+		<i class="fa fa-files-o page-header-icon"></i>
+		<span class="text-light-gray"><a href="/admin/pages"><: loc('Страницы') :></a> / </span>
+		<: loc('Новая страница') :>
+	</h1>
+</div> <!-- / .page-header -->
+
+<form class="form-horizontal" method="post" id="createForm">
+<div class="panel">
+	<div class="panel-body">
+		<div class="form-group <: 'has-error' if $p.err_title :>" id="add-title-group">
+			<label class="col-sm-2 control-label" for="title"><: loc('Заголовок') :></label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control"
+					value="<: $p.title :>" name="title" id="title" required>
+				<p class="help-block"><: loc($p.err_title) :></p>
+			</div>
+		</div>
+		<div class="form-group <: 'has-error' if $p.err_url :>" id="add-url-group">
+			<label class="col-sm-2 control-label" for="url"><: loc('Адрес страницы') :></label>
+			<div class="col-sm-10">
+				<input onfocus="title2url()" type="text" value="<: $p.url :>"
+					class="form-control" name="url" id="url" required>
+				<p class="help-block"><: loc($p.err_url) :></p>
+			</div>
+		</div>
+		<div class="form-group <: 'has-error' if $p.err_body :>" id="add-body-group">
+			<div class="col-sm-offset-2 col-sm-10">
+				<textarea class="form-control" id="page-textarea" rows="10" name="body"><: $p.body :></textarea>
+				<p class="help-block"><: loc($p.err_body) :></p>
+			</div>
+		</div>
+	</div>
+	<div class="panel-footer text-right">
+		: include admin::submit
+	</div>
+
+</div>
+</form>
+
+<script>
+	function title2url() {
+		var title = $('input[name="title"]').val();
+		if (title) {
+			$.ajax({
+				type: 'post',
+				url: '/admin/api/page/title-to-url.json',
+				data: {
+					"title": title
+				},
+				success: function(response) {
+					if (response.result == 'ok') {
+						$('input[name="url"]').val(response.url);
+					}
+				},
+				error: function() {
+					alert('Server Error');
+				}
+			});
+		}
+	}
+</script>
+

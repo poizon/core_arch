@@ -1,0 +1,70 @@
+: cascade admin::store::navigation
+
+: around header -> {
+	<: loc("Категории") :>
+: }
+
+: around body -> {
+:   my $route = $production ? "/resize/150/-/store" : "/resize/store?file=";
+:   include admin::tools::wysiwyg { id => "category-description" }
+
+<form method="post" class="form-horizontal" enctype="multipart/form-data">
+
+	<div class="form-group <: 'has-error' if $category.err_title :>">
+		<label for="title" class="control-label col-sm-2"><: loc('Заголовок') :></label>
+		<div class="col-sm-10">
+			<input type="text" class="form-control" id="title" name="title" value="<: $category.title :>">
+			<p class="help-block"><: loc($category.err_title) :></p>
+		</div>
+	</div>
+	<div class="form-group <: 'has-error' if $category.err_cover :>">
+		<label for="cover" class="control-label col-sm-2"><: loc('Изображение') :></label>
+		<div class="col-sm-10">
+			: if $category.cover {
+				<img src="<: $route :>/<: $vars.site.dir :>/<: $category.cover :>"
+					class="img-thumbnail grid-gutter-margin-b">
+			: }
+			<input type="file" id="cover" name="cover">
+			<p class="help-block"><: loc($category.err_cover) :></p>
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="category-description" class="control-label col-sm-2"><: loc('Описание') :></label>
+		<div class="col-sm-10">
+			<textarea class="form-control" id="category-description" name="body" data-height="200"><: $category.body | raw :></textarea>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-offset-2 col-sm-10">
+			<div class="checkbox">
+				<label>
+					<input type="checkbox" class="px" name="hidden" value="1" <: 'checked' if $category.hidden :>> 
+					<span class="lbl"><: loc('Скрыть эту категорию') :></span>
+				</label>
+			</div>
+		</div>
+	</div>
+
+	<hr class="panel-wide">
+
+	<div class="col-sm-offset-2 text-right">
+		: include admin::submit
+	</div>
+
+
+</form>
+
+<script type="text/javascript">
+	init.push(function () {
+		$('#cover').pixelFileInput({ 
+			placeholder: '<: loc("Файл не выбран") :>',
+			choose_btn_tmpl: '<a href="#" class="btn btn-xs btn-primary"><: loc("Выбрать") :></a>',
+			clear_btn_tmpl: '<a href="#" class="btn btn-xs"><i class="fa fa-times"></i> <: loc("Очистить") :></a>'
+		});
+	})
+
+	$(document).ready(function() {
+		$('select[name="parent_id"] option[value="<: $category.parent_id :>"]').attr('selected', true);
+	});
+</script>
+: }

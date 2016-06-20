@@ -1,0 +1,86 @@
+: cascade admin::settings::navigation
+
+: around body -> {
+<div class="mail-container-header">
+	<: loc('Favicon') :>
+</div>
+<div class="panel panel-transparent">
+	<div class="panel-body">
+		<p class="lead text-default"><: loc("admin.favicon") :></p>
+		
+		<div id="dropzonejs" class="dropzone-box" style="min-height:180px !important">
+			<div class="dz-default dz-message">
+				<i class="fa fa-cloud-upload hidden-xs"></i>
+				<: loc('Перетащите файлы') :><br>
+				<span class="dz-text-small"><: loc('или выберите их вручную') :></span>
+			</div>
+			<form action="/admin/api/files/upload">
+				<div class="fallback">
+					<input name="file" type="file" multiple="">
+				</div>
+			</form>
+		</div>
+
+	</div>
+</div>
+
+<script>
+	$(document).ready(function() {
+
+		var dz = new Dropzone('div#dropzonejs', {
+			url: "/admin/api/files/upload",
+			paramName: "file", // The name that will be used to transfer the file
+			maxFiles: 1,
+			acceptedFiles: "image/x-icon,image/png,image/gif,image/vnd.microsoft.icon",
+			params: { folder: 'root' },
+
+			: include admin::tools::dropzonejs { maxFilesize => 0.1 }
+		});
+
+		var favicon = '<: $vars.site.favicon :>';
+		if (favicon) {
+			get_filesize(favicon, function (size) {
+				var re       = /\/([^\/]+?)$/i,
+					found    = favicon.match(re),
+					mockFile = { name: found[1], size: size };
+				dz.options.addedfile.call(dz, mockFile);
+				dz.options.thumbnail.call(dz, mockFile, favicon);
+				dz.files.push(mockFile);
+			});
+		}
+
+		dz.on('success', function(file) {
+			set_favicon(file.name)
+		});
+		dz.on('removedfile', function(file) {
+			set_favicon('')
+			$.ajax({
+				type: 'DELETE',
+				url: '/admin/api/files/root/' + file.name + '.json'
+			});
+		});
+
+		function set_favicon (filename) {
+			if (!filename) {
+				filename = '';
+			}
+			$.ajax({
+				type: 'POST',
+				url: '/admin/settings/favicon',
+				data: { 'filename': filename }
+			});
+		}
+
+		function get_filesize(url, callback) {
+			var xhr = new XMLHttpRequest();
+			xhr.open("HEAD", url, true);
+			xhr.onreadystatechange = function() {
+			    if (this.readyState == this.DONE) {
+			        callback(parseInt(xhr.getResponseHeader("Content-Length")));
+			    }
+			};
+			xhr.send();
+		}
+	});
+</script>
+: }

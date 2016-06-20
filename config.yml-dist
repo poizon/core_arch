@@ -1,0 +1,139 @@
+appname: "Okis"
+appdomain: "okis2.ru"
+email: 'robot@okis2.ru'
+
+charset: "UTF-8"
+salt: 'IriWtXIrjozlHAGX'
+
+sape: ""
+linkfeed: ""
+ga_key: "" 
+
+admin:
+  login: "123"
+  password: "123"
+  #ip: "127.0.0.1"
+  
+### Compatibility mode
+
+compatibility: 1
+
+### System settings
+
+default_lang: "en"
+default_timezone: 'Europe/Moscow'
+default_currency: 'RUB'
+timezone_enabled: 0
+signup_disabled: 0
+
+captcha: 
+  data: "/tmp"
+  images: "/tmp/img"
+  length: "5"
+
+plack_middlewares:
+  -
+    - ReverseProxy
+
+### Paygates
+
+paygates:
+  robokassa:
+    mrh_login: 'robokassa_login'
+    mrh_pass1:  'pass1'
+    mrh_pass2:  'pass2'
+  paymentwall:
+    pwall_app_id: 'ffd8077f1f97f4b62ddc5522a93daf21'
+    pwall_secret_key: '***'
+    widget: 'p4_1'
+  onpay:
+    mrh_login: 'onpay_login'
+    mrh_pass1:  'secret_key'
+    # robokassa-compatible api should be selected for for onpay.ru
+    # mrh_pass1 is secret_key, mrh_pass2 will be generated automatically
+    
+### Domains
+    
+domains:
+  ns1: 'ns1.okis2.ru'
+  ns2: 'ns2.okis2.ru'
+  check_code: 'C3SYg56RlZ'
+  regru:
+    username: 'test'
+    password: 'test'
+
+### Affiliates
+
+affiliate:
+  promo_discount: 25
+  promo_bonus: 20
+  percent: 30
+  whitelabel:
+    ns1: 'ns3.okis.ru'
+    ns2: 'ns4.okis.ru'
+
+### Sessions
+
+session: "YAML"
+#session: "memcached"
+#memcached_servers: "127.0.0.1:11211"
+#session_expires: "1 month"
+#session_name: "okis"
+
+### Templates
+
+template: xslate
+engines:
+ xslate:
+  cache: 1
+  cache_dir: .xslate_cache/
+  module:
+   - tools::formatter
+   - tools::I18N
+   - Dancer::Plugin::EncodeID
+   - Text::Xslate::Bridge::Star
+
+### Plugins
+
+plugins:
+  EncodeID:
+    secret: 'wREhPfVQCIUjTewO'
+    
+  ValidateTiny:
+    rules_dir: 'validation'
+    error_prefix: err_
+    is_full: 0
+    
+  Auth::Facebook:
+    application_id:     "1672207366336376"
+    application_secret: "4807d133d8e97dd89ae970078b6657b2"
+    callback_url:       "http://okis2.ru:3011/auth/facebook/callback"
+    callback_success:   "/account"
+    callback_fail:      "/fail"
+    scope:              "email"
+
+  Auth::Google:
+    client_id:        '178685351066-lj0tn9ibsr4vmbu16695tpqvhu119s0a.apps.googleusercontent.com'
+    client_secret:    '0e8--zBL0ia1LxYtUxslwxce'
+    scope:            'email'
+    access_type:      'online'
+    callback_url:     'http://okis2.ru:3011/auth/google/callback'
+    callback_success: '/account'
+    callback_fail:    '/fail'
+    
+  Database:
+    driver: 'mysql'
+    host: 'localhost'
+    port: 3306
+    database: 'okis'
+    username: 'root'
+    password: 'root'
+    connection_check_threshold: 10
+    dbi_params:
+      RaiseError: 1
+      AutoCommit: 1
+      mysql_auto_reconnect: 1
+      mysql_enable_utf8: 1
+    on_connect_do: [ "SET NAMES 'utf8'" ]
+    log_queries: 0
+

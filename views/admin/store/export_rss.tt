@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">
+	<channel>
+		<title><: $vars.site.title :></title>
+		<link>http://<: $vars.site.domain :></link>
+		<description><: $vars.site.subtitle :></description>
+	: for $items-> $item {
+		<item>
+			<g:condition>new</g:condition>
+			<g:availability>in stock</g:availability>
+			<g:id><: $item.item_id :></g:id>
+			<g:link>http://<: $vars.site.domain :>/store/item/<: $item.item_id :></g:link>
+			: if $item.price_sale {
+			<g:sale_price><: $item.price_sale :> <: $vars.site.store_currency :></g:sale_price>
+			<g:price><: $item.price :> <: $vars.site.store_currency :></g:price>
+			: } else {
+			<g:price><: $item.price :> <: $vars.site.store_currency :></g:price>
+			: }
+			: if $item.category_id {
+			<g:google_product_category><: $item.category_id :></g:google_product_category>
+			: }
+			: if $item.cover {
+			<g:image_link>http://<: $vars.site.domain :>/store/<: $vars.site.dir :>/<: $item.cover :></g:image_link>
+			: }
+			<g:title><: $item.title :></g:title>
+			<g:description><: $item.body :></g:description>
+		</item>
+	: }
+	</channel>
+</rss>

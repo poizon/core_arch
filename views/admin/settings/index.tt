@@ -1,0 +1,73 @@
+: cascade admin::settings::navigation
+
+: around body -> {
+<div class="mail-container-header">
+	<: loc('Основное') :>
+</div>
+<div class="panel panel-transparent">
+	<div class="panel-body">
+		<form class="form-horizontal" method="post">
+			<div class="form-group">
+				<label class="col-sm-2 control-label" for="title"><: loc('Название') :></label>
+				<div class="col-sm-10">
+					<input class="form-control" name="title" id="title" value="<: $vars.site.title :>">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label" for="subtitle"><: loc('Подзаголовок') :></label>
+				<div class="col-sm-10">
+					<input class="form-control" name="subtitle" id="subtitle" value="<: $vars.site.subtitle :>">
+				</div>
+			</div>
+			
+			: if $settings.compatibility {
+			: my $themes = [ 'default', 'asphalt', 'adminflare', 'dust', 'frost', 'fresh', 'silver', 'clean', 'white' ];
+			<div class="form-group">
+				<label class="col-sm-2 control-label"><: loc('Оформление') :></label>
+				<div class="col-sm-10">
+					<select class="form-control" name="theme">
+					: for $themes -> $theme {
+						<option value="<: $theme :>"<: ' selected' if $admin_theme == $theme :>>
+							<: $theme | uc :>
+						</option>
+					: }
+					</select>
+				</div>
+			</div>
+			: }
+			
+			<div class="form-group">
+				<label class="col-sm-2 control-label" for="disable"><: loc('Отключить сайт') :></label>
+				<div class="col-sm-10">
+					<textarea placeholder='<: loc("Сайт временно отключен") :>' rows="6"
+						id="disable" class="form-control" name="disable" ><: $vars.site.disable :></textarea>
+					<p class="help-block"><: loc("admin.disable") :></p>
+				</script>
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<div class="col-sm-10 col-sm-offset-2">
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" class="px" name="sharing_widget" 
+								value="1" <: raw('checked=""') if $vars.site.sharing_widget :>>
+							<span class="lbl text-default"><: loc("Включить социальные кнопки") :></span>
+						</label>
+					</div>
+				</div>
+			</div>
+			<hr>
+			
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<button type="submit" class="btn btn-lg btn-primary btn-labeled">
+						<span class="btn-label icon fa fa-save"></span>
+						<: loc('Сохранить') :>
+					</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+: }

@@ -1,0 +1,7 @@
+: include templates::okis::store::navigation
+
+: include templates::okis::store::categories_list { categories_list => $categories }
+
+<div class="cleared"></div>
+
+: include templates::okis::store::items_list { items => $items }

@@ -1,0 +1,162 @@
+<div class="page-header">
+	<div class="row">
+		<h1 class="col-xs-12 col-sm-4 text-left-sm">
+			<i class="fa fa-newspaper-o page-header-icon"></i> <: loc('Новости') :>
+		</h1>
+		<div class="col-xs-12 col-sm-8">
+			<div class="row">
+				<hr class="visible-xs no-grid-gutter-h">
+				
+				<div class="pull-right col-xs-12 col-sm-auto hidden-xs">
+					<a href="/news" target="_blank"
+						class="btn btn-success btn-labeled" style="width:100%">
+						<span class="icon fa fa-external-link"></span>
+					</a>
+				</div>	
+				
+				<div class="pull-right col-xs-12 col-sm-auto">
+					<a href="/admin/news/add" class="btn btn-primary btn-labeled" style="width:100%">
+						<span class="btn-label icon fa fa-plus"></span> <: loc('Добавить') :>
+					</a>
+				</div>
+
+				<!-- Margin -->
+				<div class="visible-xs clearfix form-group-margin"></div>
+
+				<!-- Search field -->
+				<form class="pull-right col-xs-12 col-sm-4">
+				<div class="input-group no-margin">
+					<span class="input-group-addon">
+						<i class="fa fa-search"></i>
+					</span>
+					<input type="text" name="filter" value="<: $params.filter :>"
+						placeholder="<: loc('Поиск') :>..."
+						class="form-control form-control-gray no-padding-hr">
+				</div>
+				</form>
+
+			</div>
+		</div>
+	</div>
+</div> <!-- / .page-header -->
+
+<div class="panel widget-support-tickets" id="news">
+	<div class="panel-body">
+	: for $news -> $item {
+		<div class="ticket" id="tr_news_id_<: $item.news_id :>">
+			<div class="pull-right controls">
+				<!-- Edit -->
+				<a class="btn btn-sm btn-primary" title="<: loc('Изменить') :>" href="/admin/news/<: $item.news_id :>/edit">
+					<span class="fa fa-edit"></span>
+				</a>
+
+				<!-- Show/hide -->
+				<a class="btn btn-sm btn-warning" title="<: loc('Скрыть') :>" id="button_hide_news_id_<: $item.news_id :>"
+					<: raw('style="display:none"') if $item.hidden :> onclick="return hide_news('<: $item.news_id :>')">
+					<span class="fa fa-eye-slash"></span>
+				</a>
+				<a class="btn btn-sm" title="<: loc('Показать') :>" id="button_show_news_id_<: $item.news_id :>"
+					<: raw('style="display:none"') if !$item.hidden :> onclick="return show_news('<: $item.news_id :>')">
+					<span class="fa fa-eye"></span>
+				</a>
+
+				<!-- Delete -->
+				<a class="btn btn-sm btn-danger" title="<: loc('Удалить') :>"
+					onclick="return delete_news('<: $item.news_id :>')">
+					<span class="fa fa-times"></span>
+				</a>
+			</div>
+			<a href="/admin/news/<: $item.news_id :>/edit" class="ticket-title <: 'text-muted' if $item.hidden :>">
+				<span><: $item.date | format_date($date.formatter) :></span>
+				<: $item.title :>
+			</a>
+		</div>
+	: } else {
+	: 	include admin::empty
+	: }
+	: include admin::tools::pagination
+	</div>
+</div> <!-- / .panel -->
+
+<script type="text/javascript">
+	init.push(function () {
+		$('#news a').tooltip();
+	});
+
+	function delete_news(id) {
+		var tr = $('#tr_news_id_' + id);
+
+		bootbox.confirm({
+			message: '<: loc("Вы подтверждаете удаление?") :>',
+			buttons: {
+				confirm: {
+					label: '<: loc("Удалить") :>',
+					className: 'btn-danger'
+				},
+				cancel: {
+					label: '<: loc("Не сейчас") :>',
+					className: 'pull-left btn-outline'
+				}
+			},
+			callback: function(result){
+				if (result) {
+					$.ajax({
+						type: 'delete',
+						url: '/admin/api/news/' + id + '.json',
+						success: function(response) {
+							if (response.result == 'ok') {
+								tr.remove();
+							}
+						},
+						error: function() {
+							bootbox.alert('<: loc("Ошибка") :>');
+						}
+					});
+				}
+			},
+			className: "bootbox-sm"
+		});
+
+		return false; // prevent fallback execution
+	}
+
+	function show_news(id) {
+		var tr = $('#tr_news_id_' + id);
+
+		$.ajax({
+			type: 'post',
+			url: '/admin/api/news/' + id + '/show.json',
+			success: function(response) {
+				if (response.result == 'ok') {
+					$('#button_hide_news_id_' + id).show();
+					$('#button_show_news_id_' + id).hide();
+					tr.find('.ticket-title').removeClass('text-muted');
+				}
+			},
+			error: function() {
+				bootbox.alert('Server Error');
+			}
+		});
+		return false;
+	}
+
+	function hide_news(id) {
+		var tr = $('#tr_news_id_' + id);
+
+		$.ajax({
+			type: 'post',
+			url: '/admin/api/news/' + id + '/hide.json',
+			success: function(response) {
+				if (response.result == 'ok') {
+					$('#button_hide_news_id_' + id).hide();
+					$('#button_show_news_id_' + id).show();
+					tr.find('.ticket-title').addClass('text-muted');
+				}
+			},
+			error: function() {
+				bootbox.alert('Server Error');
+			}
+		});
+		return false;
+	}
+</script>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+	<url>
+		<loc>http://<: $vars.site.domain :>/</loc>
+		<changefreq>daily</changefreq>
+		<priority>1.0</priority>
+	</url>
+: for $pages -> $page {
+	: if $page.url != 'index' {
+	<url>
+		<loc>http://<: $vars.site.domain :>/<: $page.url :></loc>
+		<changefreq>daily</changefreq>
+		<priority>0.8</priority>
+	</url>
+	: }
+: }
+: if !$production && $posts.size() {
+	<url>
+		<loc>http://<: $vars.site.domain :>/blog</loc>
+	</url>
+	: for $posts -> $post {
+		<url>
+			<loc>http://<: $vars.site.domain :>/blog/<: $post.post_id :></loc>
+		</url>
+	: }
+: }
+: if $news.size() {
+	<url>
+		<loc>http://<: $vars.site.domain :>/news</loc>
+	</url>
+	: for $news -> $item {
+		<url>
+			<loc>http://<: $vars.site.domain :>/news/<: $item.news_id :></loc>
+		</url>
+	: }
+: }
+: if $store_items.size() {
+	<url>
+		<loc>http://<: $vars.site.domain :>/store</loc>
+	</url>
+	: for $store_items -> $item {
+		<url>
+			<loc>http://<: $vars.site.domain :>/store/item/<: $item.item_id :></loc>
+		</url>
+	: }
+: }
+: for $store_categories -> $item {
+	<url>
+		<loc>http://<: $vars.site.domain :>/store/category/<: $item.category_id :></loc>
+	</url>
+: }
+</urlset>

@@ -1,0 +1,394 @@
+<div class="page-header">
+	<div class="row">
+		<h1 class="col-xs-12 col-sm-4 text-left-sm">
+			<i class="fa fa-files-o page-header-icon"></i> <: loc('Страницы') :>
+		</h1>
+		<div class="col-xs-12 col-sm-8">
+			<div class="row">
+				<hr class="visible-xs no-grid-gutter-h">
+
+				: if $params.folder_id {
+					<div class="pull-right col-xs-12 col-sm-auto hidden-sm">
+						<button id="<: $params.folder_id :>" class="btn btn-danger btn-labeled btn-del-folder" style="width:100%">
+							<span class="btn-label icon fa fa-trash-o"></span>
+							<: loc('Удалить') :>
+						</button>
+					</div>
+
+					<!-- Margin -->
+					<div class="visible-xs clearfix form-group-margin"></div>
+
+					<div class="pull-right col-xs-12 col-sm-auto">
+						<a href="/admin/pages/folder/<: $params.folder_id :>/edit"
+							class="btn btn-info btn-labeled" style="width:100%">
+							<span class="btn-label icon fa fa-gears"></span>
+							<: loc('Настройки') :>
+						</a>
+					</div>
+					
+					<!-- Margin -->
+					<div class="visible-xs clearfix form-group-margin"></div>
+				: }
+
+				<!-- Search field -->
+				<form class="pull-right col-xs-12 col-sm-4">
+				<div class="input-group no-margin">
+					<span class="input-group-addon">
+						<i class="fa fa-search"></i>
+					</span>
+					<input type="text" name="filter" value="<: $params.filter :>"
+						placeholder="<: loc('Поиск') :>..."
+						class="form-control form-control-gray no-padding-hr">
+				</div>
+				</form>
+
+			</div>
+		</div>
+	</div>
+</div> <!-- / .page-header -->
+
+<div class="row">
+	<div class="col-md-3 col-sm-4">
+		<div class="panel panel-transparent list-transparent">
+			<div class="panel-heading">
+				<span class="panel-title"><: loc('Категории') :></span>
+			</div>
+
+			<div class="panel-padding-h">
+				<ul class="list-group list-transparent">
+					: for $folders -> $f {
+						<li class="list-group-item">
+							: if $f.count {
+								<span class="badge"><: $f.count :></span>
+							: }
+							<i class="fa <: $f.folder_id == $params.folder_id ? 'fa-folder-open-o' : 'fa-folder-o' :>"></i>
+							<a href="/admin/pages/<: $f.folder_id :>" class="nostyle"><: $f.title :></a>
+						</li>
+					: }
+				</ul>
+
+				<a href="#" id="create-folder-href" onclick="$(this).hide(); $('#create-folder-form').show()"
+					class="btn btn-info btn-labeled">
+					<span class="btn-label icon fa fa-plus"></span>
+					<: loc('Новая категория') :>
+				</a>
+
+				<form id="create-folder-form" style="display:none">
+					<div class="input-group" id="folder-group">
+						<input type="text" class="form-control" change="create_folder()" name="title">
+						<span class="input-group-btn">
+							<button class="btn" type="button" onclick="create_folder()" >
+								<span class="fa fa-check"></span>
+							</button>
+							<span class="text-danger" id="create-folder-error-msg"></span>
+						</span>
+					</div> <!-- / .input-group -->
+				</form>
+			</div>
+
+		</div>
+	</div>
+
+	: my $size = $pages.size()
+	<div class="col-md-9 col-sm-8">
+		
+		<!-- Add Page -->
+		<form action="/admin/pages/add" method="post" class="form-horizontal">
+		<div class="panel-group">
+			<div class="panel">
+				<div class="panel-heading">
+					<span class="panel-title">
+						<a class="accordion-toggle <: 'collapsed' if $size :>" style="text-decoration:none" 
+							data-toggle="collapse" href="#addpage">
+							<i class="panel-title-icon fa fa-plus-circle"></i>
+							<: loc('Новая страница') :>
+						</a>
+					</span>
+				</div> <!-- / .panel-heading -->
+				
+				<div id="addpage" class="panel-collapse <: $size ? 'collapse' : 'in' :>">
+					: if !$can_add_pages {
+					<div class="alert alert-page alert-danger alert-dark">
+						<button type="button" class="close" data-dismiss="alert">&times;</button>
+						<: loc("Данная опция недоступна на вашем пакете услуг.") :>
+					</div> <!-- / .alert -->
+					: }
+					<div class="panel-body">
+						<div class="input-group">
+							: if $params.folder_id {
+							<input type="hidden" name="folder_id" value="<: $params.folder_id :>">
+							: }
+							<input type="hidden" name="action" value="apply">
+							<input type="hidden" name="body" value="">
+							<input type="text" class="form-control" name="title" required
+								placeholder="<: loc('Введите название страницы') :>" <: 'disabled' if !$can_add_pages :>>
+							<span class="input-group-btn">
+								<button class="btn <: 'disabled' if !$can_add_pages :>" type="submit">
+									<: loc("Создать") :>
+								</button>
+							</span>
+						</div> <!-- / .input-group -->
+					</div>
+				</div>
+
+			</div>
+		</div> <!-- / .panel-group -->
+		</form>
+
+		: if $size || $params.filter {
+		<div class="panel widget-support-tickets" id="pages"  style="margin-bottom:150px"> <!-- dropdown overlay fix -->
+			<div class="panel-body">
+			: for $pages -> $page {
+				<div class="ticket" id="tr_page_id_<: $page.page_id :>" data-id="<: $page.page_id :>">
+					<div class="pull-right controls">
+						
+						<div class="btn-group btn-group-sm">
+							<a class="btn btn-primary" href="/admin/pages/<: $page.page_id :>/edit">
+								<span class="fa fa-edit"></span>
+							</a>
+							<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+								<i class="fa fa-caret-down"></i>
+							</button>
+							<ul class="dropdown-menu">
+								<li>
+									<a href="/<: $page.url :>" target="_blank">
+										<span class="fa fa-external-link"></span> 
+										<: loc('Посмотреть на сайте') :>
+									</a>
+								</li>
+								: if $settings.compatibility {
+								<li>
+									<a href="/admin/pages/<: $page.page_id :>/edit?noeditor">
+										<span class="fa fa-edit"></span> 
+										<: loc('Редактировать HTML') :>
+									</a>
+								</li>	
+								: }
+								<li class="js-btn-homepage <: 'disabled' if $page.url == $vars.site.default_page :>">
+									<a onclick="set_main(<: $page.page_id :>); return false;" href="#">
+										<span class="fa fa-home"></span>
+										<: loc('Сделать стартовой') :>
+									</a>
+								</li>
+								<li>
+									<a href="#" class="js-hidden-toggle" data-hidden="<: $page.hidden :>" >
+										<span class="fa fa-eye<: '-slash' if !$page.hidden :>"></span> 
+										<: $page.hidden ? loc('Показать') : loc('Скрыть') :>
+									</a>
+								</li>
+								<li>
+									<a href="#" class="btn-del-page">
+										<span class="fa fa-times"></span> 
+										<: loc('Удалить') :>
+									</a>
+								</li>
+							</ul>
+						</div>
+						
+					</div>
+					: my $icon = $page.hidden ?
+					: 'fa-eye-slash' : $page.url == $vars.site.default_page ?
+					: 'fa-home' : $page.noindex ? 'fa-unlink' : 'fa-file-o';
+
+					<a href="/admin/pages/<: $page.page_id :>/edit" 
+						class="ticket-title <: 'text-muted' if $page.hidden :>">
+						<i data-homepage="<: $page.url == $vars.site.default_page ? 1 : 0 :>" 
+							data-icon="<: $page.noindex ? 'fa-unlink' : 'fa-file-o' :>"
+							class="icon fa <: $icon :>"></i>
+						<: $page.title || $page.url | raw :>
+					</a>
+				</div>
+			: } else {
+			: 	include admin::empty
+			: }
+			: include admin::tools::pagination
+			</div>
+		</div> <!-- / .panel -->
+		: }
+	</div>
+</div>
+
+<script>
+	init.push(function () {
+		$('#pages a').tooltip();
+
+		$('.btn-del-folder').on('click', function(event, btn) {
+			var id = this.id;
+			bootbox.confirm({
+				message: '<: loc("Вы подтверждаете удаление?") :>',
+				buttons: {
+					confirm: {
+						label: '<: loc("Удалить") :>',
+						className: 'btn-danger'
+					},
+					cancel: {
+						label: '<: loc("Не сейчас") :>',
+						className: 'pull-left btn-outline'
+					}
+				},
+				callback: function(result) {
+					if (result == true) {
+						delete_folder(id);
+					}
+				},
+				className: "bootbox-sm"
+			})
+		});
+
+		$('.btn-del-page').on('click', function(event, href) {
+			var id = $(this).closest('.ticket').data('id');
+			bootbox.confirm({
+				message: '<: loc("Вы подтверждаете удаление?") :>',
+				buttons: {
+					confirm: {
+						label: '<: loc("Удалить") :>',
+						className: 'btn-danger'
+					},
+					cancel: {
+						label: '<: loc("Не сейчас") :>',
+						className: 'pull-left btn-outline'
+					}
+				},
+				callback: function(result) {
+					if (result == true) {
+						delete_page(id);
+					}
+				},
+				className: "bootbox-sm"
+			})
+		});
+		
+		$('#create-folder-form').on('submit', create_folder);
+		
+		$(".js-hidden-toggle").on("click", function (event) {
+			var $this   = $(this),
+			    hidden  = $this.data('hidden'),
+			    method  = hidden ? 'show' : 'hide',
+			    $ticket = $this.closest('.ticket');
+	
+			$.ajax({
+				method: 'post',
+				url: '/admin/api/page/' + $ticket.data('id') + '/' + method + '.json',
+				success: function(response) {
+					if (response.result == 'ok') {
+						if (hidden) {
+							$this.data('hidden', false);
+							$this.html('<span class="fa fa-eye-slash"></span> <:loc("Скрыть"):>');
+							$ticket.find('.ticket-title').removeClass('text-muted');
+							var $icon = $ticket.find('.icon');
+							$icon.removeClass('fa-eye-slash').addClass($icon.attr('data-homepage') == 1 ? 'fa-home' : $icon.data("icon"));
+						} else {
+							$this.data('hidden', true);
+							$this.html('<span class="fa fa-eye"></span> <:loc("Показать"):>');
+							$ticket.find('.ticket-title').addClass('text-muted');
+							$ticket.find('.icon').removeClass('fa-home fa-reply fa-unlink fa-file-o').addClass('fa-eye-slash');
+						}
+					}
+				},
+				error: function() {
+					alert('<: loc("Ошибка") :>');
+				}
+			});
+	
+			event.preventDefault();
+		});
+	});
+
+	function create_folder() {
+		var form = $('#create-folder-form');
+		var input = form.find('input[name="title"]');
+		
+		if (input.val()) {
+			$.ajax({
+				type: 'post',
+				url: '/admin/api/pages/folder/create.json',
+				data: {
+					"title": input.val()
+				},
+				success: function(response) {
+					if (response.result == 'ok') {
+						window.location.reload();
+					} else {
+						$('#create-folder-error-msg').text(response.error);
+					}
+				},
+				error: function() {
+					alert('<: loc("Ошибка") :>');
+				}
+			});
+		} else {
+			$('#folder-group').addClass('has-error');
+		}
+	}
+	
+	function delete_folder(id) {
+		var div = $('#folder-' + id);
+		$.ajax({
+			type: 'delete',
+			url: '/admin/api/page/folder/' + id + '.json',
+			success: function(response) {
+				if (response.result == 'ok') {
+					window.location.href = '/admin/pages';
+				}
+			},
+			error: function() {
+				alert('<: loc("Ошибка") :>');
+			}
+		})
+	}
+
+	function delete_page(page_id) {
+		var tr = $('#tr_page_id_' + page_id);
+		tr.addClass('danger');
+
+		$.ajax({
+			type: 'delete',
+			url: '/admin/api/page/' + page_id + '.json',
+			success: function(response) {
+				if (response.result == 'ok') {
+					tr.remove();
+				}
+				else {
+					// TODO: add alert UI item
+					tr.removeClass('danger');
+					alert('Error: ' + response.error);
+				}
+			},
+			error: function() {
+				alert('<: loc("Ошибка") :>');
+				tr.removeClass('danger');
+			}
+		})
+	}
+
+	function set_main(id) {
+		var $tr = $('#tr_page_id_' + id);
+		$tr.removeClass('warning');
+		$.ajax({
+			method: 'post',
+			url: '/admin/api/page/set-main/' + id + '.json',
+			success: function(response) {
+				if (response.result == 'ok') {
+					var $home_page = $(".ticket-title .icon[data-homepage=1]");
+					$home_page.attr('data-homepage', 0);
+					if ($home_page.hasClass('fa-home')) {
+						$home_page.removeClass('fa-home').addClass($home_page.data('icon')).data('homepage', 0);
+					}
+					var $new_home_page = $tr.find('.ticket-title .icon');
+					$new_home_page.attr('data-homepage', 1);
+					if (!$new_home_page.hasClass('fa-eye-slash')) {
+						$new_home_page.removeClass('fa-unlink fa-reply fa-file-o').addClass('fa-home');
+					}
+
+					$('.js-btn-homepage.disabled').removeClass('disabled');
+					$tr.find('.js-btn-homepage').addClass('disabled');
+				}
+			},
+			error: function() {
+				alert('<: loc("Ошибка") :>');
+			}
+		})
+		return false;
+	}
+
+</script>

@@ -1,0 +1,45 @@
+: cascade admin::store::navigation
+
+: around header -> {
+	<: loc("Заказы") :>
+: }
+
+: around body -> {
+<table class="table">
+	<thead>
+		<th><: loc('Заказ') :></th>
+		<th><: loc('Дата') :></th>
+		<th><: loc('Телефон') :></th>
+		<th><: loc('E-mail') :></th>
+		<th><: loc('Сумма') :></th>
+		<th><: loc('Статус') :></th>
+	</thead>
+	<tbody>
+	: my $restrict = $vars.site.premium && $vars.site.package == 'Business' ? 0 : 1
+	
+	: for $orders -> $order {
+		<tr>
+			<td><a href="/admin/store/orders/<: $order.order_id :>"><: $site.store_order_prefix :><: $order.order_id :><: $site.store_order_suffix :></a></td>
+			<td><: $order.date :></td>
+			<td><: $order.phone :></td>
+			<td><: $order.email :></td>
+			<td><: $get_price($order.amount) | raw :></td>
+			<td>
+				: if $order.status == 'NEW' {
+					<span class="label"><: loc($statuses[$order.status]) :></span>
+				: } else if $order.status == 'PENDING' {
+					<span class="label label-warning"><: loc($statuses[$order.status]) :></span>
+				: } else if $order.status == 'DONE' {
+					<span class="label label-success"><: loc($statuses[$order.status]) :></span>
+				: } else {
+					<span class="label label-danger"><: loc($statuses[$order.status]) :></span>
+				: }
+			</td>
+		</tr>
+	: }
+	</tbody>
+</table>
+: include admin::tools::pagination
+
+: }
+

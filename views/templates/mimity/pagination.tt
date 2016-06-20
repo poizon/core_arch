@@ -1,0 +1,25 @@
+: macro get_url -> ($p) {
+: 	$request.path ~ '?'
+: 	for $request.params('query').merge({ 'page' => $p }).kv() -> $q {
+: 		uri_escape($q.key) ~ '=' ~ uri_escape($q.value) ~ '&'
+: 	}
+: }
+
+: if $pager && $pager.end > 1 {
+	<ul class="pager">
+		: if $pager.prev {
+			<li><a href="<: get_url($pager.prev) :>"><: loc('Предыдущая') :></a></li>
+		: }
+		: for $pager.list -> $i {
+			: last if $i > $pager.end;
+			: if $pager.current == $i {
+				<li class="active"><: $i :></li>
+			: } else {
+				<li><a href="<: get_url($i) :>"><: $i :></a></li>
+			: }
+		: }
+		: if $pager.next {
+			<li><a href="<: get_url($pager.next) :>"><: loc('Следующая') :></a></li>
+		: }
+	</ul>
+: }

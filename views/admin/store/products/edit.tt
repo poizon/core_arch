@@ -1,0 +1,552 @@
+: cascade admin::store::navigation
+
+: around header -> {
+	<: loc("Товары") :>
+: }
+
+: around body -> {
+: 	include admin::tools::wysiwyg { id => 'description' };
+: 	include admin::tools::wysiwyg { id => 'body' };	
+: 	my $route = $production ? "/resize/150/-/store" : "/resize/store?file=";
+
+<ul class="nav nav-tabs">
+	<li class="active"><a href="#main" data-toggle="tab"><: loc("Основное") :></a></li>
+	<li><a href="#images" data-toggle="tab"><: loc("Галерея") :></a></li>
+</ul>
+
+<div class="tab-content">
+	<div class="tab-pane fade" id="images">
+		<!-- Images Section -->
+		: if not $error {
+		<div id="dropzonejs" class="dropzone-box form-group-margin" style="min-height:180px !important">
+			<div class="dz-default dz-message">
+				<i class="fa fa-cloud-upload hidden-xs"></i>
+				<: loc('Перетащите файлы') :><br>
+				<span class="dz-text-small"><: loc('или выберите их вручную') :></span>
+			</div>
+			<form action="/admin/api/file">
+				<div class="fallback">
+					<input name="file" type="file" multiple="">
+					<input type="hidden" name="album_id" value="<: $album.album_id :>">
+				</div>
+			</form>
+		</div>
+		<div id="item-photo"></div>
+		: }
+	</div>
+	<div class="tab-pane fade active in" id="main">
+		<!-- Main Section -->
+		<form class="form-horizontal" method="post" enctype="multipart/form-data">
+		
+			: if $error {
+				<div class="text-center alert"><: $error :></div>
+			: } else {
+				<div class="form-group">
+					<label class="col-sm-2 control-label"><: loc('Изображение') :></label>
+					<div class="col-sm-10">
+						: if $item.cover {
+							<img src="<: $route :>/<: $vars.site.dir :>/<: $item.cover :>"
+								class="img-thumbnail grid-gutter-margin-b">
+						: }
+						<input type="file" name="cover" id="cover">
+					</div>
+				</div>
+				<div class="form-group<: ' has-error' if $p.err_title :>">
+					<label for="title" class="control-label col-sm-2"><: loc('Название') :></label>
+					<div class="col-sm-10">
+						<input class="form-control" id="title" name="title" value="<: $item.title :>">
+						<p class="help-block"><: loc($p.err_title) :></p>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="categories_select" class="control-label col-sm-2"><: loc('Категории') :></label>
+					<div class="col-sm-10">
+						<select class="form-control" name="categories" multiple="multiple" id="categories_select">
+						: for $categories -> $i {
+							<option value="<: $i.category_id :>"><: $i.title :></option>
+						: }
+						</select>
+					</div>
+				</div>
+				<div class="form-group<: ' has-error' if $p.err_price || $p.err_discount_price :>">
+					<label for="price" class="control-label col-sm-2"><: loc('Цена') :></label>
+					<div class="col-sm-2">
+						<input class="form-control" id="price" name="price" value="<: $item.price :>" >
+						<p class="help-block"><: loc($p.err_price) :></p>
+					</div>
+		
+					<label for="price_sale" class="control-label col-sm-2"><: loc('Цена со скидкой') :></label>
+					<div class="col-sm-2">
+						<input class="form-control" id="price_sale" name="price_sale" value="<: $item.price_sale :>">
+						<p class="help-block"><: loc($p.err_discount_price) :></p>
+					</div>
+		
+					<div class="col-sm-offset-1 col-sm-3">
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" class="px" name="hidden" value="1"<: ' checked' if $item.hidden :>>
+								<span class="lbl"><: loc('Скрыть этот товар') :></span>
+								<p class="help-block"><: loc($p.err_hidden) :></p>
+							</label>
+						</div>
+					</div>
+				</div>
+				
+				<div class="form-group<: ' has-error' if $p.err_description :>">
+					<label for="description" class="control-label col-sm-2"><: loc('Короткое описание') :></label>
+					<div class="col-sm-10">
+						<textarea class="form-control" name="description" id="description" data-height="100"><: $item.description :></textarea>
+						<p class="help-block"><: loc($p.err_description) :></p>
+					</div>
+				</div>
+				<div class="form-group<: ' has-error' if $p.err_body :>">
+					<label for="body" class="control-label col-sm-2"><: loc('Описание') :></label>
+					<div class="col-sm-10">
+						<textarea class="form-control" name="body" id="body" data-height="150"><: $item.body :></textarea>
+						<p class="help-block"><: loc($p.err_body) :></p>
+					</div>
+				</div>
+		
+				<!-- Item's params -->
+				<hr class="panel-wide">
+				: for $item.params -> $param {
+					<div class="form-group form-params-ctrl">
+						<label class="control-label col-sm-2 param-key"><: loc('Название') :></label>
+						<div class="col-sm-2 param-key">
+							<input value="<: $param.name :>" class="form-control" name="param[<: $~param.index :>]{name}">
+						</div>
+						<label class="control-label col-sm-2"><: loc('Значение') :></label>
+						<div class="col-sm-2">
+							: if $param.param_values && $param.param_values.size() {
+							<input value="<: $param.param_values.first().value :>" class="form-control col-sm-2"
+									name="param[<: $~param.index :>]{items}[0]{val}">
+							: } else {
+							<input value="" class="form-control col-sm-2"
+									name="param[<: $~param.index :>]{items}[0]{val}">
+							: }
+						</div>
+						<div class="col-sm-1">
+							: if $param.param_values && $param.param_values.size() {
+							<input value="<: $param.param_values.first().price :>"
+									name="param[<: $~param.index :>]{items}[0]{price}" class="form-control col-sm-2">
+							: } else {
+							<input value=""
+									name="param[<: $~param.index :>]{items}[0]{price}" class="form-control col-sm-2">
+							: }
+						</div>
+						<div class="col-sm-1">
+							<a href="#item-params" class="btn btn-danger" onclick="remove_item_params_controls(this)">
+								<span class="fa fa-trash-o"></span>
+							</a>
+						</div>
+					</div>
+					: for $param.param_values -> $more {
+						: next if $~more.count == 1
+						<div class="form-group form-params-more-values">
+							<div class="col-sm-offset-6 col-sm-2">
+								<input name="param[<: $~param.index :>]{items}[<: $~more.index :>]{val}"
+										value="<: $more.value :>" class="form-control">
+							</div>
+							<div class="col-sm-1">
+								<input name="param[<: $~param.index :>]{items}[<: $~more.index :>]{price}"
+										value="<: $more.price :>" class="form-control">
+							</div>
+							<div class="col-sm-1">
+								<a href="#item-params" class="btn btn-danger" onclick="remove_more_params_value(this)">
+									<span class="fa fa-trash-o"></span>
+								</a>
+							</div>
+						</div>
+					: }
+		
+					<div class="form-group form-params-more-values-adder" id="<: $~param.index :>"
+						data-values="<: $param.param_values ? $param.param_values.size() : 0 :>"
+					>
+						<div class="col-sm-offset-6 col-sm-6">
+							<a href="#item-params" onclick="add_new_params_value(this)">
+								<span class="fa fa-plus-square"></span> <: loc('Добавить еще значений') :>
+							</a>
+						</div>
+					</div>
+				: }
+		
+				<div class="form-group form-params-ctrl" id="item-params-controls-origin" style="display:none">
+					<label class="control-label col-sm-2 param-key"><: loc('Название') :></label>
+					<div class="col-sm-2 param-key">
+						<input class="form-control" name="param.key" disabled>
+					</div>
+					<label class="control-label col-sm-2"><: loc('Значение') :></label>
+					<div class="col-sm-2">
+						<input name="param.val" class="form-control col-sm-2" disabled>
+					</div>
+					<div class="col-sm-1">
+						<input name="param.price" value="0.00" class="form-control" disabled>
+					</div>
+					<div class="col-sm-1">
+						<a href="#item-params" class="btn btn-danger" onclick="remove_item_params_controls(this)">
+							<span class="fa fa-trash-o"></span>
+						</a>
+					</div>
+				</div>
+		
+				<div class="form-group form-params-more-values" id="item-params-controls-origin-more-value" style="display:none">
+					<div class="col-sm-offset-6 col-sm-2">
+						<input name="param.val" class="form-control" disabled>
+					</div>
+					<div class="col-sm-1">
+						<input name="param.price" value="0.00" class="form-control" disabled>
+					</div>
+					<div class="col-sm-1">
+						<a href="#item-params"  class="btn btn-danger" onclick="remove_more_params_value(this)">
+							<span class="fa fa-trash-o"></span>
+						</a>
+					</div>
+				</div>
+		
+				<div class="form-group form-params-more-values-adder" id="item-params-controls-origin-value-adder"
+					style="display:none" data-values="0">
+					<div class="col-sm-offset-2 col-sm-10">
+						<a href="#item-params" onclick="add_new_params_value(this)">
+							<span class="fa fa-plus-square"></span> <: loc('Добавить еще значений') :>
+						</a>
+					</div>
+				</div>
+		
+				<div class="form-group add-item-params-href">
+					<div class="col-sm-offset-2 col-sm-10"><a href="#item-params" onclick="add_item_params_inputs()">
+						<span class="fa fa-plus-square-o"></span> <: loc('Добавить дополнительные параметры товара') :></a>
+					</div>
+				</div>
+				<!-- / Item's params -->
+		
+				: if $settings.compatibility {
+				<!-- / Item's info -->
+				<hr class="panel-wide">
+				: for $item.info -> $info {
+				<div class="form-group">
+					<label class="control-label col-sm-2"><: loc('Название') :></label>
+					<div class="col-sm-2">
+						<input class="form-control" value="<: $info.name :>" name="info_key">
+					</div>
+					<label class="control-label col-sm-2"><: loc('Значение') :></label>
+					<div class="col-sm-2">
+						<input class="form-control" value="<: $info.value :>" name="info_val">
+					</div>
+					<div class="col-sm-2">
+						<a href="#item-info" class="btn btn-danger" onclick="remove_item_info_form_input(this)">
+							<span class="fa fa-trash-o"></span>
+						</a>
+					</div>
+				</div>
+				: }
+		
+				<!-- Item's info -->
+				<div class="form-group" id="item-info-controls-origin" style="display:none">
+					<label class="control-label col-sm-2"><: loc('Название') :></label>
+					<div class="col-sm-2">
+						<input class="form-control" name="info_key" disabled>
+					</div>
+					<label class="control-label col-sm-2"><: loc('Значение') :></label>
+					<div class="col-sm-2">
+						<input class="form-control" name="info_val" disabled>
+					</div>
+					<div class="col-sm-2">
+						<a href="#item-info" class="btn btn-danger" onclick="remove_item_info_form_input(this)">
+							<span class="fa fa-trash-o"></span>
+						</a>
+					</div>
+				</div>
+		
+				<div class="form-group add-item-info-href">
+					<div class="col-sm-offset-2 col-sm-10">
+						<a name="item-info"></a>
+						<a href="#item-info" onclick="add_item_info_inputs()">
+							<span class="fa fa-plus-square-o"></span> <: loc('Добавить характеристики товара') :>
+						</a>
+					</div>
+				</div>
+				<!-- / Item's info -->
+				: }
+		
+				<hr class="panel-wide">
+		
+				<div class="form-group">
+					<label for="items_select" class="control-label col-sm-2"><: loc('Похожие товары') :></label>
+					<div class="col-sm-10">
+						<select class="form-control" name="items_more" multiple="multiple" id="items_select">
+						: for $items -> $i {
+						: 	next if $i.item_id == $item.item_id;
+							<option value="<: $i.item_id :>"><: $i.title :></option>
+						: }
+						</select>
+					</div>
+				</div>
+		
+			: }
+			
+			<div class="col-sm-offset-2 text-right">
+			: include admin::submit
+			</div>
+		
+		</form>
+	</div>
+</div>
+
+<script>
+	init.push(function () {
+		$('body').addClass('mmc');
+		$('#cover').pixelFileInput({ 
+			placeholder: '<: loc("Файл не выбран") :>',
+			choose_btn_tmpl: '<a href="#" class="btn btn-xs btn-primary"><: loc("Выбрать") :></a>',
+			clear_btn_tmpl: '<a href="#" class="btn btn-xs"><i class="fa fa-times"></i> <: loc("Очистить") :></a>'
+		});
+
+		$('#categories_select').select2({
+			formatNoMatches: function() { return "<: loc('Ничего не найдено') :>" } 
+		});
+		$('#categories_select').select2(
+			'data', [
+			: for $item.categories -> $i {
+				{ "id": "<: $i.category_id :>", "text": "<: $i.title :>" },
+			: }
+			]
+		)
+
+		$('#items_select').select2({ 
+			placeholder: "<: loc('Выберите товары') :>",
+			formatNoMatches: function() { return "<: loc('Ничего не найдено') :>" } 
+		});
+		$('#items_select').select2(
+			'data', [
+			: for $item.related -> $im {
+				{ "id": "<: $im.item_id :>", "text": "<: $im.title :>" },
+			: }
+			]
+		);
+		
+		load_item_photo();
+		var name_id_map = {};
+
+		var dz = new Dropzone('div#dropzonejs', {
+			url: "/admin/api/store/products/categories/items/<: $item.item_id :>/photo.json",
+			paramName: "file", // The name that will be used to transfer the file
+			acceptedFiles: "image/*",
+
+			: include admin::tools::dropzonejs
+		});
+
+		dz.on('success', function(file, response) {
+			load_item_photo();
+			if (response && response.id) {
+				name_id_map[ file.name ] = response.id;
+			}
+		});
+		dz.on('removedfile', function(file) {
+			delete_photo(name_id_map[ file.name ]);
+		});
+	});
+	
+	function add_item_info_inputs() {
+		var origin = $('#item-info-controls-origin');
+		var c = origin.clone();
+		c.find('input[name="info_key"]').attr('disabled', false);
+		c.find('input[name="info_val"]').attr('disabled', false);
+		c.attr('id', undefined);
+		$('.add-item-info-href').before(c);
+		c.show();
+	}
+
+	function remove_item_info_form_input(href) {
+		var input_div = $(href).closest('.form-group');
+		input_div.remove();
+	}
+
+	function load_item_photo() {
+		id = '<: $item.item_id :>';
+		if (id) {
+			$.ajax({
+				type: 'get',
+				url: '/admin/api/store/products/categories/items/' + id + '/photo.html',
+				success: function(response) {
+					$('#item-photo').html(response);
+				},
+				error: function() {
+					alert('<: loc("Ошибка") :>');
+				}
+			})
+		}
+	}
+
+	function update_photo_title(id) {
+		var title = $('#title_photo_id_' + id).val();
+		var cmt_text = $('div[id="div-photo-' + id + '"]').find('.comment-text');
+		cmt_text.addClass('warning');
+
+		$.ajax({
+			type: 'put',
+			url: '/admin/api/store/products/categories/items/<: $item.item_id :>/photo/' + id + '.json',
+			data: {
+				"title": title
+			},
+			success: function(response) {
+				cmt_text.removeClass('warning');
+				if (response.result == 'ok') {
+					cmt_text.addClass('has-success');
+					setTimeout(function() {
+						cmt_text.removeClass('has-success');
+					}, 2000);
+				}
+				else {
+					cmt_text.addClass('has-error');
+					setTimeout(function() {
+						cmt_text.removeClass('has-error');
+					}, 2000);
+				}
+			},
+			error: function() {
+				cmt_text.addClass('has-error');
+			}
+		});
+	}
+
+	function delete_photo_confirm(id) {
+		bootbox.confirm({
+			message: '<: loc("Вы подтверждаете удаление?") :>',
+			buttons: {
+				confirm: {
+					label: '<: loc("Удалить") :>',
+					className: 'btn-danger'
+				},
+				cancel: {
+					label: '<: loc("Не сейчас") :>',
+					className: 'pull-left btn-outline'
+				}
+			},
+			callback: function(result) {
+				if (result == true) {
+					delete_photo(id);
+				}
+			},
+			className: "bootbox-sm"
+		});
+	}
+
+	function delete_photo(id) {
+		$.ajax({
+			type: 'delete',
+			url: '/admin/api/store/products/categories/items/<: $item.item_id :>/photo/' + id + '.json',
+			success: function(response) {
+				if (response.result == 'ok') {
+					load_item_photo();
+				}
+			},
+			error: function() {
+				alert('<: loc("Ошибка") :>');
+			}
+		})
+	}
+
+	function show_photo(id) {
+		$.ajax({
+			type: 'post',
+			url: '/admin/api/store/products/categories/items/<: $item.item_id :>/photo/' + id + '/show.json',
+			success: function(response) {
+				if (response.result == 'ok') {
+					$('.href-hide-photo-' + id).show();
+					$('.href-show-photo-' + id).hide();
+				}
+			},
+			error: function() {
+
+			}
+		})
+	}
+
+	function hide_photo(id) {
+		$.ajax({
+			type: 'post',
+			url: '/admin/api/store/products/categories/items/<: $item.item_id :>/photo/' + id + '/hide.json',
+			success: function(response) {
+				if (response.result == 'ok') {
+					$('.href-hide-photo-' + id).hide();
+					$('.href-show-photo-' + id).show();
+				}
+			},
+			error: function() {
+
+			}
+		})
+	}
+
+	function add_item_params_inputs(href) {
+		var controls_clone = $('#item-params-controls-origin').clone();
+		var more_values_clone = $('#item-params-controls-origin-value-adder').clone();
+		var num = $('.form-params-ctrl').length - 1;
+
+		var k_input = controls_clone.find('input[name="param.key"]');
+		var v_input = controls_clone.find('input[name="param.val"]');
+		var p_input = controls_clone.find('input[name="param.price"]');
+		k_input.attr('name', 'param[' + num + ']{name}').attr('disabled', false);
+		v_input.attr('name', 'param[' + num + ']{items}[0]{val}').attr('disabled', false);
+		p_input.attr('name', 'param[' + num + ']{items}[0]{price}').attr('disabled', false);
+
+
+		controls_clone.attr('id', undefined);
+		more_values_clone.attr('id', num);
+		more_values_clone.attr('data-values', 1);
+
+		$('.add-item-params-href').before(controls_clone.show());
+		$('.add-item-params-href').before(more_values_clone.show());
+	}
+
+	function add_new_params_value(href) {
+		var add_more_value_div = $('#item-params-controls-origin-more-value').clone();
+		add_more_value_div.removeAttr('id');
+
+		var div = $(href).closest('.form-group');
+		var cnt = parseInt(div.attr("data-values")) || 0;
+		var v_name = 'param[' + div.attr('id') + ']{items}[' + cnt + ']{val}';
+		var p_name = 'param[' + div.attr('id') + ']{items}[' + cnt + ']{price}';
+		add_more_value_div.find('input[name="param.val"]').attr('name', v_name).attr('disabled', false);
+		add_more_value_div.find('input[name="param.price"]').attr('name', p_name).attr('disabled', false);
+		div.attr("data-values", cnt + 1);
+
+		$(href).closest('.form-params-more-values-adder').before(add_more_value_div.show());
+	}
+
+	function remove_more_params_value(href) {
+		$(href).closest('.form-params-more-values').remove();
+	}
+
+	function remove_item_params_controls(href) {
+		var controls_div = $(href).closest('.form-params-ctrl');
+		while(true) {
+			var more_params_div = controls_div.next('.form-params-more-values');
+			if (more_params_div.length == 0) { break; }
+			more_params_div.remove();
+		}
+
+		var more_params_adder_div = controls_div.next('.form-params-more-values-adder');
+
+		controls_div.remove();
+		more_params_adder_div.remove();
+	}
+
+	function remove_item_param_form_input(href) {
+		$(href).closest('.form-group').remove();
+	}
+
+	function add_new_value_to_item_params(href) {
+		var input_div = $(href).closest('.form-group');
+		$(href).before(
+			$('<div></div>')
+			.append(
+				$('<input>').addClass('form-control').attr('name', 'param_addition_value')
+			)
+			.append(
+				$('<a></a>').attr('href', '#item-params').text('<: loc("Удалить") :>')
+			)
+		);
+	}
+</script>
+: }

@@ -1,0 +1,12 @@
+<button type="submit" class="btn btn-lg btn-info btn-labeled" name="action" value="apply">
+	<span class="btn-label icon fa fa-save"></span>
+	<: loc('Применить') :>
+</button>
+
+<!-- Margin -->
+<div class="visible-xs clearfix form-group-margin"></div>
+
+<button type="submit" class="btn btn-lg btn-success btn-labeled" name="action" value="done">
+	<span class="btn-label icon fa fa-sign-in"></span>
+	<: loc('Сохранить') :>
+</button>

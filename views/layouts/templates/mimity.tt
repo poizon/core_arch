@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title><: $title // $vars.site.domain :></title>
+	<link href="//cdn.jsdelivr.net/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+	<link href="//cdn.jsdelivr.net/fontawesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+	<link href="/templates/mimity/css/style.css" rel="stylesheet">
+	: if $noindex || $vars.site.noindex { 
+	<meta name="robots" content="noindex,nofollow">
+	: }
+	: if $vars.site.favicon {
+	<link rel="shortcut icon" href="<: $vars.site.favicon :>"/>
+	: }
+	: if $vars.site.css {
+	<style type='text/css'>
+		<: $vars.site.css | raw :>
+	</style>	
+	: }
+	: if $meta_desc || $vars.site.meta_description {
+	<meta name="description" content="<: $meta_desc || $vars.site.meta_description :>">
+	: }
+	: if $meta_keywords || $vars.site.meta_keywords {
+	<meta name="keywords" content="<: $meta_keywords || $vars.site.meta_keywords :>">
+	: }
+	: if $vars.site.meta_header {
+	<: $vars.site.meta_header | raw :>	
+	: }
+</head>
+<body>
+	<header>
+		<div class="container">
+			<div class="row">
+
+				<!-- Logo -->
+				<div class="col-lg-4 col-md-3 hidden-sm hidden-xs">
+					<div class="well logo">
+						<a href="/"><: $vars.site.title :></a>
+						<div><: $vars.site.subtitle :></div>
+					</div>
+				</div>
+				<!-- End Logo -->
+			</div>
+		</div>
+	</header>
+
+	<!-- Navigation -->
+	<nav class="navbar navbar-inverse" role="navigation">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<!-- text logo on mobile view -->
+				<a class="navbar-brand visible-xs" href="/"><: $vars.site.title :></a>
+			</div>
+			<div class="collapse navbar-collapse navbar-ex1-collapse">
+				<ul class="nav navbar-nav">
+				: for $menu -> $item {
+					: if $item.submenu.0 {
+					<li class="nav-dropdown">
+						<a href="<: $item.url :>" class="dropdown-toggle" data-toggle="dropdown">
+							<: $item.title :> <span class="caret"></span>
+						</a>
+						<ul class="dropdown-menu">
+						: for $item.submenu -> $subitem {
+							<li><a href="<: $subitem.url :>"><: $subitem.title :></a></li>
+						: }
+						</ul>
+					</li>
+					: } else {
+					<li><a href="<: $item.url :>"><: $item.title :></a></li>
+					: }
+				: }
+				</ul>
+			</div>
+		</div>
+	</nav>
+	<!-- End Navigation -->
+
+	<div class="container main-container">
+		<: $content | raw :>
+	</div>
+
+	<footer>
+		<div class="navbar-inverse text-center copyright">
+			Copyright &copy; 2015 Mimity All right reserved
+		</div>
+	</footer>
+
+	<script src="//cdn.jsdelivr.net/jquery/1.11.2/jquery.min.js"></script>
+	<script src="//cdn.jsdelivr.net/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+	<script src="//cdn.jsdelivr.net/bxslider/4.1.2/jquery.bxslider.min.js"></script>
+	<script src="/templates/mimity/js/mimity.js"></script>
+	
+	: include ads::stat
+</body>
+</html>

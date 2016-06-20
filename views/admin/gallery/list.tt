@@ -1,0 +1,50 @@
+: if $photos.0 {
+<div class="panel widget-comments">
+	<div class="panel-body sortable">
+	: my $size = 150;
+	: my $route = $production ? '/resize/' ~ $size ~ '/-/gallery' : '/resize/gallery?width=' ~ $size ~ '&file=';
+	: for $photos -> $p {
+		<div class="comment" id="div-photo-<: $p.photo_id :>" data-id="<: $p.photo_id :>">
+			<img src="<: $route :>/<: $vars.site.dir :>/<: $p.album_id || 0 :>/<: $p.filename :>"
+				class="comment-avatar img-thumbnail handle" alt="<: $p.title :>">
+			<div class="comment-body">
+				<div class="comment-text">
+					<textarea id="title_photo_id_<: $p.photo_id :>" 
+						class="form-control" rows="3" name="title"><: $p.title :></textarea>
+				</div>
+				<div class="comment-actions">
+					<input onclick="update_photo_title('<: $p.photo_id :>')" type="button"
+					class="btn btn-xs btn-primary" value="<: loc('Сохранить') :>">
+
+					<span class="pull-right hidden-sm">
+						<a style="cursor:pointer;<: 'display:none' if $p.hidden :>"
+							class="href-hide-photo-<: $p.photo_id :>" onclick="hide_photo(<: $p.photo_id :>)">
+							<i class="fa fa-eye-slash"></i>
+							<: loc('Скрыть') :>
+						</a>
+
+						<a style="cursor:pointer;<: 'display:none' if !$p.hidden :>"
+							class="href-show-photo-<: $p.photo_id :>" onclick="show_photo(<: $p.photo_id :>)">
+							<i class="fa fa-eye"></i>
+							<: loc('Показать') :>
+						</a>
+
+						: if $album.album_id {
+							<a style="cursor:pointer" onclick="set_album_cover(<: $p.photo_id :>)">
+								<i class="fa fa-picture-o <: 'text-info' if $album.cover_id == $p.photo_id :>"></i>
+								<: loc('Обложка') :>
+							</a>
+						: }
+						<a style="cursor:pointer" onclick="delete_photo(<: $p.photo_id :>)">
+							<i class="fa fa-times"></i>
+							<: loc('Удалить') :>
+						</a>
+					</span>
+				</div>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+	: }
+	</div>
+</div>
+: }

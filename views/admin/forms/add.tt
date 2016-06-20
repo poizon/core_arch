@@ -1,0 +1,196 @@
+<style type="text/css">
+.option-ctrl{margin-top:4px}
+.option-input{float:left;width:30%;margin-right:13px}
+</style>
+
+<div class="page-header">
+	<h1>
+		<i class="fa page-header-icon fa-tasks"></i>
+		<span class="text-light-gray"><a href="/admin/forms/"><: loc('Формы') :></a> / </span>
+		<: $title :>
+	</h1>
+</div>
+
+<div class="panel">
+	: if $error.common {
+		<div class="panel-body no-padding-b">
+			<div class="alert">
+				<: $error.common :>
+			</div>
+		</div>
+	: } else {
+	<form class="form-horizontal" method="post" action="">
+		<div class="panel-body">
+			<div class="form-group <: 'has-error' if $error.err_name :>" id="add-name-group">
+				<label class="col-sm-2 control-label" for="name"><: loc('Название') :></label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" value="<: $data.name :>" name="name" 
+					placeholder="<: loc('Новая форма') :>" id="name" required>
+					: if $error.err_name {
+					<p class="help-block"><: loc($error.err_name) :></p>
+					: }
+				</div>
+			</div>
+			<div class="form-group <: 'has-error' if $error.err_descr :>" id="add-descr-group">
+				<label class="col-sm-2 control-label" for="descr"><: loc('Описание') :></label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" value="<: $data.descr :>" name="descr" id="descr">
+					: if $error.err_descr {
+					<p class="help-block"><: loc($error.err_descr) :></p>
+					: }
+				</div>
+			</div>
+			<div class="form-group <: 'has-error' if $error.err_reply_email :>" id="add-reply_email-group">
+				<label class="col-sm-2 control-label" for="reply_email"><: loc('E-mail') :></label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" value="<: $data.reply_email || $vars.site.email :>" 
+						name="reply_email" id="reply_email" required>
+					: if $error.err_reply_email {
+					<p class="help-block"><: loc($error.err_reply_email) :></p>
+					: }
+				</div>
+			</div>
+			<div class="form-group <: 'has-error' if $error.err_finish_message :>" id="add-finish_message-group">
+				<label class="col-sm-2 control-label" for="finish_message"><: loc('Подтверждение') :></label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" value="<: $data.finish_message :>" id="finish_message"
+						name="finish_message" placeholder="<: loc('Сообщение успешно отправлено') :>">
+					: if $error.err_finish_message {
+					<p class="help-block"><: loc($error.err_finish_message) :></p>
+					: }
+				</div>
+			</div>
+			
+			: if not $production {
+			<div class="form-group <: 'has-error' if $error.err_nocaptcha :>" id="add-nocaptcha-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" name="nocaptcha" id="nocaptcha" value="1" class="px"
+								<: 'checked' if $data.nocaptcha :>> 
+							<span class="lbl"><: loc("Отключить защиту от спама") :></span>
+						</label>
+					</div>
+					: if $error.nocaptcha {
+					<p class="help-block"><: loc($error.nocaptcha) :></p>
+					: }
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<div class="col-sm-10 col-sm-offset-2">
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" class="px" name="noindex" value="1" id="noindex"
+								<: 'checked' if $data.noindex :>>
+								<span class="lbl"><: loc("Запретить поисковым системам индексировать эту страницу") :></span>
+						</label>
+					</div>	
+				</div>
+			</div>
+			: }
+			
+			<hr class="panel-wide">
+
+			<div class="js-questions">
+			: for $data.questions.values() -> $q {
+			: 	include admin::forms::questions { q => $q, error => $error };
+			: }
+			</div>
+			<div class="form-group" id="add-question-group">
+				<div class="col-sm-10 col-sm-offset-2">
+					<button class="btn btn-primary btn-labeled js-question-add">
+						<span class="btn-label icon fa fa-plus"></span>
+						<: loc('Добавить элемент') :>
+					</button>
+				</div>
+			</div>
+		</div>
+		<div class="panel-footer text-right">
+			: include admin::submit
+		</div>
+	</form>
+	:}
+</div>
+
+<div style="display:none" class="js-template-questions"><: include admin::forms::questions :></div>
+<div style="display:none" class="js-template-options"><: include admin::forms::options :></div>
+
+<script type="text/javascript">
+	var tpl_q = $('.js-template-questions').html(),
+		tpl_o = $('.js-template-options').html(),
+		$questions = $(".js-questions"),
+		re = new RegExp("questions\\.\\.", "g"),
+		re_opt = new RegExp("options\\.\\.", "g"),
+		priority = $questions.children().length;
+	$(".js-question-add").on('click', function() {
+		$questions.append(tpl_q.replace(re, "questions." + (++priority) + "."))
+		return false;
+	});
+	$questions.on('click', ".js-question-delete", function() {
+		var $this = $(this);
+		$this.parents('.js-question').remove();
+		return false;
+	});
+	$questions.on('click', ".js-question-required", function() {
+		var $this  = $(this),
+			$input = $this.parents('.js-question').find('input.js-required');
+
+		if ($input.val() == 1) {
+			$input.val(0);
+			//$this.addClass('btn-outline');
+			$this.children().removeClass('fa-bookmark').addClass('fa-bookmark-o');
+		}
+		else {
+			$input.val(1);
+			//$this.removeClass('btn-outline');
+			$this.children().removeClass('fa-bookmark-o').addClass('fa-bookmark');
+		}
+		return false;
+	});
+
+	$questions.on('change', '.js-type-change', function() {
+		var $this = $(this);
+		$('option:selected', $this).each(function() {
+			var type     = $(this).prop('value'),
+				$options = $('.js-options', $this.parents('.js-question'));
+
+			if (type == 'select' || type == 'checkbox' || type == 'radio') {
+				if ($options.children().length == 0) {
+					var name = $this.prop('name'),
+						re_priority = new RegExp("questions\\.(\\d+)\\."),
+						result = name.match(re_priority),
+						prefix = "questions." + (result ? result[1] : 1) + ".";
+					$options.append(tpl_o.replace(re, prefix).replace(re_opt, "options.1."));
+				}
+				$options.show();
+			}
+			else {
+				$options.children().remove();
+			}
+		});
+		return false;
+	});
+
+	$questions.on('click', '.js-option-delete', function() {
+		var $this = $(this),
+		    $options = $this.parents('.js-options');
+		if ($options.children().length > 1) {
+			$this.parents('.js-option').remove();
+		}
+		return false;
+	});
+
+	$questions.on('click', '.js-option-add', function() {
+		var $option	= $(this).parents('.js-option'),
+			re_opt_priority = new RegExp("options\\.(\\d+)\\.option$");
+		$option.clone().insertAfter($option).find('input').prop('value', '');
+		$option.parent().children().each(function( index ) {
+			var $input = $(this).find('input'),
+				new_infix = "options." + (index + 1) + ".option";
+			$input.prop('name', $input.prop('name').replace(re_opt_priority, new_infix));
+		});
+		return false;
+	});
+
+</script>

@@ -1,0 +1,79 @@
+/* begin Page */
+
+img
+{
+  filter: expression(artFixPNG(this));
+}/* end Page */
+
+/* begin Box, Sheet */
+
+.art-sheet-body
+{
+  zoom: 1;
+}
+/* end Box, Sheet */
+
+/* begin Layout */
+.art-content-layout, .art-content-layout-row {display: block;}
+.art-content-layout, .art-content-layout-row {zoom: 1;}
+/* end Layout */
+
+/* begin Box, Block */
+
+.art-block-body
+{
+  zoom: 1;
+}
+/* end Box, Block */
+
+/* begin BlockHeader */
+.art-blockheader .r
+{
+  clip: rect(auto auto auto 1904px);
+}
+/* end BlockHeader */
+
+/* begin Box, BlockContent */
+
+.art-blockcontent-body
+{
+  zoom: 1;
+}
+/* end Box, BlockContent */
+
+/* begin Button */
+.art-button-wrapper .art-button-r
+{
+  clip: rect(auto auto auto 402px);
+}
+/* end Button */
+
+/* begin Box, Post */
+
+.art-post-body
+{
+  zoom: 1;
+}
+/* end Box, Post */
+
+/* begin PostContent */
+.art-postcontent
+{
+  height: 1%;
+}
+/* end PostContent */
+
+/* begin LayoutCell, content */
+.art-sidebar2 {width: auto;}
+.art-content-layout .art-layout-cell, .art-content-layout .art-layout-cell .art-content-layout .art-layout-cell
+{
+  display: block;
+  position:relative;
+  float: left;
+  clear: right;
+}
+.art-content-layout .art-layout-cell, .art-content-layout .art-layout-cell .art-content-layout .art-layout-cell {  zoom:1; }
+.art-layout-cell .art-layout-cell{ float: none; clear: both;}
+/* end LayoutCell, content */
+
+

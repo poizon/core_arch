@@ -1,0 +1,161 @@
+<div class="page-header">
+	<div class="row">
+		<h1 class="col-xs-12 col-sm-4 text-left-sm">
+			<i class="fa fa-calendar page-header-icon"></i> <: loc('Events') :>
+		</h1>
+		<div class="col-xs-12 col-sm-8">
+			<div class="row">
+				<hr class="visible-xs no-grid-gutter-h">
+				<div class="pull-right col-xs-12 col-sm-auto">
+					<a href="/admin/events/add" class="btn btn-primary btn-labeled" style="width:100%">
+						<span class="btn-label icon fa fa-plus"></span> <: loc('New Event') :>
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div> <!-- / .page-header -->
+
+<div class="panel" id="events">
+	<div class="panel-body">
+		: if $events.size() {
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<td class="col-md-2 col-sm-3 col-xs-2"><: loc('Date') :></td>
+					<td class="col-md-8 col-sm-6 col-xs-6"><: loc('Title') :></td>
+					<td class="col-md-2 col-sm-3 col-xs-4"></td>
+				</tr>
+			</thead>
+			<tbody>
+			: for $events -> $n {
+				<tr id="tr_event_id_<: $n.event_id :>">
+					<td class="col-md-2 col-sm-3 col-xs-2">
+						<: $n.date_start | format_date($date.formatter) :> — <: $n.date_end | format_date($date.formatter) :>
+					</td>
+					<td class="col-md-8 col-sm-6 col-xs-6">
+						<a href="/admin/events/<: $n.event_id :>">
+							<: $n.title :></a>
+					</td>
+					<td class="col-md-2 col-sm-3 col-xs-4 text-right">
+
+						<a class="btn btn-sm btn-primary" title="<: loc('Edit') :>"
+							href="/admin/events/<: $n.event_id :>/edit">
+							<span class="fa fa-edit"></span>
+						</a>
+						<a class="btn btn-sm btn-warning"
+							title="<: loc('Hide') :>"
+							id="button_hide_event_id_<: $n.event_id :>"
+							onclick="return hide_event('<: $n.event_id :>')"
+							<: raw('style="display:none"') if $n.hidden :>>
+							<span class="fa fa-eye-slash"></span>
+						</a>
+						<a class="btn btn-sm btn-warning"
+							title="<: loc('Show') :>"
+							id="button_show_event_id_<: $n.event_id :>"
+							onclick="return show_event('<: $n.event_id :>')"
+							<: raw('style="display:none"') if !$n.hidden :>>
+							<span class="fa fa-eye"></span>
+						</a>
+						<a class="btn btn-sm btn-danger" title="<: loc('Delete') :>"
+							onclick="return delete_event('<: $n.event_id :>')">
+							<span class="fa fa-times"></span>
+						</a>
+					</td>
+				</tr>
+			: }
+			</tbody>
+		</table>
+		: } else {
+			: include admin::empty
+		: }
+	</div>
+</div> <!-- / .panel -->
+
+<script type="text/javascript">
+	init.push(function () {
+		$('#events a').tooltip();
+	});
+
+	function delete_event(id) {
+		var tr = $('#tr_event_id_' + id);
+		tr.addClass('danger');
+
+		bootbox.confirm({
+			message: '<: loc("Do you really want to delete it?") :>',
+			buttons: {
+				confirm: {
+					label: '<: loc("Delete") :>',
+					className: 'btn-danger'
+				},
+				cancel: {
+					label: '<: loc("Not Now") :>',
+					className: 'pull-left btn-outline'
+				}
+			},
+			callback: function(result){
+				if (result) {
+					$.ajax({
+						type: 'delete',
+						url: '/admin/api/events/' + id + '.json',
+						success: function(response) {
+							if (response.result == 'ok') {
+								tr.remove();
+							}
+						},
+						error: function() {
+							bootbox.alert('<: loc("Server Error") :>');
+						}
+					});
+				}
+				tr.removeClass('danger');
+			}
+		});
+
+		return false; // prevent fallback execution
+	}
+
+	function show_event(id) {
+		var tr = $('#tr_event_id_' + id);
+		tr.addClass('warning');
+
+		$.ajax({
+			type: 'post',
+			url: '/admin/api/events/' + id + '/show.json',
+			success: function(response) {
+				tr.removeClass('warning');
+				if (response.result == 'ok') {
+					$('#button_hide_event_id_' + id).show();
+					$('#button_show_event_id_' + id).hide();
+				}
+			},
+			error: function() {
+				bootbox.alert('<: loc("Server Error") :>');
+				tr.removeClass('warning');
+			}
+		});
+		return false;
+	}
+
+	function hide_event(id) {
+		var tr = $('#tr_event_id_' + id);
+		tr.addClass('warning');
+
+		$.ajax({
+			type: 'post',
+			url: '/admin/api/events/' + id + '/hide.json',
+			success: function(response) {
+				tr.removeClass('warning');
+				if (response.result == 'ok') {
+					$('#button_hide_event_id_' + id).hide();
+					$('#button_show_event_id_' + id).show();
+				}
+			},
+			error: function() {
+				bootbox.alert('<: loc("Server Error") :>');
+				tr.removeClass('warning');
+			}
+		});
+		return false;
+	}
+</script>

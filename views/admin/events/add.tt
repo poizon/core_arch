@@ -1,0 +1,94 @@
+: include admin::tools::wysiwyg { id => "textarea-desc-full" }
+
+<div class="page-header">
+	<h1>
+		<i class="fa page-header-icon fa-calendar"></i>
+		<span class="text-light-gray"><a href="/admin/events"> <: loc('Events') :></a> / </span>
+		<: $title :>
+	</h1>
+</div> <!-- / .page-header -->
+
+<div class="panel">
+	<form class="form-horizontal" method="post">
+	<div class="panel-body">
+
+		<div class="form-group" id="add-title-group">
+			<label class="col-sm-2 control-label" for="input-title">
+				<: loc('Title') :>
+			</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" value="<: $event.title :>"
+					name="title" id="input-title" required>
+				: if defined($event.err_title) {
+				<span class="text-danger"><: $event.err_title :></span>
+				: }
+			</div>
+		</div>
+
+		<div class="form-group" id="add-date-group">
+			<label class="col-sm-2 control-label" for="date_start">
+				<: loc('Date') :></label>
+			<div class="col-sm-10">
+				<div class="input-daterange input-group" id="date">
+					<input type="text" class="input-sm form-control" name="date_start"
+						id="date_start"
+						value="<: $event.date_start | format_date($date.formatter) :>"
+						placeholder="<: loc('Start date') :>" required>
+					: if defined($event.err_date_start) {
+						<span class="text-danger"><: $event.err_date_start :></span>
+					: }
+					<span class="input-group-addon"><: loc('to') :></span>
+					<input type="text" class="input-sm form-control" name="date_end"
+						value="<: $event.date_end | format_date($date.formatter) :>"
+						placeholder="<: loc('End date') :>" required>
+					: if defined($event.err_date_end) {
+					<span class="text-danger"><: $event.err_date_end :></span>
+					: }
+				</div>
+			</div>
+		</div>
+
+		<div class="form-group" id="add-location-group">
+			<label class="col-sm-2 control-label" for="input-location">
+				<: loc('Location') :></label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" name="location"
+					value="<: $event.location :>" id="input-location">
+				: if defined($event.err_location) {
+				<span class="text-danger"><: $event.err_location :></span>
+				: }
+			</div>
+		</div>
+
+		<div class="form-group" id="add-desc-short-group">
+			<label class="col-sm-2 control-label" for="textarea-desc-short">
+				<: loc('Overview') :></label>
+			<div class="col-sm-10">
+				<textarea class="form-control" rows="3" name="desc_short"
+					id="textarea-desc-short" required><: $event.desc_short :></textarea>
+				: if defined($event.err_desc_short) {
+					<span class="text-danger"><: $event.err_desc_short :></span>
+				: }
+			</div>
+		</div>
+
+		<div class="form-group" id="add-desc-full-group">
+			<label class="col-sm-2 control-label" for="textarea-desc-full">
+				<: loc('Description') :></label>
+			<div class="col-sm-10">
+				<textarea class="form-control" rows="10" name="desc_full"
+					id="textarea-desc-full"><: $event.desc_full :></textarea>
+				: if defined($event.err_desc_full) {
+					<span class="text-danger"><: $event.err_desc_full :></span>
+				: }
+			</div>
+		</div>
+
+	</div>
+	<div class="panel-footer text-right">
+		<button type="submit" class="btn btn-primary"><: loc("Сохранить") :></button>
+	</div>
+	</form>
+</div>
+
+: include admin::tools::datepicker { id => "date" }

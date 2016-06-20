@@ -1,0 +1,112 @@
+: cascade admin::store::navigation
+
+: around header -> {
+	<: loc('Промокоды') :>
+	: if $vars.site.premium && $vars.site.package == 'Business' {
+	<a href="/admin/store/coupons/add" class="btn btn-sm btn-primary btn-labeled btn-outline pull-right">
+		<span class="btn-label fa fa-plus"></span>
+		<: loc('Добавить') :>
+	</a>
+	: }
+: }
+
+: around body -> {
+
+: if $vars.site.premium && $vars.site.package == 'Business' {
+	: if $coupons.size() {
+		<table class="table">
+		<thead>
+			<tr>
+				<th><: loc('Название') :></th>
+				<th><: loc('Код') :></th>
+				<th><: loc('Скидка') :></th>
+				<th class="hidden-xs"><: loc('Действителен') :></th>
+				<th><: loc('Ограничение') :></th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+		: for $coupons -> $coupon {
+			<tr id="tr-coupon-<: $coupon.coupon_id :>">
+				<td><a href="/admin/store/coupons/<: $coupon.coupon_id :>/edit"><: $coupon.title :></a></td>
+				<td><a href="/admin/store/coupons/<: $coupon.coupon_id :>/edit"><: $coupon.code :></a></td>
+				<td>
+					<: $coupon.type == 'REL' ? $coupon.discount ~ '%' : $get_price($coupon.discount) | raw :>
+				</td>
+				<td class="hidden-xs">
+					<: loc("с") :>
+					<: $coupon.date_start | format_date($date.formatter) || '&#8734;' | raw :>
+					<: loc("до") :>
+					<: $coupon.date_end   | format_date($date.formatter) || '&#8734;' | raw :>
+				</td>
+				<td><: $coupon.used :>/<: $coupon.limit :></td>
+				<td>
+					<button class="btn btn-sm btn-danger btn-outline" onclick="delete_coupon(<: $coupon.coupon_id :>)">
+						<span class="fa fa-times"></span>
+					</button>
+				</td>
+			</tr>
+		: }
+		</tbody>
+		</table>
+		: include admin::tools::pagination
+	: } else {
+		<p class="lead"><: loc("admin.store.coupons") :></p>
+	: }
+: } else {
+	<p>
+		<a href="http://<: $settings.appdomain :>/account/upgrade/<: $vars.site.site_id | encode_id :>/Business/year">
+			<: loc('Данная опция недоступна на вашем пакете услуг.') :>
+			<: loc('Необходимо повысить статус до пакета Бизнес.') :>
+		</a>
+	</p>
+: }
+
+
+<script type="text/javascript">
+	
+	function delete_coupon(id) {
+		var tr = $('#tr-coupon-' + id);
+		tr.addClass('warning');
+
+		bootbox.confirm({
+			message: '<: loc("Вы подтверждаете удаление?") :>',
+			buttons: {
+				confirm: {
+					label: '<: loc("Удалить") :>',
+					className: 'btn-danger'
+				},
+				cancel: {
+					label: '<: loc("Не сейчас") :>',
+					className: 'pull-left btn-outline'
+				}
+			},
+			callback: function(result){
+				if (result) {
+					$.ajax({
+						type: 'delete',
+						url: '/admin/api/store/coupon/' + id + '.json',
+						success: function(response) {
+							if (response.result == 'ok') {
+								tr.remove();
+								return;
+							}
+							// else
+							tr.removeClass('warning');
+						},
+						error: function() {
+							tr.removeClass('warning');
+							alert('Server Error');
+						}
+					})
+				}
+				tr.removeClass('danger');
+			},
+			className: "bootbox-sm"
+		});
+
+		return false;
+	}
+
+</script>
+: }

@@ -1,0 +1,12 @@
+: if $questions.0 {
+	<dl class="faq">
+		: for $questions -> $item {
+		<dt id="faq-<: $item.question_id:>"><: $item.question :></dt>
+		<dd><: $item.answer | raw :></dd>
+		: }
+	</dl>
+: } else {
+	<div class="alert">
+		<: loc('Ничего не найдено') :>
+	</div>	
+: }

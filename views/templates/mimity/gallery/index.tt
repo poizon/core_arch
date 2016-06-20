@@ -1,0 +1,58 @@
+: if $albums.0 || $unsorted.0 {
+
+	<table align="center" width="100%" cellpadding="5" cellspacing="5" class="galleryTable">
+		<tbody>
+			: if $albums.0 {
+				<tr>
+				: for $albums -> $album {
+					: next if not $album.cover
+					: my $show_hr = 1;
+					: raw('</tr><tr>') if $~album > 0 && $~album % 2 == 0
+					<td>
+						<h4><: $album.title :></h4>
+						<a href="/gallery/album/<: $album.album_id :>/">
+							<img src="/gallery/resize/pics/<: $vars.site.dir :>/<: $album.album_id :>/<: $album.cover :>" 
+								alt="<: $album.title :>">
+						</a>
+					</td>
+				: }
+				</tr>
+				: if $show_hr {
+					<tr>
+						<td colspan="2"><hr size="1"></td>
+					</tr>
+				: }
+			: }
+			
+			: if $unsorted.0 {
+			<tr>
+				: for $unsorted -> $photo {
+				: raw('</tr><tr>') if $~photo > 0 && $~photo % 2 == 0
+					<td>
+						<h4><: $photo.title :></h4>
+						<a rel="group" title="<: $photo.title :>" class="fancybox" 
+							href="/gallery/pics/<: $vars.site.dir :>/0/<: $photo.filename :>">
+							<img src="/gallery/resize/pics/<: $vars.site.dir :>/0/<: $photo.filename :>" alt="<: $photo.title :>">
+						</a>
+					</td>
+				: }
+			</tr>
+			: }
+		</tbody>
+	</table>
+
+: } else {
+	<div class="alert">
+		<: loc('Ничего не найдено') :>
+	</div>
+: }
+
+<script src="/assets/javascripts/jquery-2.1.1.min.js"></script>
+<script src="/assets/javascripts/jquery.fancybox.js"></script>
+<link rel="stylesheet" type="text/css" href="/assets/stylesheets/jquery.fancybox.css" media="screen">
+
+<script>
+	$(document).ready(function() {
+		$('.fancybox').fancybox();
+	});
+</script>

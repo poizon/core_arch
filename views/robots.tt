@@ -1,0 +1,9 @@
+: if $vars.site.robots {
+: $vars.site.robots
+: } else {
+User-agent: *
+Disallow: /admin
+Disallow: /signin
+Host: <: $vars.site.domain :>
+Sitemap: http://<: $vars.site.domain :>/sitemap.xml
+: }

@@ -1,0 +1,17 @@
+<h1><: loc('Please, select Payment Method:') :></h1>
+<form method="post">
+	<select name="paymethod_name">
+	: for $paymethods.keys() -> $pm {
+		: if $pm == 'robokassa' {
+			: if $vars.site.store_currency == "RUR" {
+				<option value="<: $pm :>"><: $pm :></option>
+			: }
+		: }
+		: else {
+			<option value="<: $pm :>"><: $pm :></option>
+		: }
+	: }
+	</select>
+	<br>
+	<input type="submit" value="<: loc('Next') :>">
+</form>

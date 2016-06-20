@@ -1,0 +1,35 @@
+			addRemoveLinks : true,
+			autoProcessQueue: true,
+			thumbnailWidth: 100,
+			thumbnailHeight: 100,
+			maxFilesize: <: $maxFilesize ? $maxFilesize : $vars.site.premium && $vars.site.package == 'Business' ? 50 : $vars.site.premium ? 15 : 2 :>,
+
+			previewTemplate: '<div class="dz-preview dz-file-preview"><div class="dz-details"><div class="dz-filename"><span data-dz-name></span></div><div class="dz-size"><: loc("Размер") :>: <span data-dz-size></span></div><div class="dz-thumbnail-wrapper"><div class="dz-thumbnail"><img data-dz-thumbnail><span class="dz-nopreview"><: loc("Предпросмотр отсутствует") :></span><div class="dz-success-mark"><i class="fa fa-check-circle-o"></i></div><div class="dz-error-mark"><i class="fa fa-times-circle-o"></i></div><div class="dz-error-message"><span data-dz-errormessage></span></div></div></div></div><div class="progress progress-striped active"><div class="progress-bar progress-bar-success" data-dz-uploadprogress></div></div></div>',
+
+			resize: function(file) {
+				var info = { srcX: 0, srcY: 0, srcWidth: file.width, srcHeight: file.height },
+				srcRatio = file.width / file.height;
+				if (file.height > this.options.thumbnailHeight || file.width > this.options.thumbnailWidth) {
+					info.trgHeight = this.options.thumbnailHeight;
+					info.trgWidth = info.trgHeight * srcRatio;
+					if (info.trgWidth > this.options.thumbnailWidth) {
+						info.trgWidth = this.options.thumbnailWidth;
+						info.trgHeight = info.trgWidth / srcRatio;
+					}
+				}
+				else {
+					info.trgHeight = file.height;
+					info.trgWidth = file.width;
+				}
+				return info;
+			},
+
+			// translate options:
+			dictDefaultMessage: "<: loc('Перетащите файлы сюда для загрузки') :>",
+			dictFallbackMessage: "<: loc('Ваш броузер не поддерживает данную возможность') :>",
+			dictInvalidFileType: "<: loc('Запрещенный тип файла') :>",
+			dictFileTooBig: "<: loc('Вы превысили допустимый размер файла') :>",
+			dictResponseError: "<: loc('Ошибка') :>",
+			dictRemoveFile: "<: loc('Удалить файл') :>",
+			dictMaxFilesExceeded: "<: loc('Достигнуто максимальное число файлов') :>",
+			dictResponseError: "<: loc('Ошибка загрузки файла') :> ",

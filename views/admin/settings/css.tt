@@ -1,0 +1,60 @@
+: cascade admin::settings::navigation
+
+: around option -> {
+	<div style="padding:5px 25px 10px 0">
+		<a onclick="save_css_settings()" id="save_button" class="btn btn-info btn-labeled btn-block">
+			<i class="btn-label fa fa-save"></i>
+			<: loc('Сохранить') :>
+		</a>
+	</div>
+: }
+
+: around body -> {
+: 	include admin::tools::codemirror { cm_id => "css", cm_mode => "text/css" }
+
+	<style>
+	html,body,#main-wrapper,#content-wrapper,.mail-container,.CodeMirror,.CodeMirror-form{height:100% !important}
+	@media (min-width:992px){.mail-container{padding-top:46px !important}}
+	.mail-container-header{margin-top:46px !important}
+	</style>
+	
+	<form method="post" class="CodeMirror-form">
+		<textarea id="css" name="css"><: $vars.site.css :></textarea>
+	</form>
+	
+	<script>
+		init.push(function () {
+			$('body').addClass('mmc');
+		});
+	
+		function save_css_settings() {
+			var cm = $('#css').data('CodeMirrorInstance');
+	
+			$.ajax({
+				type: 'post',
+				url: '/admin/api/settings/css.json',
+				data: { "css": cm.getValue() },
+				success: function(response) {
+					if (response.result == 'ok') {
+						$.growl.notice({
+							message: "<: loc('Данные успешно сохранены') :>",
+							size: 'large',
+						});
+					}
+					else {
+						$.growl.error({
+							message: "<: loc('Ошибка') :>",
+							size: 'large',
+						});
+					}
+				},
+				error: function() {
+					$.growl.error({
+						message: "<: loc('Ошибка') :>",
+						size: 'large',
+					});
+				}
+			})
+		}
+	</script>
+: }

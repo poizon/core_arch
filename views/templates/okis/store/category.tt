@@ -1,0 +1,15 @@
+: include templates::okis::store::navigation
+
+<div class="store_topnav">
+	<: loc('Сортировать по') :>
+	<a href="?order=title"<: raw(' class="category_selected"') if $params.order == 'title' :>><: loc('названию') :></a> /
+	<a href="?order=price"<: raw(' class="category_selected"') if $params.order == 'price' :>><: loc('цене') :></a>
+</div>
+
+<: $category.body | raw :>
+
+: include templates::okis::store::categories_list { categories_list => $categories }
+
+<div class="cleared"></div>
+
+: include templates::okis::store::items_list { items => $items }

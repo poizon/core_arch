@@ -1,0 +1,189 @@
+: cascade admin::store::navigation
+
+: around header -> {
+	<: loc('Доставка') :>
+	
+	<a href="/admin/store/delivery/create"
+		class="btn btn-sm btn-primary btn-labeled btn-outline pull-right <: 'show-package-warning' if !$can_add_items :>">
+		<span class="btn-label fa fa-plus"></span> <: loc("Добавить") :>
+	</a>
+: }
+
+: around body -> {
+
+: if $vars.site.premium && $vars.site.package == 'Business' {
+	: if $deliveries.size() {
+		<table class="table">
+		<thead>
+			<tr>
+				<th class="col-sm-2"><: loc('Название') :></th>
+				<th class="col-sm-1"><: loc('Цена') :></th>
+				<th class="col-sm-1"></th>
+			</tr>
+		</thead>
+		<tbody>
+		: for $deliveries -> $d {
+			<tr>
+				<td><a href="/admin/store/delivery/<: $d.delivery_id :>/edit"><: $d.title :></a></td>
+				<td><: $get_price($d.price) | raw :></td>
+				<td class="text-right">
+					<button type="button" onclick="delete_delivery(this, <: $d.delivery_id :>)"
+						class="btn btn-danger btn-sm btn-outline">
+						<span class="fa fa-times"></span>
+					</button>
+				</td>
+			</tr>
+		: }
+		<tr class="store-freedelivery">
+			<td><: loc('Бесплатная доставка при сумме заказа больше') :></td>
+			<td>
+				<div class="form-inline">
+				<div class="form-group">
+				<input type="text" class="form-control" id="store_freedelivery"
+					value="<: $vars.site.store_freedelivery if $vars.site.store_freedelivery :>"
+					name="store_freedelivery" style="width: 30%;"
+				>
+				</div>
+				</div>
+			</td>
+			<td class="text-right">
+				<button type="button" onclick="set_store_freedelivery()"
+					class="btn btn-primary btn-sm btn-set-store-freedelivery">
+					<span class="fa fa-floppy-o"></span>
+				</button>
+				<button type="button" onclick="del_store_freedelivery()"
+					class="btn btn-danger btn-sm btn-outline btn-del-store-freedelivery"
+					<: raw('style="display:none;"') if !$vars.site.store_freedelivery :>
+				>
+					<span class="fa fa-times"></span>
+				</button>
+			</td>
+		</tr>
+		</tbody>
+		</table>
+	: } else {
+		<p class="lead">
+			<: loc("admin.store.deliveries") :>
+		</p>
+	: }
+: } else {
+	<p>
+		<a href="http://<: $settings.appdomain :>/account/upgrade/<: $vars.site.site_id | encode_id :>/Business/year">
+			<: loc('Данная опция недоступна на вашем пакете услуг.') :>
+			<: loc('Необходимо повысить статус до пакета Бизнес.') :>
+		</a>
+	</p>
+: }
+
+<script>
+	function set_store_freedelivery() {
+		var value = $('#store_freedelivery').val(),
+			container = $('.store-freedelivery'),
+			del_btn = $('.btn-del-store-freedelivery', container);
+			
+		$('button', container).addClass('disabled');
+		$.ajax({
+			type: 'post',
+			url: '/admin/api/store/delivery/freedelivery.json',
+			data: {
+				"store_freedelivery": value
+			},
+			success: function(response) {
+				if (response.result == 'ok') {
+					$.growl.notice({ message: "<: loc('Данные успешно сохранены') :>", size: 'large' });
+					del_btn.show();
+				}
+			},
+			error: function() {
+				alert('<: loc("Ошибка") :>');
+			},
+			complete: function() {
+				$('button', container).removeClass('disabled');
+			}
+		})
+	}
+
+	function del_store_freedelivery() {
+		var	container = $('.store-freedelivery'),
+			input = $('#store_freedelivery', container),
+			del_btn = $('.btn-del-store-freedelivery', container);
+			
+		container.addClass('danger');
+		bootbox.confirm({
+			message: '<: loc("Вы подтверждаете удаление?") :>',
+			buttons: {
+				confirm: {
+					label: '<: loc("Удалить") :>',
+					className: 'btn-danger'
+				},
+				cancel: {
+					label: '<: loc("Не сейчас") :>',
+					className: 'pull-left btn-outline'
+				}
+			},
+			callback: function(result){
+				if (result) {
+					$.ajax({
+						type: "delete",
+						url: '/admin/api/store/delivery/freedelivery.json',
+						success: function(response) {
+							if (response.result == 'ok') {
+								del_btn.hide();
+								input.val('');
+								$.growl.notice({ message: "<: loc('Данные успешно сохранены') :>", size: 'large' });
+							}
+						},
+						error: function() {
+							alert('<: loc("Ошибка") :>');
+						}
+					});
+				}
+				container.removeClass('danger');
+			},
+			className: "bootbox-sm"
+		});
+
+		return false;
+	}
+
+	function delete_delivery(href, id) {
+		var tr = $(href).closest('tr');
+		tr.addClass('danger');
+
+		bootbox.confirm({
+			message: '<: loc("Вы подтверждаете удаление?") :>',
+			buttons: {
+				confirm: {
+					label: '<: loc("Удалить") :>',
+					className: 'btn-danger'
+				},
+				cancel: {
+					label: '<: loc("Не сейчас") :>',
+					className: 'pull-left btn-outline'
+				}
+			},
+			callback: function(result){
+				if (result) {
+					$.ajax({
+						type: "delete",
+						url: '/admin/api/store/delivery/' + id + '.json',
+						success: function(response) {
+							if (response.result == 'ok') {
+								tr.remove();
+							}
+						},
+						error: function() {
+							bootbox.alert('<: loc("Ошибка") :>');
+						}
+					})
+				}
+				tr.removeClass('danger');
+			},
+			className: "bootbox-sm"
+		});
+
+		return false;
+	}
+
+</script>
+: }

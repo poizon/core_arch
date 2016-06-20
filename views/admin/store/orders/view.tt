@@ -1,0 +1,202 @@
+: cascade admin::store::navigation
+
+: around header -> {
+	<: loc("Заказы") :>
+: }
+
+: around body -> {
+<div class="row">
+	<div class="col-md-8">
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title">
+					<i class="panel-title-icon fa fa-user"></i>
+					<: loc("Информация о покупателе") :>
+				</span>
+			</div>
+			<div class="panel-body">
+				<table class="table table-striped">
+					<tr>
+						<th><: loc('Телефон') :></th>
+						<td><: $order.phone :></td>
+					</tr>
+					<tr>
+						<th><: loc('E-mail') :></th>
+						<td><: $order.email :></td>
+					</tr>
+					: for $fields.keys() -> $name {
+					<tr>
+						<th><: $name :></th>
+						<td><: $fields[$name] :></td>
+					</tr>
+					: }
+				</table>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-4">
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title">
+					<i class="panel-title-icon fa fa-info"></i>
+					<: loc("Информация о заказе") :>
+				</span>
+			</div>
+			<div class="panel-body">
+				<table class="table">
+					<tr>
+						<th><: loc("Дата") :></th>
+						<td><: $order.date | format_date($date.formatter) :></td>
+					</tr>
+					<tr>
+						<th><: loc("Статус") :></th>
+						<td>
+							<select name="order_status" onchange="change_order_status($(this).val())" class="form-control">
+							: for $statuses.kv() -> $status {
+								<option value="<: $status.key :>"<: ' selected' if $status.key == $order.status :>>
+									<: loc($status.value) :>
+								</option>
+							: }
+							</select>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="panel">
+	<div class="panel-body">
+		<table class="table table-hover">
+			<tbody>
+				: for $products -> $item {
+				<tr id="tr-item-<: $item.id :>" class="order-items">
+					<td class="col-sm-10">
+						<h3><a href="/store/item/<: $item.item_id :>"><: $item.title :></a></h3>
+
+					: for $item.params_decoded.kv() -> $p {
+						<b><: $p.key :></b> <: $p.value :>
+						<br>
+					: }
+						<br>
+						<: loc('Цена') :>: <: $get_price($item.price) | raw :>
+					</td>
+					<td class="col-sm-1">
+						<input type="text" onchange="set_item_qty(this, <: $item.id :>)" name="qty" 
+							class="form-control text-right" value="<: $item.qty :>">
+					</td>
+					<td class="col-sm-1 text-right">
+						<b><span class="item-price"><: $get_price($item.price * $item.qty) | raw :></span></b>
+					</td>
+					<td>
+						<button onclick="delete_item_from_order(<: $item.id :>)" type="button" class="btn btn-xs btn-danger">
+							<span class="fa fa-times"></span>
+						</button>
+					</td>
+				</tr>
+				: }
+				: if $order.delivery_title {
+				<tr id="tr-item-delivery" class="order-items">
+					<td class="col-sm-10">
+						<h3><: loc("Доставка") :>: <: $order.delivery_title :></h3>
+
+						<br>
+						<: loc('Цена') :>: <: $get_price($order.delivery_price) | raw :>
+					</td>
+					<td>&nbsp;</td>
+					<td>&nbsp;</td>
+					<td>&nbsp;</td>
+				</tr>
+				: }
+				<tr>
+					<td></td>
+					<td>
+						<h4><: loc('Всего') :></h4>
+					</td>
+					<td class="text-right" colspan="2">
+						<h4 id="total-amount"><: $get_price($order.amount) | raw :></h4>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<script>
+	init.push(function () {
+		$('body').addClass('mmc');
+	});
+	
+	function change_order_status(status) {
+		$.ajax({
+			type: 'put',
+			url: '/admin/api/store/orders/<: $order.order_id :>/status',
+			data: {
+				"status": status
+			},
+			success: function(response) {
+			},
+			error: function() {
+				alert('Server Error');
+			}
+		});
+	}
+
+	function delete_item_from_order(id) {
+		var tr = $('#tr-item-' + id);
+		tr.addClass('warning');
+
+		$.ajax({
+			type: 'delete',
+			url: '/admin/api/store/orders/<: $order.order_id :>/items/' + id + '.json',
+			success: function(response) {
+				if (response.result == 'ok') {
+					tr.remove();
+					var total_amount = count_total_amount();
+
+					$('#total-amount').text(total_amount);
+				}
+			},
+			error: function() {
+				alert('Server Error');
+			}
+		});
+	}
+
+	function set_item_qty(input, id) {
+		var tr = $('#tr-item-' + id);
+		tr.addClass('warning');
+
+		$.ajax({
+			type: 'post',
+			url: '/admin/api/store/orders/<: $order.order_id :>/items/' + id + '/set-qty.json',
+			data: {
+				qty: $(input).val()
+			},
+			dataType: 'json',
+			success: function(response) {
+				if (response.result == 'ok') {
+					tr.removeClass('warning');
+					tr.find('.item-price').text(response.amount);
+					var total_amount = count_total_amount();
+					$('#total-amount').text(total_amount);
+				}
+			},
+			error: function() {
+				alert('Server Error');
+			}
+		});
+	}
+
+	function count_total_amount() {
+		var sum = 0;
+		$('.order-items').each(function(i, tr) {
+			var tr_obj = $(tr);
+			var price = parseFloat(tr_obj.find('span[class="item-price"]').text());
+			sum += price;
+		});
+		return sum;
+	}
+</script>
+: }

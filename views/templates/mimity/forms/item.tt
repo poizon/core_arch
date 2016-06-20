@@ -1,0 +1,87 @@
+: if $status == 404 {
+	<div class="danger"><: loc('Ничего не найдено') :></div>
+: } elsif $finish {
+	<div class="danger"><: $data.finish_message || loc('Сообщение успешно отправлено') :></div>
+: } else {
+	<div><: loc($data.descr) :></div>
+	<form method="post">
+	: if $error {
+		<div class="form-group" id="add-title-group">
+			<label class="col-sm-2 control-label" for="title"></label>
+			<div class="col-sm-10">
+				<h3 class="text-danger"><: $error :></h3>
+			</div>
+		</div>
+	: }
+
+		<table>
+		: for $data.questions -> $q {
+			<tr>
+				<td><: $q.question :>&nbsp;<: $q.descr :></td>
+				<td>
+				: if $q.type == "text" {
+					<input type="<: $q.type :>" value="<: $q.value :>"	name="answers.<: $q.priority :>">
+				: }
+				: elsif $q.type == "textarea" {
+					<textarea name="answers.<: $q.priority :>"><: $q.value :></textarea>
+				: }
+				: elsif $q.type == "radio" {
+					: for $q.options -> $o {
+						<label>
+							<input type="radio" name="answers.<: $q.priority :>"
+								value="<: $o.priority :>" <: 'checked' if $o.active :>>
+							<: $o.option :>
+						</label>
+					: }
+				: }
+				: elsif $q.type == "checkbox" {
+					: for $q.options -> $o {
+						<label>
+							<input type="checkbox" name="answers.<: $q.priority :>.<: $o.priority :>"
+								value="1" <: 'checked' if $o.active :>>
+							<: $o.option :>
+						</label>
+					: }
+				: }
+				: elsif $q.type == "select" {
+					<select name="answers.<: $q.priority :>">
+					: for $q.options -> $o {
+						<option value="<: $o.priority :>" <: 'selected' if $o.active :>><: $o.option :></option>
+					: }
+					</select>
+				: }
+				: if defined($q.error) {
+					<span style="color:red"><: $q.error :></span>
+				: }
+				</td>
+			</tr>
+		: }
+		: if !$data.nocaptcha {
+			<tr>
+				<td>
+					<img src="/forms/captcha/<: $token :>.png">
+				</td>
+				<td style="vertical-align:middle;">
+					<input type="text" value="" name="code" placeholder="<: loc('Введите текст с картинки') :>">
+					: if defined($data.code_error) {
+						<span style="color:red"><: $data.code_error :></span>
+					: }
+					<input type="hidden" name="token" value="<: $token :>">
+				</td>
+			</tr>
+		: }
+			<tr>
+				<td colspan="2">
+					<button type="submit"><: loc('Отправить') :></button>
+				</td>
+			</tr>
+		</table>
+	: if $data.nocaptcha {
+		<input type="text" name="url" value="" class="feedback_url">
+		<script>document.write('<input type="hidden" name="furry" value="kitten">')</script>
+	: }
+	</form>
+	<style>
+		table, tbody td {border:none}
+	</style>
+: }

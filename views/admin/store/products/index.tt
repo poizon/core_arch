@@ -1,0 +1,305 @@
+: cascade admin::store::navigation
+
+: around header -> {
+	: if $category_name {
+		<span class="text-light-gray"><: loc("Товары") :> /</span>
+		<: $category_name :>
+	: } else {
+		<: loc("Товары") :>
+	: }
+	
+	<form action="/admin/store/products" class="pull-right" method="get" style="width:200px;margin-top:-3px">
+		<div class="form-group input-group-sm has-feedback no-margin">
+			<input type="text" name="search" placeholder="<: loc('Поиск') :>..." class="form-control">
+			<span class="fa fa-search form-control-feedback" style="top:-1px"></span>
+		</div>
+	</form>
+: }
+
+: macro get_url -> ($page) {
+:	"/admin/store/products?page="
+:	$page
+:	'&search=' ~ $params.search if $params.search
+: }
+
+: around controls -> {
+: my $cid = $params.category_id
+<div class="mail-controls clearfix">
+	<div class="pull-left" role="toolbar" id="controls">
+
+		<a href="/admin/store/products/add<: '?category=' ~ $cid if $cid :>" 
+			class="btn <: 'show-package-warning' if !$can_add_items :>"
+			title='<: loc("Добавить") :>'>
+			<span class="fa fa-plus"></span> 
+		</a>
+		: if $items.size() {
+		<a href="/admin/store/products/export" class="btn" title='<: loc("Экспортировать") :>'>
+			<span class="fa fa-upload"></span> 
+		</a>
+		: }
+		
+		<!-- Import -->
+		<a class="btn" title='<: loc("Импортировать") :>' data-toggle="modal" data-target="#import-modal">
+			<span class="fa fa-download"></span>
+		</a>
+
+		<div id="import-modal" class="modal fade" tabindex="-1" role="dialog" style="display:none;">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title"><: loc("Импортировать") :></h4>
+					</div>
+					<form class="form-horizontal" action="/admin/store/products/import" method="post" enctype="multipart/form-data">
+						<div class="modal-body">
+							<div class="form-group">
+								<div class="col-sm-12">
+									<input type="file" id="file" name="file">
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer text-right">
+							<button type="button" class="btn btn-default" data-dismiss="modal">
+								<: loc("Закрыть") :>
+							</button>
+							<button type="submit" class="btn btn-info">
+								<: loc('Импортировать') :>
+							</button>
+						</div>
+					</form>
+				</div>
+			</div> 
+		</div>
+		<!-- /Import -->
+
+		<a href="/store<: '/category/' ~ $cid if $cid :>" target="_blank"
+			class="btn" title='<: loc("Посмотреть на сайте") :>'>
+			<span class="fa fa-external-link"></span>
+		</a>
+		
+		: if $cid {
+		<a onclick="move_items(<: $cid :>)" class="btn " title='<: loc("Переместить") :>'>
+			<span class="fa fa-share"></span>
+		</a>	
+		: }
+
+	</div>
+
+	: if $pager && $pager.end > 1 {
+	<div class="btn-toolbar pull-right" role="toolbar">
+		<div class="btn-group">
+			<a href="<: get_url($pager.prev) :>" 
+				class="btn <: 'disabled' if !$pager.prev :>">
+				<i class="fa fa-chevron-left"></i>
+			</a>
+			<a href="<: get_url($pager.next) :>" 
+				class="btn <: 'disabled' if !$pager.next :>">
+				<i class="fa fa-chevron-right"></i>
+			</a>
+		</div>
+	</div>
+	<div class="pages pull-right">
+		<: loc('%1-%2 из %3', [ $pager.from + 1, $pager.to, $pager.limit ]) :>
+	</div>
+	: }
+</div>
+: }
+
+: around body -> {
+	
+: if $items.size() {
+: my $category_id = $params.category_id
+<table class="table">
+	<thead>
+		<tr>
+			<th class="col-sm-8"><: loc('Название') :></th>
+			<th class="col-sm-2"><: loc('Цена') :></th>
+			<th class="col-sm-2"></th>
+		</tr>
+	</thead>
+	<tbody class="sortable">
+	: for $items -> $i {
+		<tr data-id="<: $i.item_id :>">
+			<td>
+				<span class="handle" style="cursor:move">
+					<span class="icon fa fa-bars std-icon"></span>
+				</span>
+				<a href="/admin/store/products/<: $i.item_id :>/edit" 
+					class="<: 'text-muted' if $i.hidden :>"><: $i.title :></a>
+			</td>
+			<td>
+				: if $i.price_sale {
+					<strike class="text-light-gray"><: $i.price :></strike>
+					<: $get_price($i.price_sale) | raw :>
+				: } else {
+					<: $get_price($i.price) | raw :>
+				: }
+			</td>
+			<td class="text-right">
+				<button type="button" onclick="delete_item(this, <: $i.item_id :>)"
+					class="btn btn-danger btn-sm btn-outline">
+					<span class="fa fa-times"></span>
+				</button>
+			</td>
+		</tr>
+	: }
+	</tbody>
+</table>
+: } else {
+<p class="lead"><: loc("admin.store.products") :></p>
+: }
+
+<script>
+	init.push(function () {
+		$('#controls a').tooltip();
+		$('#file').pixelFileInput({ 
+			placeholder: '<: loc("Файл не выбран") :>',
+			choose_btn_tmpl: '<a href="#" class="btn btn-xs btn-primary"><: loc("Выбрать") :></a>',
+			clear_btn_tmpl: '<a href="#" class="btn btn-xs"><i class="fa fa-times"></i> <: loc("Очистить") :></a>'
+		});
+		
+		: if $params.error {
+			$.growl.error({
+				message: '<: $params.error :>',
+				size: 'large',
+				duration: 999 * 999
+			});
+		: }
+	});
+	
+	function delete_item(href, id) {
+		var tr = $(href).closest('tr');
+		tr.addClass('danger');
+
+		bootbox.confirm({
+			message: '<: loc("Вы подтверждаете удаление?") :>',
+			buttons: {
+				confirm: {
+					label: '<: loc("Удалить") :>',
+					className: 'btn-danger'
+				},
+				cancel: {
+					label: '<: loc("Не сейчас") :>',
+					className: 'pull-left btn-outline'
+				}
+			},
+			callback: function(result){
+				if (result) {
+					$.ajax({
+						type: "delete",
+						url: '/admin/api/store/products/item/' + id + '.json',
+						success: function(response) {
+							if (response.result == 'ok') {
+								tr.remove();
+							}
+						},
+						error: function() {
+							bootbox.alert('<: loc("Ошибка") :>');
+						}
+					})
+				}
+				tr.removeClass('danger');
+			},
+			className: "bootbox-sm"
+		});
+
+		return false;
+	}
+
+	function move_items(id) {
+		var $tr = $("tbody tr"),
+			$select = $(
+				'<div id="categories-select">' +
+					'<select name="category" class="form-control">' +
+					'<option value=""><: loc("Без категории") :></option>' +
+					: for $categories -> $c {
+					: next if $category_id == $c.category_id
+					'<option value="<: $c.category_id :>"><: $c.title :></option>' +
+					: }
+				'</select>'+
+				'</div>');
+		$tr.addClass('info');
+
+		bootbox.dialog({
+			title: '<: loc("Товары") :>',
+			message: $select.show(),
+			buttons: {
+				confirm: {
+					label: '<: loc("Переместить") :>',
+					className: 'btn-primary',
+					callback: function () {
+						$.ajax({
+							type: 'post',
+							url: '/admin/api/store/category/move/items.json',
+							data: {
+								category_id: id,
+								to_category_id: $('#categories-select').find('option:selected').val()
+							},
+							success: function(response) {
+								if (response.result == 'ok') {
+									$tr.remove();
+								}
+							},
+							error: function() {
+								bootbox.alert('<: loc("Ошибка") :>');
+							}
+						});
+					}
+				},
+				cancel: {
+					label: '<: loc("Не сейчас") :>',
+					className: 'pull-left btn-outline',
+					callback: function () {
+						$tr.removeClass('info');
+					}
+				}
+			}
+		});
+		return false;
+	}
+
+	$(".show-package-warning").on("click", function() {
+		$.growl.error({
+			message: '<: loc("Данная опция недоступна на вашем пакете услуг.") :>',
+			size: 'large',
+			duration: 999 * 999
+		});
+		return false;
+	});
+
+	$('.sortable').nestedSortable({
+		handle: 'span.handle',
+		listType: 'tbody',
+		items: 'tr',
+		maxLevels: 1,
+		tabSize: 40,
+		placeholder: 'sortPlaceholder',
+		errorClass: 'sortError',
+		rtl: false,
+		forcePlaceholderSize: true,
+		forceHelperSize: true,
+		stop: function (event, ui) {
+			var ids = [];
+
+			ui.item.parents('tbody').find('tr').each(function() {
+				ids.push($(this).data('id'));
+			});
+
+			$.ajax({
+				type: 'POST',
+				url: '/admin/api/store/category/sort/items.json',
+				data: {
+					'ids': ids.join(),
+					'offset': '<: $pager.from :>'
+				}
+			});
+		}
+	});
+</script>
+
+<style>
+	.sortPlaceholder{border:0}
+</style>
+
+: }
+

@@ -1,0 +1,44 @@
+: if $item_photo.0 {
+: my $route = $production ? "/resize/150/-/store" : "/resize/store?file=";
+
+<div class="panel widget-comments">
+	<div class="panel-body">
+
+	: for $item_photo -> $ph {
+		<div class="comment" id="div-photo-<: $ph.photo_id :>">
+			<img src="<: $route :>/<: $vars.site.dir :>/<: $ph.filename :>"
+				class="comment-avatar img-thumbnail" alt="<: $ph.title :>">
+			<div class="comment-body">
+				<div class="comment-text">
+					<textarea id="title_photo_id_<: $ph.photo_id :>" class="form-control" rows="3" name="title"><: $ph.title :></textarea>
+				</div>
+				<div class="comment-actions">
+					<input onclick="update_photo_title('<: $ph.photo_id :>')" type="button"
+					class="btn btn-xs btn-primary" value="<: loc('Сохранить') :>">
+
+					<span class="pull-right hidden-sm">
+						<a style="cursor:pointer;<: 'display:none' if $ph.hidden :>"
+							class="href-hide-photo-<: $ph.photo_id :>" onclick="hide_photo(<: $ph.photo_id :>)">
+							<i class="fa fa-eye-slash"></i>
+							<: loc('Скрыть') :>
+						</a>
+
+						<a style="cursor:pointer;<: 'display:none' if !$ph.hidden :>"
+							class="href-show-photo-<: $ph.photo_id :>" onclick="show_photo(<: $ph.photo_id :>)">
+							<i class="fa fa-eye"></i>
+							<: loc('Показать') :>
+						</a>
+
+						<a style="cursor:pointer" onclick="delete_photo_confirm(<: $ph.photo_id :>)">
+							<i class="fa fa-times"></i>
+							<: loc('Удалить') :>
+						</a>
+					</span>
+				</div>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+	: }
+	</div>
+</div>
+: }

@@ -1,0 +1,43 @@
+<div class="art-vmenublock-tl"></div>
+<div class="art-vmenublock-tr"></div>
+<div class="art-vmenublock-bl"></div>
+<div class="art-vmenublock-br"></div>
+<div class="art-vmenublock-tc"></div>
+<div class="art-vmenublock-bc"></div>
+<div class="art-vmenublock-cl"></div>
+<div class="art-vmenublock-cr"></div>
+<div class="art-vmenublock-cc"></div>
+<div class="art-vmenublock-body">
+	<div class="art-vmenublockheader">
+		<div class="l"></div>
+		<div class="r"></div>
+		<div class="t"><: loc("Меню") :></div>
+	</div>
+	<div class="art-vmenublockcontent">
+		<div class="art-vmenublockcontent-body">
+			<ul class="art-vmenu">
+			: for $menu -> $item {
+				<li>
+					<a href="<: $item.url :>">
+						<span class="l"></span>
+						<span class="r"></span>
+						<span class="t"><: $item.title | raw :></span>
+					</a>
+				: if $item.submenu.0 {
+					<ul>
+					: for $item.submenu -> $m {
+						<li>
+							<a href="<: $m.url :>"><: $m.title | raw :></a>
+						</li>
+					: }
+					</ul>
+					<div class="cleared"></div>
+				: }
+				</li>
+			: }
+			</ul>
+			<div class="cleared"></div>
+		</div>
+	</div>
+	<div class="cleared"></div>
+</div>

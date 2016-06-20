@@ -1,0 +1,6 @@
+<div class="well well-lg no-margin-vr">
+	<h3>
+		<i class="fa fa-life-bouy"></i> <: loc("Ничего не найдено") :>
+		<small><: loc("пожалуйста попробуйте еще раз") :></small>
+	</h3>
+</div>

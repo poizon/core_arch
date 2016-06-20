@@ -1,0 +1,466 @@
+: macro get_field -> ($p) {
+: my $hidden   = $p.hidden   // 0
+: my $required = $p.required // 1
+
+<div class="form-group-margin js-field-one" data-id="<: $p.data_id :>">
+	<input type="text" class="form-control js-title <: 'js-title-add' if $p.add :>" 
+		name="title" value="<: $p.title // '' :>">
+
+	<span>
+		<button title="<: loc('Показать') :>" class="btn js-show" 
+			<: raw('style="display:none"') if !$hidden :>>
+			<span class="fa fa-eye"></span>
+		</button>
+		<button title="<: loc('Скрыть') :>" class="btn btn-warning js-hide" 
+			<: raw('style="display:none"') if $hidden :>>
+			<span class="fa fa-eye-slash"></span>
+		</button>
+		<button title="<: loc('Сделать обязательным') :>" class="btn btn-info js-required-on" 
+			<: raw('style="display:none"') if $required :>>
+			<span class="fa fa-square-o"></span>
+		</button>
+		<button title="<: loc('Сделать необязательным') :>" class="btn btn-info js-required-off" 
+			<: raw('style="display:none"') if !$required :>>
+			<span class="fa fa-check-square-o"></span>
+		</button>
+		<button class="btn btn-danger js-field-delete" title="<: loc('Удалить') :>">
+			<span class="fa fa-minus"></span>
+		</button>
+	</span>
+</div>
+: }
+
+: cascade admin::store::navigation
+
+: around header -> {
+	<: loc("Настройки") :>
+: }
+
+: around body -> {
+: 	include admin::tools::wysiwyg { id => 'confirmation' }
+: 	my $currency = $vars.site.store_currency || $settings.default_currency || 'RUB'
+
+<div class="row">
+	<div class="col-lg-6 col-md-12">
+		
+		<!-- Store Order Data -->
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title">
+					<i class="panel-title-icon fa fa-bars"></i>
+					<: loc('Данные для заказа') :>
+				</span>
+			</div>
+			
+			: my $restrict = $vars.site.premium && $vars.site.package == 'Business' ? 0 : 1
+			
+			: if $restrict {
+			<div class="alert alert-page alert-info">
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+				<a href="http://<: $settings.appdomain :>/account/upgrade/<: $vars.site.site_id | encode_id :>/Business/year">
+					<!-- <: loc('Данная опция недоступна на вашем пакете услуг.') :> -->
+					<: loc('Необходимо повысить статус до пакета Бизнес.') :>
+				</a>
+			</div>
+			: }
+
+			<div class="panel-body">
+				<p><: loc("admin.store.settings.form") :></p>
+				<hr class="panel-wide">
+				<div class="form-inline js-fields col-sm-offset-0">
+
+					<!-- Add -->
+					<div class="form-group-margin js-field-one">
+						<input type="text" class="form-control js-title js-title-add" 
+							name="title" <: 'disabled' if $restrict :>>
+						<button class="btn btn-primary js-field-add <: 'disabled' if $restrict :>">
+							<span class="fa fa-plus"></span>
+						</button>
+					</div>
+					<!-- /Add -->
+
+					<div class="form-group-margin">
+						<div class="form-group">
+							<input type="text" class="form-control" value="<: loc('Email') :>" disabled>
+						</div>
+					</div>
+
+					<div class="form-group-margin">
+						<div class="form-group">
+							<input type="text" class="form-control" value="<: loc('Телефон') :>" disabled>
+						</div>
+					</div>
+
+					: for $order_data -> $field { get_field($field) }
+				</div>
+			</div>
+		</div>
+		
+		<!-- Store Image Sizes -->
+		: if $settings.compatibility {
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title">
+					<i class="panel-title-icon fa fa-image"></i>
+					<: loc('Размер картинок') :>
+				</span>
+			</div>
+			
+			<form class="panel-body" method="post">
+
+				<div class="form-group">
+					<label class="control-label"><: loc('Список товаров') :></label>
+					<div class="input-group">
+						<input type="text" class="form-control" name="store_imgsize_category"
+							value="<: $vars.site.store_imgsize_category :>">
+						<span class="input-group-addon">px</span>
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<label class="control-label"><: loc('Страница товара') :></label>
+					<div class="input-group">
+						<input type="text" class="form-control" name="store_imgsize_product"
+							value="<: $vars.site.store_imgsize_product :>">
+						<span class="input-group-addon">px</span>
+					</div>
+				</div>
+
+				<button type="submit" class="btn btn-primary"><: loc('Сохранить') :></button>
+
+			</form>
+		</div>
+		: }
+	</div>
+	
+	<div class="col-lg-6 col-md-12">
+		
+		<!-- Currency -->
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title">
+					<i class="panel-title-icon fa fa-money"></i>
+					<: loc('Валюта') :>
+				</span>
+			</div>
+			<div class="panel-body form-inline">
+				<div class="form-group">
+					<select id="store_currency_select" name="store_currency" class="form-control">
+					: for $currencies.keys() -> $code {
+						<option value="<: $code :>" <: 'selected' if $currency == $code :>>
+							<: $currencies[$code].name :>
+						</option>
+					: }
+					</select>
+				</div>
+				<button type="button" class="btn btn-primary btn-set-store-currency" onclick="set_store_currency()">
+					<: loc('Сохранить') :>
+				</button>
+			</div>
+		</div>
+		<!-- /Currency -->
+		
+		<!-- Order confirmation -->
+		<div id="store_confirmation" class="modal fade" tabindex="-1" role="dialog" style="display: none;">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title"><: loc('Текст подтверждения заказа') :></h4>
+					</div>
+					<div class="modal-body">
+						<div class="form-group">
+							<textarea class="form-control" name="confirmation" id="confirmation"
+								placeholder="<: loc('Ваш заказ принят. В ближайшее время с вами свяжутся.') :>"
+								data-height="100"><: $vars.site.store_confirmation :></textarea>
+						</div>
+					</div>
+					<div class="modal-footer text-right">
+						<button type="button" class="btn btn-default" data-dismiss="modal">
+							<: loc("Закрыть") :>
+						</button>
+						<button type="button" class="btn btn-primary" onclick="set_store_confirmation()">
+							<: loc('Сохранить') :>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title">
+					<i class="panel-title-icon fa fa-thumbs-o-up"></i>
+					<: loc('Текст подтверждения заказа') :>
+				</span>
+			</div>
+			<div class="panel-body">
+				<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#store_confirmation">
+					<: loc('Изменить') :>
+				</button>
+			</div>
+		</div>
+		<!-- /Order confirmation -->
+		
+		<!-- prefix and suffix -->
+		<div class="panel">
+			<div class="panel-heading">
+				<span class="panel-title">
+					<i class="panel-title-icon fa fa-barcode"></i>
+					<: loc('Edit order ID format') :>
+				</span>
+			</div>
+			
+			<div class="alert alert-page alert-info">
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+					<: loc('Order numbers start at #1001 by default.') :>
+				</a>
+			</div>
+			
+			<form class="panel-body" method="post">
+
+				<div class="form-group">
+					<label class="control-label"><: loc('Prefix') :></label>
+					<div class="input-group">
+						<input type="text" class="form-control" id="store_order_prefix" name="store_order_prefix"
+							value="<: $vars.site.store_order_prefix :>">
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<label class="control-label"><: loc('Suffix') :></label>
+					<div class="input-group">
+						<input type="text" class="form-control" id="store_order_suffix" name="store_order_suffix"
+							value="<: $vars.site.store_order_suffix :>">
+					</div>
+				</div>
+
+				<button type="button" class="btn btn-primary"  onclick="set_store_id_format()"><: loc('Сохранить') :></button>
+
+			</form>
+		</div>
+		<!-- /prefix and suffix -->
+		
+		
+	</div>
+
+</div>
+
+<div style="display:none" class="js-template-fields"><: get_field({}) :></div>
+
+<script>
+	init.push(function () {
+		$("#store_currency_select").select2({
+			allowClear: true,
+			width: 'resolve'
+		});
+		$('.js-fields button').tooltip();
+		
+		var tpl = $('.js-template-fields').html(),
+		$fields = $(".js-fields");
+
+		var handle_error = function () {
+			bootbox.alert('<: loc("Ошибка") :>');
+		};
+	
+		var handle_toggle = function (method, $btn) {
+			var $field = $btn.parents('.js-field-one'),
+				class_map = {
+					"show": ".js-hide",
+					"hide": ".js-show",
+					"required_on": ".js-required-off",
+					"required_off": ".js-required-on"
+				};
+			$.ajax({
+				type: 'post',
+				url: '/admin/api/store/settings/' + $field.data('id') + '/' + method + '.json',
+				success: function(response) {
+					if (response.result == 'ok') {
+						$btn.hide();
+						$field.find(class_map[method]).show();
+					}
+					else {
+						handle_error()
+					}
+				},
+				error: function() {
+					handle_error();
+				}
+			});
+		};
+		$(".js-field-add").on("click", function() {
+			var $this = $(this),
+			    $elem = $this.parents(".js-field-one").find("input[name='title']");
+			if (!$elem || $elem.val() === '') {
+				$elem.parent().addClass('has-error');
+				return false;
+			}
+			else {
+				$elem.parent().removeClass('has-error');
+			}
+			$.ajax({
+				type: 'post',
+				url: '/admin/api/store/fields.json',
+				data: { title: $elem.val() },
+				success: function(response) {
+					if (response.result == 'ok') {
+						var $new_elem = $(tpl);
+						$new_elem.find("input[name='title']").val($elem.val());
+						$new_elem.data('id', response.data_id);
+						$fields.append($new_elem);
+						$fields.find('button').tooltip();
+						$elem.val('');
+					}
+					else {
+						handle_error()
+					}
+				},
+				error: function() {
+					handle_error();
+				}
+			});
+
+			return false;
+		});
+		$fields.on('click', ".js-field-delete", function() {
+			var $this = $(this),
+			    id = $this.parents(".js-field-one").data('id');
+			$.ajax({
+				type: 'delete',
+				url: '/admin/api/store/settings/' + id + '.json',
+				success: function(response) {
+					$this.parents('.js-field-one').remove();
+				},
+				error: function() {
+					handle_error();
+				}
+			});
+			return false;
+		});
+		$fields.on('click', ".js-hide", function() {
+			var $this = $(this);
+			handle_toggle('hide', $this);
+			return false;
+		});
+		$fields.on('click', ".js-show", function() {
+			var $this = $(this);
+			handle_toggle('show', $this);
+			return false;
+		});
+		$fields.on('click', ".js-required-on", function() {
+			var $this  = $(this);
+			handle_toggle('required_on', $this);
+			return false;
+		});
+		$fields.on('click', ".js-required-off", function() {
+			var $this  = $(this);
+			handle_toggle('required_off', $this);
+			return false;
+		});
+		$fields.on('keypress', 'input', function(e) {
+			if (e.which == 13) {
+				var $this = $(this);
+				if ($this.hasClass('js-title-add')) {
+					$this.parents('.js-field-one').find('.js-field-add').trigger('click');
+				}
+				else {
+					save_field($this);
+				}
+				return false;
+			}
+		});
+		$fields.on('focusout', 'input', function(e) {
+			save_field($(this));
+		});
+	});
+
+	function set_store_currency() {
+		var currency_code = $('#store_currency_select').val();
+		var btn = $('.btn-set-store-currency');
+		btn.addClass('disabled');
+		$.ajax({
+			type: 'post',
+			url: '/admin/api/store/currency.json',
+			data: {
+				"currency_code": currency_code
+			},
+			success: function(response) {
+				if (response.result == 'ok') {
+					btn.removeClass('disabled');
+					$.growl.notice({ message: "<: loc('Данные успешно сохранены') :>", size: 'large' });
+				}
+			},
+			error: function() {
+				btn.removeClass('disabled');
+				alert('<: loc("Ошибка") :>');
+			}
+		})
+	}
+
+	function set_store_confirmation() {
+		var confirmation = $('#confirmation').val();
+		$.ajax({
+			type: 'post',
+			url: '/admin/api/store/confirmation.json',
+			data: {
+				"confirmation": confirmation
+			},
+			success: function(response) {
+				if (response.result == 'ok') {
+					$.growl.notice({ message: "<: loc('Данные успешно сохранены') :>", size: 'large' });
+				}
+			},
+			error: function() {
+				alert('<: loc("Ошибка") :>');
+			}
+		})
+	}
+
+	function save_field($input) {
+		if ($input.val() === "") {
+			return
+		}
+		if ($input.hasClass('js-title-add')) {
+			return
+		}
+		$.ajax({
+			type: 'post',
+			url: '/admin/api/store/fields.json',
+			data: {
+				data_id: $input.parents('.js-field-one').data('id'),
+				title: $input.val()
+			},
+			success: function(response) {
+				if (response.result != 'ok') {
+					handle_error();
+				}
+			},
+			error: function() {
+				handle_error();
+			}
+		});
+	}
+	
+	function set_store_id_format () {
+		var suffix = $('#store_order_suffix').val();
+		var prefix = $('#store_order_prefix').val();
+		$.ajax({
+			type: 'post',
+			url: '/admin/api/store/id_format.json',
+			data: {
+				"suffix": suffix,
+				"prefix": prefix
+			},
+			success: function(response) {
+				if (response.result == 'ok') {
+					$.growl.notice({ message: "<: loc('Данные успешно сохранены') :>", size: 'large' });
+				}
+			},
+			error: function() {
+				alert('<: loc("Ошибка") :>');
+			}
+		})
+	}
+
+</script>
+: }

@@ -1,0 +1,205 @@
+: macro item -> ($m) {
+	<span class="js-item item" data-id="<: $m.menu_id :>">
+		<span class='handle'><span class='icon fa fa-<: $m.url == "index" ? "home home-icon" : "bars std-icon" :>'></span></span>
+		<a class="js-edit caption text-bg <: 'text-muted' if $m.hidden :>" 
+			href="/admin/menu/<: $m.menu_id :>/edit">
+			<: $m.title :>
+		</a>
+		<span class="controls">
+			<a class="btn btn-sm btn-primary js-edit" title="<: loc('Изменить') :>" 
+				href="/admin/menu/<: $m.menu_id :>/edit">
+				  <span class="fa fa-edit"></span>
+			 </a>
+			<a class="btn btn-sm <: 'btn-warning' if !$m.hidden :> js-hide-menu" 
+				data-id="<: $m.menu_id :>" title="<: loc($m.hidden ? 'Показать' : 'Скрыть') :>">
+				<span class="fa fa-eye<: '-slash' if !$m.hidden :>"></span>
+			</a>
+			<a class="btn btn-sm btn-danger js-delete-menu" data-id="<: $m.menu_id :>" title="<: loc('Удалить') :>">
+				 <span class="fa fa-times"></span>
+			</a>
+		</span>
+	</span>
+: }
+
+<div class="page-header">
+	<div class="row">
+		<h1 class="col-xs-12 col-sm-4 text-left-sm">
+			<i class="fa fa-bars page-header-icon"></i> 
+			<: loc('Меню') :>
+		</h1>
+		<div class="col-xs-12 col-sm-8">
+			<div class="row">
+				<hr class="visible-xs no-grid-gutter-h">
+				<div class="pull-right col-xs-12 col-sm-auto">
+					<a href="/admin/menu/add" class="btn btn-primary btn-labeled" style="width:100%">
+						<span class="btn-label icon fa fa-plus"></span> 
+						<: loc('Добавить') :>
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="panel" id="menu">
+	<div class="panel-body no-padding-b">
+		: if $menu.size() {
+			<ul class="list-group sortable">
+			: for $menu -> $parent {
+				<li class="list-group-item">
+					: item($parent);
+					: if ($parent.children) {
+						<ul>
+					: }
+					: for $parent.children -> $child {
+							<li class="list-group-item">
+							: item($child);
+							</li>
+					: }
+					: if ($parent.children) {
+						</ul>
+					: }
+				</li>
+			: }
+			</ul>
+		: }
+	</div>
+</div>
+
+<script>
+	init.push(function () {
+		$('#menu a').tooltip();
+	});
+
+	$('.js-delete-menu').on('click', function() {
+		var $this = $(this),
+			$item   = $this.parents('.js-item');
+
+		bootbox.confirm({
+			message: '<: loc("Вы подтверждаете удаление?") :>',
+			buttons: {
+				confirm: {
+					label: '<: loc("Удалить") :>',
+					className: 'btn-danger'
+				},
+				cancel: {
+					label: '<: loc("Не сейчас") :>',
+					className: 'pull-left btn-outline'
+				}
+			},
+			callback: function(result){
+				if (result) {
+					$.ajax({
+						type: 'POST',
+						url: '/admin/menu/delete/',
+						data: { 'id': $this.data('id') },
+						success: function(response) {
+							if (response.result == 'ok') {
+								$item.parent().remove();
+							}
+						},
+						error: function() {
+							bootbox.alert('<: loc("Ошибка") :>');
+						}
+					});
+				}
+			},
+			className: "bootbox-sm"
+		});
+
+		return false;
+	});
+
+	$('.js-hide-menu').on('click', function() {
+		var $this = $(this),
+			$span = $this.children(),
+			$item = $this.parents('.js-item').find('.caption');
+
+		$.ajax({
+			type: 'POST',
+			url: '/admin/menu/hide/',
+			data: { 'id': $this.data('id') },
+			success: function(response) {
+				if (response.result == 'ok') {
+					if ($span.hasClass('fa-eye')) {
+						$item.removeClass('text-muted');
+						$span.removeClass('fa-eye').addClass('fa-eye-slash');
+						$this.addClass('btn-warning');
+						$this.prop('title', 'Hide').tooltip('fixTitle').tooltip('show');
+					} else {
+						$item.addClass('text-muted');
+						$span.removeClass('fa-eye-slash').addClass('fa-eye');
+						$this.removeClass('btn-warning');
+						$this.prop('title', 'Show').tooltip('fixTitle').tooltip('show');
+					}
+				}
+			},
+		});
+
+		return false;
+	});
+
+	$('.sortable').nestedSortable({
+		handle: 'span.handle',
+		listType: 'ul',
+		items: 'li',
+		maxLevels: 2,
+		tabSize: 40,
+		placeholder: 'sortPlaceholder',
+		errorClass: 'sortError',
+		rtl: false,
+		forcePlaceholderSize: true,
+		forceHelperSize: true,
+		stop: function (event, ui) {
+			var id  = ui.item.find('.js-item').data('id'),
+				ids	= [],
+				new_parent = ui.item.parent().prev().data('id') || 0;
+				
+			ui.item.parent().children().each(function() {
+				ids.push($(this).find('.js-item').data('id'));
+			});
+
+			$('.js-edit', ui.item).prop('href', '/admin/menu/edit/' + (new_parent ? new_parent : id ) + '/');
+			$.ajax({
+				type: 'POST',
+				url: '/admin/menu/move/',
+				data: {
+					'id'  : id,
+					'ids' : ids.join(),
+					'new_parent': new_parent
+				}
+			});
+		}
+
+	});
+
+	$('.item').hover(
+		function () {
+			$(this).find('.std-icon').removeClass('fa-bars').addClass('fa-arrows');
+		}, function () {
+			$(this).find('.std-icon').removeClass('fa-arrows').addClass('fa-bars');
+		}
+	);
+	
+	$('.item').hover(
+		function () {
+			$(this).find('.home-icon').removeClass('fa-home').addClass('fa-arrows');
+		}, function () {
+			$(this).find('.home-icon').removeClass('fa-arrows').addClass('fa-home');
+		}
+	);
+</script>
+
+<style type="text/css">
+.list-group-item{border:none!important;padding:0!important}
+a{color:#0579C2;text-decoration:none}
+li{border-radius:3px;border:1px solid transparent}
+ul{list-style-type:none}
+li span.item{display:block;border-radius:5px;line-height:32px;background-color:#FFF;border:1px solid transparent;margin-top:2px;margin-bottom:2px}
+li span.item:hover{background:#f5f5f5}
+li span.item span.handle{background:none;border-radius:3px 0 0 3px;cursor:move;float:left;width:20px;position:absolute;z-index:100}
+li span.item a.caption{display:inline-block;padding-left:28px;text-decoration:none;text-overflow:ellipsis;white-space:nowrap;position:relative}
+.icon{padding-left:5px}
+.controls{float:right}
+.controls .btn{height:25px}
+</style>

@@ -1,0 +1,64 @@
+<h3><: loc('Информация о заказе') :> <: $site.store_order_prefix :><: $order.order_id :><: $site.store_order_suffix :></h3>
+
+
+<table border="1" cellspacing="0" cellpadding="4">
+<tr>
+	<th><: loc('Товар') :></th>
+	<th><: loc('Цена') :></th>
+	<th><: loc('Количество') :></th>
+	<th><: loc('Всего') :></th>
+</tr>
+: for $items -> $item {
+<tr>
+	<td>
+		<a href="http://<: $vars.site.domain :>/store/item/<: $item.item_id :>"><: $item.title :></a>
+
+		: for $item.params_decoded.kv() -> $p {
+			<br><: $p.key :>:</b> <: $p.value :>
+		: }
+	</td>
+	<td><: $item.price :></td>
+	<td align="center"><: $item.qty :></td>
+	<td align="center"><: ($item.qty * $item.price) :></td>
+</tr>
+: }
+: if $order.delivery_title {
+<tr>
+	<td><: loc('Доставка') :></td>
+	<td></td>
+	<td align="center"></td>
+	<td align="center"><: $order.delivery_price :></td>
+</tr>
+: }
+: if $order.promocode {
+<tr>
+	<td><: loc('Промокод') :></td>
+	<td>-<: $get_price($order.promocode_discount) :></td>
+	<td></td>
+	<td>-<: $get_price($order.promocode_discount) :></td>
+</tr>
+: }
+<tr>
+	<td><: loc('Всего') :></td>
+	<td></td>
+	<td align="center"><: $order.qty :></td>
+	<td align="center"><: $order.amount :> <: $vars.site.store_currency :></td>
+</tr>
+</table>
+
+
+<h4><: loc('Информация о покупателе') :></h4>
+: if $order.delivery_title {
+<p><: loc('Доставка') :>: <: $order.delivery_title :></p>
+: }
+: if $order.phone {
+<p><: loc('Телефон') :>: <: $order.phone :></p>
+: }
+: if $order.email {
+<p>E-mail: <a href="mailto:<: $order.email :>"><: $order.email :></a></p>
+: }
+: for $order.data.kv() -> $data {
+	: if ($data.value) {
+	<p><: $data.key :>: <: $data.value :></p>
+	: }
+: }

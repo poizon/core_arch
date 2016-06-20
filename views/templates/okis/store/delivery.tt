@@ -1,0 +1,13 @@
+<h1><: loc('Доставка') :></h1>
+<form method="post">
+	: for $delivery -> $d {
+	<label>
+		<input type="radio" name="delivery_id" value="<: $d.delivery_id :>" <: 'checked="checked"' if $~d.is_first :>> 
+		<: $d.title :> — <: $get_price($d.price) | raw :>
+	</label>
+	<div><: $d.body | raw :></div>
+	: }
+	<br>
+
+	<input type="submit" value="<: loc('Далее') :>">
+</form>

@@ -1,0 +1,137 @@
+: if defined $params.noeditor {
+: 	include admin::tools::codemirror { cm_id => "page-textarea" }
+<style>.CodeMirror{height:350px}</style>
+: } 
+: else {
+: 	include admin::tools::wysiwyg { id => "page-textarea" }
+: }
+
+<div class="page-header">
+	<h1>
+		<i class="fa fa-files-o page-header-icon"></i>
+		<span class="text-light-gray"><a href="/admin/pages"><: loc('Страницы') :></a> / </span>
+		<: loc('Изменить') :>
+	</h1>
+</div> <!-- / .page-header -->
+
+<ul class="nav nav-tabs">
+	<li <: raw('class="active"') if !$params.active :>><a href="#basic" data-toggle="tab"><: loc('Основное') :></a></li>
+	<li <: raw('class="active"') if $params.active == "seo" :>><a href="#seo" data-toggle="tab"><: loc('SEO') :></a></li>
+</ul>
+
+<div class="tab-content no-padding">
+	<div class="tab-pane fade <: 'active in' if !$params.active :>" id="basic">
+		<form class="form-horizontal" method="post" id="createForm">
+		<div class="panel no-border-t">
+			<div class="panel-body">
+				<div class="form-group <: 'has-error' if $page.err_title :>" id="add-title-group">
+					<label class="col-sm-2 control-label" for="title"><: loc('Заголовок') :></label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" value="<: $page.title :>"
+							name="title" id="title">
+						<p class="help-block"><: loc($page.err_title) :></p>
+					</div>
+				</div>
+				<div class="form-group  <: 'has-error' if $page.err_url :>" id="add-url-group">
+					<label class="col-sm-2 control-label" for="url"><: loc('Адрес страницы') :></label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" value="<: $page.url :>"
+							name="url" id="url" required>
+						<p class="help-block"><: loc($page.err_url) :></p>
+					</div>
+				</div>
+				: if $folders.size() > 1 {
+				<div class="form-group" id="add-url-group">
+					<label class="col-sm-2 control-label" for="category"><: loc('Категория') :></label>
+					<div class="col-sm-4">
+						<select name="folder_id" id="category" class="form-control">
+							: for $folders -> $f {
+							<option value="<: $f.folder_id :>" <: raw('selected="selected"') if $f.folder_id == $page.folder_id:>>
+								<: $f.title :>
+							</option>
+							: }
+						</select>
+					</div>
+				</div>
+				: }
+				<div class="form-group  <: 'has-error' if $page.err_body :>" id="add-body-group">
+					<div class="col-sm-offset-2 col-sm-10">
+						<textarea class="form-control" id="page-textarea"
+							rows="15" name="body"><: $page.body :></textarea>
+						<p class="help-block"><: loc($page.err_body) :></p>
+					</div>
+				</div>
+			</div>
+			<div class="panel-footer text-right">
+				: include admin::submit
+			</div>
+		</div>
+		</form>
+	</div>
+
+	<div class="tab-pane fade <: 'active in' if $params.active == 'seo' :>" id="seo">
+		<div class="panel no-border-t">
+			<form class="form-horizontal" method="post" action="/admin/pages/<: $page.page_id :>/set-meta">
+			<div class="panel-body">
+				
+				<div class="form-group" id="add-meta-title-group">
+					<label class="col-sm-2 control-label" for="meta_title"><: loc('Заголовок страницы') :></label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" value="<: $page.meta_title :>"
+							name="meta_title" id="meta_title">
+						: if $page.err_meta_title {
+							<p class="help-block"><: $page.err_meta_title :></p>
+						: } else {
+							<p class="help-block"><: loc("Отображается в качестве заголовка окна браузера.") :></p>	
+						: }
+					</div>
+				</div>
+				
+				<div class="form-group" id="add-meta-description-group">
+					<label class="col-sm-2 control-label" for="meta_description"><: loc('Описание') :></label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" value="<: $page.meta_description :>"
+							name="meta_description" id="meta_description">
+						: if $page.err_meta_description {
+							<p class="help-block"><: $page.err_meta_description :></p>
+						: } else {
+							<p class="help-block"><: loc("Короткое описание страницы.") :></p>
+						: }
+					</div>
+				</div>
+				
+				<div class="form-group" id="add-meta-keywords-group">
+					<label class="col-sm-2 control-label" for="meta_keywords"><: loc('Ключевые слова') :></label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" value="<: $page.meta_keywords :>"
+							name="meta_keywords" id="meta_keywords">
+						: if $page.err_meta_keywords {
+							<p class="help-block"><: $page.err_meta_keywords :></p>
+						: } else {
+							<p class="help-block"><: loc("Список ключевых слов, разделенных запятыми.") :></p>	
+						: }
+					</div>
+				</div>
+
+				<div class="form-group">
+					<div class="col-sm-10 col-sm-offset-2">
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" class="px" name="noindex" 
+									value="1" <: raw('checked=""') if $page.noindex :>>
+								<span class="lbl text-default">
+									<: loc("Запретить поисковым системам индексировать эту страницу") :>
+								</span>
+							</label>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="panel-footer text-right">
+				: include admin::submit
+			</div>
+			</form>
+		</div>
+	</div>
+
+</div>

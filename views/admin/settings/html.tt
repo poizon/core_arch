@@ -1,0 +1,81 @@
+: cascade admin::settings::navigation
+
+: around option -> {
+	<div style="padding:5px 25px 10px 0">
+		<a onclick="save_html_settings()" class="btn btn-info btn-labeled btn-block">
+			<i class="btn-label fa fa-save"></i>
+			<: loc('Сохранить') :>
+		</a>
+	</div>
+: }
+
+: around menu -> {
+	<li class="mail-select-folder active aa"><a href="/admin/settings/html">HTML</a></li>
+	<li><a href="#"><div class="mail-nav-lbl bg-success"></div>title</a></li>
+	<li><a href="#"><div class="mail-nav-lbl bg-info"></div>menu</a></li>
+	<li><a href="#"><div class="mail-nav-lbl bg-danger"></div>meta</a></li>
+	<li><a href="#"><div class="mail-nav-lbl bg-warning"></div>counters</a></li>
+	<li><a href="#"><div class="mail-nav-lbl bg-pa-purple"></div>css</a></li>
+	<li><a href="#"><div class="mail-nav-lbl bg-success"></div>content</a></li>
+	<li><a href="#"><div class="mail-nav-lbl bg-info"></div>copyright</a></li>
+: }
+
+: around body -> {
+: 	include admin::tools::codemirror { cm_id => "html" }
+
+	<style>
+	html,body,#main-wrapper,#content-wrapper,.mail-container,.CodeMirror,.CodeMirror-form{height:100% !important}
+	@media (min-width:992px){.mail-container{padding-top:46px !important}}
+	.mail-container-header{margin-top:46px !important}
+	</style>
+	
+	<form method="post" class="CodeMirror-form" id="my-form">
+		<textarea id="html" name="html"><: $meta.html :></textarea>
+	</form>
+	
+	<script type="text/javascript">
+		init.push(function () {
+			$('body').addClass('mmc');
+		
+			: if !$vars.site.premium {
+				$.growl.error({
+					message: "<: loc('Эта функция доступна только на платном пакете услуг.') :>",
+					size: 'large',
+					duration: 999 * 999
+				});
+			: }
+		});
+	
+		function save_html_settings() {
+			var cm = $('#html').data('CodeMirrorInstance');
+	
+			$.ajax({
+				type: 'post',
+				url: '/admin/api/settings/html.json',
+				data: { "html": cm.getValue() },
+				success: function(response) {
+					if (response.result == 'ok') {
+						$.growl.notice({
+							message: "<: loc('Данные успешно сохранены') :>",
+							size: 'large',
+						});
+					}
+					else {
+						$.growl.error({
+							message: "<: loc('Эта функция доступна только на платном пакете услуг.') :>",
+							size: 'large',
+						});
+					}
+				},
+				error: function() {
+					$.growl.error({
+						message: "<: loc('Ошибка') :>",
+						size: 'large',
+					});
+				}
+			})
+		}
+	</script>
+
+: }
+

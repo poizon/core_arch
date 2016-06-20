@@ -1,0 +1,15 @@
+<h3><: loc('Please, select Delivery Method:') :></h3>
+<form method="post">
+	: for $deliveries -> $d {
+	<label>
+		<input type="radio" name="delivery_id" 
+			   value="<: $d.delivery_id :>" <: 'checked="checked"' if $~d.is_first :>
+		> <: $d.title :> — <: $d.price :> <: $currency :>
+	</label>
+	<div><: $d.body | raw :></div>
+	: }
+	<br>
+
+	<button type="submit" class="btn btn-primary"><: loc('Next') :></button>
+	</br>
+</form>

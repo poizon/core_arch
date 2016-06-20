@@ -1,0 +1,66 @@
+<div class="mail-nav">
+	<div class="mail-container-header show">
+		<i class="fa fa-gear page-header-icon"></i>
+		<span class="text-light-gray"><: loc('Настройки') :></span>
+	</div>
+	<div class="navigation">
+		
+		<ul class="sections">
+			: block menu -> {
+			<li<: raw(' class="active aa"') if !$path.3 :>>
+				<a href="/admin/settings"><i class="m-nav-icon fa fa-desktop"></i><: loc('Основное') :></a>
+			</li>
+			<li<: raw(' class="active aa"') if $path.3 == "statistics" :>>
+				<a href="/admin/settings/statistics"><i class="m-nav-icon fa fa-bar-chart"></i><: loc('Статистика') :></a>
+			</li>
+			<li<: raw(' class="active aa"') if $path.3 == "redirect" :>>
+				<a href="/admin/settings/redirect"><i class="m-nav-icon fa fa-exchange"></i><: loc('Переадресация') :></a>
+			</li>
+			<li<: raw(' class="active aa"') if $path.3 == "favicon" :>>
+				<a href="/admin/settings/favicon"><i class="m-nav-icon fa fa-star"></i><: loc('Favicon') :></a>
+			</li>
+			<li<: raw(' class="active aa"') if $path.3 == "seo" :>>
+				<a href="/admin/settings/seo"><i class="m-nav-icon fa fa-line-chart"></i><: loc('SEO') :></a>
+			</li>
+			<li<: raw(' class="active aa"') if $path.3 == "css" :>>
+				<a href="/admin/settings/css"><i class="m-nav-icon fa fa-paint-brush"></i>CSS</a>
+			</li>
+			
+			: if $settings.compatibility {
+			<li class="divider"></li>
+			<li<: raw(' class="active"') if $path.3 == "html" :>>
+				<a href="/admin/settings/html"><i class="m-nav-icon fa fa-code"></i><: loc('HTML') :></a>
+			</li>
+			<li>
+				<a href="/admin/settings/advertisement"><i class="m-nav-icon fa fa-signal"></i><: loc('Реклама') :></a>
+			</li>
+			:}
+			
+			: }
+			<li class="divider"></li>
+		</ul>
+		
+	</div>
+	: block option -> {}
+</div>
+
+<div class="mail-container">
+	: block body -> {}
+</div>
+
+<script type="text/javascript">
+init.push(function () {
+
+	// Open nav on mobile
+	$('.mail-nav .navigation li.active a').click(function () {
+		$('.mail-nav .navigation').toggleClass('open');
+		return false;
+	});
+	
+	// Fix navigation if main menu is fixed
+	if ($('body').hasClass('main-menu-fixed')) {
+		$('.mail-nav').addClass('fixed');
+	}
+	
+});
+</script>

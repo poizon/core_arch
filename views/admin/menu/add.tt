@@ -1,0 +1,76 @@
+<div class="page-header">
+	<h1>
+		<i class="fa page-header-icon fa-bars"></i>
+		<span class="text-light-gray"><a href="/admin/menu/"><: loc('Меню') :></a> / </span>
+		<: $title :>
+	</h1>
+</div>
+
+<div class="panel">
+	: if $error.common {
+		<div class="panel-body no-padding-b">
+			<div class="alert">
+				<: $error.common :>
+			</div>
+		</div>
+	: } else {
+	<form class="form-horizontal" method="post" action="">
+		<div class="panel-body">
+			<div class="form-group <: 'has-error' if $error.err_url :>" id="add-descr-group">
+				<label class="col-sm-2 control-label" for="url"><: loc('Адрес страницы') :></label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control search-url" value="<: $data.url :>" name="url" id="url" required>
+					: if $error.err_url {
+					<p class="help-block"><: loc($error.err_url) :></p>
+					: }
+				</div>
+			</div>
+			<div class="form-group <: 'has-error' if $error.err_title :>" id="add-name-group">
+				<label class="col-sm-2 control-label" for="title"><: loc('Текст ссылки') :></label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" value="<: $data.title :>" name="title" id="title" required>
+					: if $error.err_title {
+					<p class="help-block"><: loc($error.err_title) :></p>
+					: }
+				</div>
+			</div>
+		</div>
+		<div class="panel-footer text-right">
+			: include admin::submit
+		</div>
+	</form>
+	:}
+</div>
+
+<script type="text/javascript">
+	var autocomplete = <: $tags | raw :>;
+
+	function autocomplete_init() {
+		$.ui.autocomplete.prototype._renderItem = function(ul, item) {
+			return $("<li class='autoc-item'>")
+				.append( "<a><b>" + item.label + "</b><br>" + item.url + "</a>" )
+				.appendTo(ul);
+		};
+		$( ".search-url" ).autocomplete({
+			minLength: 0,
+			focus	: function( event, ui ) {
+				$(event.target).val( ui.item.url );
+				return false;
+			},
+			select   : function( event, ui ) {
+				var $url_input = $(event.target);
+				$url_input.val( ui.item.url );
+				$url_input.closest('.form-group').next().find("input[type='text']").val( ui.item.label )
+				return false;
+			},
+			source: function(request, response) {
+				var matcher = new RegExp( $.ui.autocomplete.escapeRegex( request.term ), "i" );
+				response($.grep(autocomplete, function(value) {
+					return matcher.test(value.label) || matcher.test(value.url);
+				}));
+			}
+		});
+	}
+	autocomplete_init();
+</script>
+

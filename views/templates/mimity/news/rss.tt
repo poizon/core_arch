@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<rss version="2.0">
+	<channel>
+		<title><: $vars.site.title :></title>
+		<link>http://<: $vars.site.domain :>/news/rss</link>
+		<description><: $vars.site.title :></description>
+		<language><: $lang :></language>
+		: if $list && $list.size() > 0 {
+		<pubDate><: $list.0.date :></pubDate>
+		: }
+
+		: for $list -> $news {
+		<item>
+			<title><: $news.title :></title>
+			<link>http:/<: $vars.site.domain :>/news/<: $news.news_id :></link>
+			<description><: $news.body :></description>
+			<pubDate><: $news.date :></pubDate>
+			<guid><: $news.news_id :></guid>
+		</item>
+		: }
+	</channel>
+</rss>

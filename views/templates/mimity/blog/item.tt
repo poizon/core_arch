@@ -1,0 +1,77 @@
+: if $status == 404 {
+	<div class="danger"><: loc('The requested blog entry was not found.') :></div>
+	<p><: loc('See <a href="/blog">entire blog</a>.') | raw :></p>
+: }
+: else {
+	: include admin::wysiwyg { id => "textarea-body" }
+	<span class="date"><: $item.date | format_date($date.formatter) :></span>
+	<: $item.body | raw :>
+
+	: if $comments.0 {
+		<h3 id="comments"><: loc('Comments') :></h3>
+		<ul>
+		: for $comments -> $comment {
+			<li>
+				<span class="date"><: $comment.date | format_date($date.formatter) :></span>
+				<: $comment.name :>
+					<a href="mailto:<: $comment.email :>"><: $comment.email :></a>
+				<: $comment.body :>
+			</li>
+		: }
+		</ul>
+	: }
+	<h3><: loc('Leave comment') :></h3>
+	<form method="post" class="form-horizontal">
+		<div class="panel-body">
+		: if defined($error) {
+			<div class="form-group" id="add-title-group">
+				<label class="col-sm-2 control-label" for="title"></label>
+				<div class="col-sm-10">
+					<h3 class="text-danger"><: $error :></h3>
+				</div>
+			</div>
+		: }
+
+			<div class="form-group" id="add-title-group">
+				<label class="col-sm-2 control-label" for="input-name">
+					<: loc('Your name') :></label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" value="<: $comment.name :>"
+						name="name" placeholder="<: loc('Your name') :>" id="input-name"
+						required>
+					: if defined($comment.err_name) {
+					<span class="text-danger"><: $comment.err_name :></span>
+					: }
+				</div>
+			</div>
+
+			<div class="form-group" id="add-title-group">
+				<label class="col-sm-2 control-label" for="input-email">
+					<: loc('Your email') :></label>
+				<div class="col-sm-10">
+					<input type="email" class="form-control" value="<: $comment.email :>"
+						name="email" placeholder="<: loc('Your email') :>" id="input-email"
+						required>
+					: if defined($comment.err_email) {
+					<span class="text-danger"><: $comment.err_email :></span>
+					: }
+				</div>
+			</div>
+
+			<div class="form-group" id="add-body-group">
+				<label class="col-sm-2 control-label" for="textarea-body">
+					<: loc('Message') :></label>
+				<div class="col-sm-10">
+					<textarea class="form-control" rows="10" name="body"
+						id="textarea-body" required><: $comment.body :></textarea>
+					: if defined($comment.err_body) {
+						<span class="text-danger"><: $comment.err_body :></span>
+					: }
+				</div>
+			</div>
+		</div>
+		<div class="panel-footer text-right">
+			<button type="submit" class="btn btn-primary"><: loc('Post comment') :></button>
+		</div>
+	</form>
+: }

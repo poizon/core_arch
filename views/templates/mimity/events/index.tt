@@ -1,0 +1,77 @@
+: if $calendar {
+<table id="calendar-current" class="calendar">
+	<caption>
+		<a href="/calendar/<: $calendar.year - ( $calendar.month ==  1) :>/<: $calendar.month_prev | format('%02d') :>" title="<: loc($calendar.monthname_prev) :>">←</a>
+		<a href="/calendar/<: $calendar.year :>/<: $calendar.month | format('%02d') :>"
+			title="<: loc('Entire month') :>"><: loc($calendar.monthname) :></a>
+		<a href="/calendar/<: $calendar.year :>"
+			title="<: loc('Entire year') :>"><: $calendar.year :></a>
+		<a href="/calendar/<: $calendar.year + ( $calendar.month == 12) :>/<: $calendar.month_next | format('%02d') :>"
+			title="<: loc($calendar.monthname_next) :>">→</a>
+	</caption>
+	<thead>
+		: for $calendar.weekdays -> $weekday {
+		<th><: $weekday :></th>
+		: }
+	</thead>
+	<tbody>
+		: for $calendar.calendar -> $week {
+		<tr>
+			: for $week -> $day {
+			<td
+				: if $calendar.is_current_year
+				: && $calendar.is_current_month
+				: && $day == format('%d')($calendar.today_day)  {
+				class="today" title="<: loc('Today') :>"
+				: }
+			>
+				: if $day {
+					: if $days_with_events[$day] {
+						<a href="/calendar/<:
+							$calendar.year :>/<: $calendar.month | format('%02d'):>/<:
+							$day | format('%02d') :>"><: $day :></a>
+					: }
+					: else {
+						<: $day :>
+					: }
+				: }
+			</td>
+			: }
+		</tr>
+		: }
+	</tbody>
+</table>
+: }
+: else if $year && $months {
+<ul class="monthlist">
+	: for $months -> $item {
+	<li><a href="/calendar/<: $year :>/<:
+		$~item.count | format('%02d'):>"><: loc($item) :></a></li>
+	: }
+</ul>
+: }
+: else {
+	<div class="info"><: loc('See list of <a href="/calendar">upcoming events</a>.') | raw :></div>
+: }
+
+: if $events.0 {
+	<ul>
+        : for $events -> $item {
+        <li>
+			<a href="/events/<: $item.event_id :>">
+				<span class="date">
+					<: $item.date_start | format_date($date.formatter) :>
+					<: loc('-') :>
+					<: $item.date_end   | format_date($date.formatter) :>
+				</span>
+				<: $item.title :>
+			</a>
+        </li>
+        : }
+    </ul>
+	: include "templates/v1/pagination.tt"
+: } else {
+    <div class="alert">
+        <: loc('There is no events.') :>
+    </div>
+: }

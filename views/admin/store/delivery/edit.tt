@@ -1,0 +1,44 @@
+: cascade admin::store::navigation
+
+: around header -> {
+	<: loc('Доставка') :>
+: }
+
+: around body -> {
+: 	include admin::tools::wysiwyg { id => 'body' }
+
+<form class="form-horizontal" method="post" enctype="multipart/form-data">
+
+	<div class="form-group <: 'has-error' if $p.err_title :>">
+		<label for="title" class="control-label col-sm-2"><: loc('Название') :></label>
+		<div class="col-sm-10">
+			<input class="form-control" id="title" name="title" value="<: $item.title :>" required>
+			<p class="help-block"><: loc($p.err_title) :></p>
+		</div>
+	</div>
+
+	<div class="form-group <: 'has-error' if $p.err_body :>">
+		<label class="control-label col-sm-2"><: loc('Описание') :></label>
+		<div class="col-sm-10">
+			<textarea class="form-control" name="body" id="body" data-height="150"><: $item.body :></textarea>
+			<p class="help-block"><: loc($p.err_body) :></p>
+		</div>
+	</div>
+
+	<div class="form-group <: 'has-error' if $p.err_price :>">
+		<label for="price" class="control-label col-sm-2"><: loc('Цена') :></label>
+		<div class="col-sm-2">
+			<input class="form-control" name="price" id="price" value="<: $item.price :>" required>
+			<p class="help-block"><: $p.err_price :></p>
+		</div>
+		<div class="col-sm-2">
+			<div style="margin-top:6px;"><: $vars.site.store_currency :></div>
+		</div>
+	</div>
+
+	<div class="col-sm-offset-2">
+	: include admin::submit
+	</div>
+
+</form>
+: }

@@ -1,0 +1,11 @@
+: if !$vars.site.premium {
+	<div style="text-align:center">
+		<a href="http://<: $settings.appdomain :>">
+			<: loc("Создано на конструкторе сайтов %1.", [ $settings.appname ]) :>
+		</a>
+		: if $settings.compatibility && !$vars.site.noads {
+		<: $sape | raw :>
+		<: $linkfeed | raw :>
+		: }
+	</div>
+: }

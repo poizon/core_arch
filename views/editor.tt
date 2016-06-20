@@ -1,0 +1,128 @@
+: if $can_edit {
+
+: include admin::tools::codemirror
+
+<link rel="stylesheet" type="text/css" href="/assets/stylesheets/font-awesome.min.css"/>
+<link rel="stylesheet" type="text/css" href="/assets/stylesheets/froala_editor.min.css"/>
+<link rel="stylesheet" type="text/css" href="/assets/stylesheets/froala_style.min.css"/>
+<link rel="stylesheet" type="text/css" href="/assets/stylesheets/froala-themes/gray.min.css"/>
+
+<link rel="stylesheet" type="text/css" href="/assets/stylesheets/froala-plugins/char_counter.min.css"/>
+<link rel="stylesheet" type="text/css" href="/assets/stylesheets/froala-plugins/code_view.min.css"/>
+<link rel="stylesheet" type="text/css" href="/assets/stylesheets/froala-plugins/colors.min.css"/>
+<link rel="stylesheet" type="text/css" href="/assets/stylesheets/froala-plugins/emoticons.min.css"/>
+<link rel="stylesheet" type="text/css" href="/assets/stylesheets/froala-plugins/file.min.css"/>
+<link rel="stylesheet" type="text/css" href="/assets/stylesheets/froala-plugins/fullscreen.min.css"/>
+<link rel="stylesheet" type="text/css" href="/assets/stylesheets/froala-plugins/image_manager.min.css"/>
+<link rel="stylesheet" type="text/css" href="/assets/stylesheets/froala-plugins/image.min.css"/>
+<link rel="stylesheet" type="text/css" href="/assets/stylesheets/froala-plugins/line_breaker.min.css"/>
+<link rel="stylesheet" type="text/css" href="/assets/stylesheets/froala-plugins/table.min.css"/>
+<link rel="stylesheet" type="text/css" href="/assets/stylesheets/froala-plugins/video.min.css"/>
+
+<script src="/assets/javascripts/jquery-2.1.1.min.js"></script>
+<script src="/assets/javascripts/froala_editor.min.js"></script>
+
+<script type="text/javascript">
+	$.FroalaEditor.DEFAULTS.key = 'TA4==';
+</script>
+
+<script src="/assets/javascripts/froala-plugins/lists.min.js"></script>
+<script src="/assets/javascripts/froala-plugins/colors.min.js"></script>
+<script src="/assets/javascripts/froala-plugins/font_family.min.js"></script>
+<script src="/assets/javascripts/froala-plugins/font_size.min.js"></script>
+<script src="/assets/javascripts/froala-plugins/paragraph_style.min.js"></script>
+<script src="/assets/javascripts/froala-plugins/video.min.js"></script>
+<script src="/assets/javascripts/froala-plugins/fullscreen.min.js"></script>
+
+<script src="/assets/javascripts/froala-plugins/align.min.js"></script>
+<script src="/assets/javascripts/froala-plugins/char_counter.min.js"></script>
+<script src="/assets/javascripts/froala-plugins/code_view.min.js"></script>
+<script src="/assets/javascripts/froala-plugins/emoticons.min.js"></script>
+<script src="/assets/javascripts/froala-plugins/entities.min.js"></script>
+<script src="/assets/javascripts/froala-plugins/file.min.js"></script>
+<script src="/assets/javascripts/froala-plugins/image.min.js"></script>
+<script src="/assets/javascripts/froala-plugins/image_manager.min.js"></script>
+<script src="/assets/javascripts/froala-plugins/inline_style.min.js"></script>
+<script src="/assets/javascripts/froala-plugins/line_breaker.min.js"></script>
+<script src="/assets/javascripts/froala-plugins/link.min.js"></script>
+<script src="/assets/javascripts/froala-plugins/paragraph_format.min.js"></script>
+<script src="/assets/javascripts/froala-plugins/paragraph_style.min.js"></script>
+<script src="/assets/javascripts/froala-plugins/quote.min.js"></script>
+<script src="/assets/javascripts/froala-plugins/save.min.js"></script>
+<script src="/assets/javascripts/froala-plugins/table.min.js"></script>
+<script src="/assets/javascripts/froala-plugins/url.min.js"></script>
+
+<script src="/assets/javascripts/froala-langs/<: $vars.site.lang || $settings.default_lang :>.js"></script>
+
+<script type="text/javascript">
+	$(function(){
+		var $editable_element = $('.editable'),
+			editable_params   = {
+				height: 250,
+				theme: 'gray',
+				language: '<: $vars.site.lang || $settings.default_lang :>',
+				direction: 'ltr',
+				fileMaxSize: 1024 * 1024 * 3,
+
+				toolbarButtons: ["bold", "italic", "underline", "|",
+					"fontFamily", "fontSize", "color", "paragraphFormat", "|",
+					"align", "formatOL", "formatUL", "outdent", "indent", "|",
+					"insertLink", "insertImage", "insertVideo", "insertTable", "|",
+					"html", "fullscreen", "save"],
+
+				htmlRemoveTags: ['style', 'script'],
+				fullPage: false,
+				toolbarInline: false,
+				initOnClick: true,
+				imageResize: true,
+				codeMirror: true,
+
+				saveURL: '/instant_editing/update/',
+				saveMethod: 'POST',
+				saveParams: {'id': 115},
+
+				imageUploadParam: 'file',
+				imageUploadURL: '/admin/api/files/upload',
+				imageUploadParams: {
+					uploader: 'editor'
+				},
+				imageDeleteURL: '/admin/api/files/delete/',
+				imageManagerURL: '/admin/api/files/root.json'
+			};
+
+		$editable_element.froalaEditor(editable_params)
+			.on('froalaEditor.save.before', instant_editing_update)
+			.on('froalaEditor.image.removed', removeImage);
+
+		function removeImage(e, editor, $img) {
+			editor.deleteImage($img);
+		}
+
+		function instant_editing_update(e, editor) {
+			console.log();
+			$.ajax({
+				type: 'post',
+				url: '/instant_editing/update/',
+				data: {
+					'alias': editor.$original_element.data('alias'),
+					'field': editor.$original_element.data('field'),
+					'id':	editor.$original_element.data('id'),
+					'value': editor.getHTML()
+				},
+				success: function(response) {
+					if (response.status == 'ok') {
+						editor.destroy();
+						editor.$original_element.froalaEditor(editable_params)
+							.on('froalaEditor.save.before', instant_editing_update)
+							.on('froalaEditor.image.removed', removeImage);
+					}
+				},
+				error: function() {
+					alert('Server Error');
+				}
+			})
+			return false;
+		}
+	});
+</script>
+: }
